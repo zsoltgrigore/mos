@@ -16,7 +16,7 @@ h3 {
 #nickname,
 #connecting {
   position: absolute;
-  height: 460px;
+  height: 467px;
   z-index: 100;
   left: 0;
   top: 0;
@@ -140,7 +140,7 @@ h3 {
   background-color: #fff;
   -webkit-border-radius: 3px;
 }
-#send-message, #send-mcp-message {
+#send-message, #send-mcp-message, #connect-to-mcp {
   background: #fff;
   position: relative;
 }
@@ -161,12 +161,19 @@ h3 {
   vertical-align: middle;
   width: 580px;
 }
+
+#connect-to-mcp h3 {
+  line-height: 30px;
+  padding: 0 10px;
+}
+
 #send-message input:focus, #send-mcp-message input:focus {
   outline: 0;
 }
-#send-message button, #send-mcp-message button {
+
+#send-message button, #send-mcp-message button, #connect-to-mcp button {
   position: absolute;
-  top: 5px;
+  top: 2px;
   right: 5px;
 }
 button {

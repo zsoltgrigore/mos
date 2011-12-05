@@ -47,9 +47,28 @@
 	    function mcpmessage (from ,msg) {
 	      $('#mcp-lines').append($('<p>').append($('<b>').text(from), msg));
 	    }
+	    
+	    function clearmcp () {
+	      $('#mcp-message').val('').focus();
+	    };
+	      
+	    function clear () {
+	      $('#message').val('').focus();
+	    };
 	
+		function toggleConnectButton(){
+		  if ($('#connect-to-mcp button').attr('disabled') !== undefined) {
+    		$('#connect-to-mcp button').removeAttr('disabled');
+    	  } else {
+    		$('#connect-to-mcp button').attr('disabled', 'disabled');
+		  }
+		}
+		
 	    // dom manipulation
 	    $(function () {
+	    	
+	      $('#connect-to-mcp button').removeAttr('disabled');
+	    	
 	      $('#set-nickname').submit(function (ev) {
 	        socket.emit('nickname', $('#nick').val(), function (set) {
 	          if (!set) {
@@ -69,6 +88,17 @@
 	        return false;
 	      });
 	      
+	      $('#connect-to-mcp').submit(function () {
+	        socket.emit('connect to mcp', function (isConnected, msg){
+	        	if(isConnected) {
+	        		toggleConnectButton();
+	        	}
+	        	mcpmessage('MCP2me', msg);
+	        });
+	        $('#mcp-lines').get(0).scrollTop = 10000000;
+	        return false;
+	      });
+	      
 	      $('#send-mcp-message').submit(function () {
 	        mcpmessage('me2MCP', $('#mcp-message').val());
 	        socket.emit('mcp message', $('#mcp-message').val());
@@ -76,14 +106,6 @@
 	        $('#mcp-lines').get(0).scrollTop = 10000000;
 	        return false;
 	      });
-	      
-	      function clearmcp () {
-	        $('#mcp-message').val('').focus();
-	      };
-	      
-	      function clear () {
-	        $('#message').val('').focus();
-	      };
 	    });
 		</script>
 	</head>
@@ -107,7 +129,10 @@
 				<input id="message" type="text" />
 				<button>Send</button>
 			</form>
-			<h3>Send messages to ESB:</h3>
+			<form id="connect-to-mcp">
+				<h3>Send messages to ESB:</h3>
+				<button>Connect</button>
+			</form>
 			<form id="send-mcp-message">
 				<input id="mcp-message" type="text" />
 				<button>Send</button>

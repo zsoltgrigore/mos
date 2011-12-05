@@ -44,15 +44,39 @@ app.listen(8080, function () {
 * Socket.IO server (single process only)
 */
 
-var io = sio.listen(app), nicknames = {};
+var io = sio.listen(app);
+var nicknames = {};
+var mcpsocketmap = {};
 
 io.sockets.on('connection', function (websocket) {
   websocket.on('user message', function (msg) {
     websocket.broadcast.emit('user message', websocket.nickname, msg);
   });
   
-  websocket.on('mcp connect', function (msg) {
-    console.log("connect to mcp");
+  websocket.on('connect to mcp', function (fn) {
+    fn(true, "connected");
+    //mcpsocketmap[websocket.nickname].connect(2525, "91.82.98.3", mcpConnectionSuccess(fn, this));
+    mcpsocketmap[websocket.nickname].connect(2525, "91.82.98.3", function() {
+    	console.log("connect to mcp");
+    	mcpsocketmap[websocket.nickname].on("data", function(data){
+                //ha jön data akkor az menjen ki websocketen a kliensnek
+                //majd a beírt utasítást küldjük socketen postfix-nek
+                //console.log(data.toString());
+                websocket.emit('mcp message', "MCP2me", data)
+                mcpsocketmap[websocket.nickname].write("QUIT\r\n");
+        });
+    	
+    });
+    
+    mcpsocketmap[websocket.nickname].on("end", function(){
+		websocket.emit('mcp message', "MCP2me", "end");
+        // can be done else where, is similar to http .end("data", encoding);
+        mcpsocketmap[websocket.nickname].end();
+        // cleans up the socket.
+        //socket.destroy();
+
+	});
+    
     /*itt meghívjuk az mcp connect függvényt aminek a callback-je visszaír webre egy connected-t*/
     /*és beteszi magát a nicknames objectbe a username mellé */
     /*ezután használhatjuk azt a referenciát az üzenet továbbítására és fogadására*/
@@ -61,7 +85,7 @@ io.sockets.on('connection', function (websocket) {
   
   websocket.on('mcp message', function (msg) {
     console.log(msg + " <- sended by:" + websocket.nickname);
-    websocket.emit('mcp message', websocket.nickname, "ide jön a socket response")
+    websocket.emit('mcp message', websocket.nickname, "ide jön a socket response");
     /*itt esbsocket.send aminek a callback-je megkapja a websocketet*/
   });
 
@@ -71,6 +95,13 @@ io.sockets.on('connection', function (websocket) {
     } else {
       fn(false);
       nicknames[nick] = websocket.nickname = nick;
+      
+      //Érdekes hogy elvileg a type-on kívül minden egyébb config opció default értéket kap mégis
+      //ha configot beadom akkor szanszét esik arra hivatkozva hogy "Socket already opened"
+      //http://nodejs.org/docs/latest/api/net.html#new_net.Socket
+      mcpsocketmap[nick] = new net.Socket(/*{fd: null, type: 'tcp4', allowHalfOpen: false}*/);
+      mcpsocketmap[nick].setEncoding('utf8'); 
+      
       websocket.broadcast.emit('announcement', nick + ' connected');
       io.sockets.emit('nicknames', nicknames);
     }
@@ -80,10 +111,28 @@ io.sockets.on('connection', function (websocket) {
     if (!websocket.nickname) return;
 
     delete nicknames[websocket.nickname];
+    //szépen socket.end()-el kell lezárni 
+    //de ha kilövi a böngészőt vagy frissíti az oldalt akkor töröljük a nevét
+    //hiábe jön több üzenet a socketen nem tudjuk kinek érkezett inkább destroy() egyelőre
+    mcpsocketmap[websocket.nickname].destroy();
+    delete mcpsocketmap[websocket.nickname];
     websocket.broadcast.emit('announcement', websocket.nickname + ' disconnected');
     websocket.broadcast.emit('nicknames', nicknames);
   });
 });
+
+var mcpConnectionSuccess = function (websocketCallback, websocket) {
+	websocketCallback(true, "Connection established!");
+	console.log(websocket);
+	console.log("vajon van különbség?\n\n");
+	console.log(this);
+}
+var mcpConnectionFailure = function (exception, thiSocket, websocketCallback) {
+	websocketCallback(false, "valami hiba");
+	console.log("error oCCured\n");
+	console.log(exception);
+	console.log(thiSocket);
+}
 
 /**
  * PostFix connection
@@ -94,13 +143,13 @@ socket.setEncoding("utf8");
 socket.setTimeout(1000, sendHi);
 
 function sendHi(){
-	socket.write("hello\r\n")
+	socket.write("\r\n")
 }
  
 socket.on("connect", function(){
         socket.on("data", function(data){
                 //ha jön data akkor az menjen ki websocketen a kliensnek
-                //majd a beírt utasítást küldjük socketen telnetnek
+                //majd a beírt utasítást küldjük socketen postfix-nek
                 console.log(data);
                 socket.write("QUIT\r\n");
         });
