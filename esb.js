@@ -4,15 +4,9 @@
 var esb = require("./esb/");
 var fs = require("fs");
 
-var esb_login_req = JSON.parse(fs.readFileSync("esb_login_req.json", "utf8"));
-var esb_login_resp = JSON.parse(fs.readFileSync("esb_login_resp.json", "utf8"));
-var esb_hello_req = JSON.parse(fs.readFileSync("esb_hello_req.json", "utf8"));
-var esb_hello_req = JSON.parse(fs.readFileSync("esb_hello_resp.json", "utf8"));
-
-var instance1 = new esb.EsbSocket({userName : "grigo@meshnetwork.hu", fired : 0});
-var securityId = "";
-instance1.connect(5521, "meshnetwork.hu");
-
+var instance1 = new esb.EsbSocket({source : "test", password : "test2"});
+instance1.connect(5521, "meshnetwork.hu"); //"localhost");
+/*
 instance1.on("connect", function(){
 	console.log("connected");
 	var loginstring = JSON.stringify(esb_login_req);
@@ -41,4 +35,4 @@ function sendHello(socket){
   	console.log("write: " + helloString);  
   	socket.write(helloString);  
   }, 1000)
-}
+}*/

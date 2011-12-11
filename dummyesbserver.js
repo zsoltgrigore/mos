@@ -5,18 +5,14 @@ var net = require("net");
 var fs = require("fs");
 var filecontent = fs.readFileSync("dummy.json", "utf8")
 var os = require("os");
-var storeOneSocket;
-
 
 var server = net.createServer(function (socket) {
   socket.setNoDelay(true);
-  storeOneSocket = socket;
-});
-
-storeOneSocket.on("data", function(data) {
+  socket.on("data", function(data) {
   	var dataStr = data.toString();
   	console.log(dataStr+"\n");
-  	
+  	socket.write(filecontent); 
+  });
 });
 
 function sendBigJson(socket){
@@ -30,4 +26,4 @@ function sendLoadAvg(socket){
   	socket.write(os.loadavg());
 }
 
-server.listen(2525, "localhost");
+server.listen(5521, "localhost");
