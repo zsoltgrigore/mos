@@ -1,0 +1,14 @@
+{
+  "header": {
+    "protocol": "mcp5",
+    "name": "esb_login_resp",
+    "source": "server4@meshnetwork.hu",
+    "destination": "bgw2-kistelek@vertigoweb.hu",
+    "session_id": "1234567",
+    "security_id": ""
+  },
+  "data": {
+    "login_success": "1",
+    "security_id": "6X1xx9lyhbn0EFtjPR9oLzzqTtKNY0ST"
+  }
+}

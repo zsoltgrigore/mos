@@ -1,0 +1,13 @@
+{
+  "header": {
+    "protocol": "mcp5",
+    "name": "esb_login_req",
+    "source": "test",
+    "destination": "ANY",
+    "session_id": "123456",
+    "security_id": ""
+  },
+  "data": {
+    "password": "test2"
+  }
+}

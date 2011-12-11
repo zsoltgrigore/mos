@@ -6,3 +6,4 @@
  */
 
 exports.EsbSocket = require("./EsbSocket");
+exports.EsbMsgProcessor = require("./EsbMsgProcessor");
