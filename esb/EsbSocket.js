@@ -35,7 +35,7 @@ var EsbSocket = function (esbSocketConfig) {
 	//EsbSocket specifikus események a többi eseményt EsbMsgProcessor kezeli
 	this.on("succesfull login", startHeartBeat);
 	this.on("remote heartbeat", connectionLive);
-	this.on("access denied", connectionLive);
+	this.on("access denied", accessDenied);
 }
 
 util.inherits(EsbSocket, net.Socket);
