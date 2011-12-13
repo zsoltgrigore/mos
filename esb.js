@@ -5,7 +5,7 @@ var esb = require("./esb/");
 var fs = require("fs");
 
 var instance1 = new esb.EsbSocket({source : "test", password : "test2"});
-instance1.connect(5521, "meshnetwork.hu"); //"localhost");
+instance1.connect(5521, "localhost");//"meshnetwork.hu");
 /*
 instance1.on("connect", function(){
 	console.log("connected");
