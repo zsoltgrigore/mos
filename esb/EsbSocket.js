@@ -46,6 +46,10 @@ var EsbSocket = function (esbSocketConfig) {
 
 util.inherits(EsbSocket, net.Socket);
 
+EsbSocket.prototype.connectToEsb = function () {
+	this.connect(5521, "localhost");												//TODO: Ezeket majd konfigból!
+}
+
 /*
  * Kapcsolódákor elküld egy login request-et a megfelelő adatokkal kitöltve
  * 		source és password a socketpéldányban van
@@ -126,27 +130,57 @@ function startHeartBeat(esb_login_resp) {
 		this.esb_hello_req = new esb.api.esb_hello_req();
 		this.esb_hello_req.header.source = this.esb_login_req.header.source;
 		this.esb_hello_req.header.destination = this.esb_login_req.header.destination;
-		this.esb_hello_req.header.session_id = esb_login_resp.header.session_id;
 		this.esb_hello_req.header.security_id = esb_login_resp.header.security_id;
 	}
+
+	this.esb_hello_req.header.session_id = esb_login_resp.header.session_id;				//minden adott, csak a seurity Id változik ha újra kell kapcsolódni
 	
 	setInterval(sendEsbHelloReq, 1000, this);
 }
 
+/*
+ * Alapértelmezett timeout kezelő függvény, ha meghívódik akkor újrakapcsolódunk
+ */
 function timeOutHandler() {
-	console.log("socket time outed");
+	console.error("A socket-en (%s) 3 másodperce nem volt adatforgalom. Újrakapcsolódás...", this.esbSocketConfig.source);
+	setTimeout(reconnect, 1000, this);
 }
 
-function errorHandler() {
-	console.log("socket error");
+/*
+ * Alapértelmezett hibakezelő függvény, ha meghívódik akkor újrakapcsolódunk
+ */
+function errorHandler(exception) {
+	console.error("Hiba történt a %s felhasználóhoz rendelt socket-en. Kivétel: ", this.esbSocketConfig.source);
+	console.error(exception);
+	console.log("Újrakapcsolódás...");
+	setTimeout(reconnect, 1000, this);
 }
 
+/*
+ * Alapértelmezett szívdobbanás válasz kezelő függvény. Logba írja hogy minden ok.
+ */
 function connectionLive() {
-	console.log("got remote heartbeat");
+	console.info("ESB kapcsolat él!");
 }
 
+/*
+ * Ha hibásak a bejelentkezési attribútumok akkor hívódik meg ez a függvény és ebben az esetben nem is próbálunk újrakapcsolódni
+ */
 function accessDenied() {
-	console.log("accessDenied");
+	console.error("Sikertelen bejelentkezés...");
+	this.end();
+	this.destroy;
+}
+
+/*
+ * Ha bármilyen oknál fogva megszakad a kapcsolat akkor újrakapcsolódik ESB-hez
+ * 
+ * @param {EsbSocket}
+ * 		EsbSocket ami leszakadt valamelyik ESB szerverrről
+ */
+function reconnect(socket) {
+	socket.destroy();
+	socket.connectToEsb();
 }
 
 /*
@@ -161,7 +195,6 @@ function sendEsbHelloReq(socket){
 		socket.write(JSON.stringify(socket.esb_hello_req));
 	} else {
 		console.error("Authorizált socket szükséges Hello csomag küldéséhez!");
-		socket.end();
 	}
 }
 
