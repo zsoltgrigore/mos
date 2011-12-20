@@ -16,14 +16,14 @@ var util = require("util");
  * 		TODO: Egyelőre csak paraméterként adódnak hozzá de ha szükséges akkor függvények is kerülhetnek bele
  * 		esbSocketConfig = {
  * 			source : {String} username,
- * 			password : {String} password 
+ * 			password : {String} password,
+ * 			host : {String} host;
+ * 			port : {Number} port;
  * 		}
  */
 var EsbSocket = function (esbSocketConfig) {
-	//net.Socket core konfig
-	net.Socket.call(this);
 	this.setNoDelay(true);															//letiltja a TCP default cachelési algurimusát (Nagle)
-	this.setTimeout(3000);
+	//this.setTimeout(3000);
 	
 	//EsbSocket konfig
 	this.esbSocketConfig = esbSocketConfig;
@@ -37,6 +37,7 @@ var EsbSocket = function (esbSocketConfig) {
 	this.on("data", dataBufferHandler);
 	this.on("timeout", timeOutHandler);
 	this.on("error", errorHandler);
+	this.on("close", closeHandler);
 	
 	//EsbSocket specifikus események a többi eseményt EsbMsgProcessor kezeli
 	this.on("succesfull login", startHeartBeat);
@@ -47,7 +48,11 @@ var EsbSocket = function (esbSocketConfig) {
 util.inherits(EsbSocket, net.Socket);
 
 EsbSocket.prototype.connectToEsb = function () {
-	this.connect(5521, "localhost");												//TODO: Ezeket majd konfigból!
+	var host = this.esbSocketConfig.host ? this.esbSocketConfig.host : "localhost";
+	var port = this.esbSocketConfig.port ? this.esbSocketConfig.port : 5521;
+	this.connect(port, host);												//TODO: Ezeket majd konfigból!
+	
+	console.info("[%s] kapocsolódni próbál a következőn %s:%d", this.esbSocketConfig.source, host, port);
 }
 
 /*
@@ -59,7 +64,8 @@ EsbSocket.prototype.connectToEsb = function () {
  * 		Visszaadja az EsbSocket-et hogy az event-ek láncolhatóak legyenek (chainable)
  */
 function sendLoginRequest() {
-	console.log("connected");
+	console.info("[%s] kapocsolódott a következőn %s:%d", this.esbSocketConfig.source, this.remoteAddress, this.remotePort);
+	console.info("[%s] connected...", this.esbSocketConfig.source);
 	
 	if (this.esb_login_req == undefined) {											//ha van már kitöltött login request akkor haszbáljuk azt, ha nem akkor adjunk hozzá újat
 		this.esb_login_req = new esb.api.esb_login_req();
@@ -91,7 +97,7 @@ function sendLoginRequest() {
  * 		Visszaadja az EsbSocket-et hogy az event-ek láncolhatóak legyenek (chainable)
  */
 function dataBufferHandler(dataChunk){
-	console.info(dataChunk);
+	//console.info(dataChunk);
 	this.esbSocketBuffer += dataChunk.toString();									//minden üzenetet Stringgé alakít, ha szükséges akkor bináris buffer is használható (pl.: videó Stream)
 	
 	var esbJsonMsg = stringBufferIsJson(this.esbSocketBuffer);
@@ -133,17 +139,17 @@ function startHeartBeat(esb_login_resp) {
 		this.esb_hello_req.header.security_id = esb_login_resp.header.security_id;
 	}
 
-	this.esb_hello_req.header.session_id = esb_login_resp.header.session_id;				//minden adott, csak a seurity Id változik ha újra kell kapcsolódni
+	this.esb_hello_req.header.session_id = "123456"//esb_login_resp.header.session_id;				//minden adott, csak a seurity Id változik ha újra kell kapcsolódni
 	
-	setInterval(sendEsbHelloReq, 1000, this);
+	this.helloTimerId = setInterval(sendEsbHelloReq, 1000, this);
 }
 
 /*
  * Alapértelmezett timeout kezelő függvény, ha meghívódik akkor újrakapcsolódunk
  */
 function timeOutHandler() {
-	console.error("A socket-en (%s) 3 másodperce nem volt adatforgalom. Újrakapcsolódás...", this.esbSocketConfig.source);
-	setTimeout(reconnect, 1000, this);
+	console.error("A socket-en (%s) 3 másodperce nem volt adatforgalom.", this.esbSocketConfig.source);
+	reconnect(this);
 }
 
 /*
@@ -152,8 +158,16 @@ function timeOutHandler() {
 function errorHandler(exception) {
 	console.error("Hiba történt a %s felhasználóhoz rendelt socket-en. Kivétel: ", this.esbSocketConfig.source);
 	console.error(exception);
-	console.log("Újrakapcsolódás...");
-	setTimeout(reconnect, 1000, this);
+	reconnect(this);
+}
+
+function closeHandler(had_error) {
+	if (had_error) {
+		console.error("A %s felhasználóhoz rendelt socket váratlanul bezárult!", this.esbSocketConfig.source);
+	} else {
+		console.log("A %s felhasználóhoz rendelt socket sikeresen bezárult", this.esbSocketConfig.source);
+	}
+	reconnect(this);
 }
 
 /*
@@ -179,8 +193,19 @@ function accessDenied() {
  * 		EsbSocket ami leszakadt valamelyik ESB szerverrről
  */
 function reconnect(socket) {
-	socket.destroy();
-	socket.connectToEsb();
+	if (socket.helloTimerId) {
+		console.log("Hello Timer törlése");
+		clearInterval(socket.helloTimerId);
+		socket.helloTimerId = 0;
+	}
+	
+	console.log("socket.end()");
+	socket.end();
+	
+	setTimeout(function() {
+		console.log("Újrakapcsolódás most.");
+		socket.connectToEsb();
+	}, 1000);
 }
 
 /*
@@ -190,9 +215,10 @@ function reconnect(socket) {
  * 		EsbSocket példány
  */
 function sendEsbHelloReq(socket){
-	console.info("Send esb_hello_req message!");
-	if (socket.esb_hello_req == undefined) {
+	if (socket.esb_hello_req != undefined) {
+		//console.info(socket.esb_hello_req);
 		socket.write(JSON.stringify(socket.esb_hello_req));
+		console.info("Write happened esb_hello_req message!");
 	} else {
 		console.error("Authorizált socket szükséges Hello csomag küldéséhez!");
 	}
@@ -211,7 +237,7 @@ function sendEsbHelloReq(socket){
  * 		Ha sikerül átalakítani akkor kész Object, ha nem akkor SyntaxError Object 
  */
 function stringBufferIsJson(buffer) {
-	console.log(buffer);
+	console.log("JSON vagy JSON szelet: \n" + buffer);
 	try {
 		var json = JSON.parse(buffer);
 		return json;

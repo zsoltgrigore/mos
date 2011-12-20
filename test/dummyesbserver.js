@@ -26,4 +26,10 @@ function sendLoadAvg(socket){
   	socket.write(os.loadavg());
 }
 
-server.listen(5521, "localhost");
+function listen (port, host) {
+server.listen(port, host);
+console.info("dummyserver started on %s: %d", host, port);
+}
+
+module.export = server;
+exports.listen = listen;
