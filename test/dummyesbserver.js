@@ -3,15 +3,25 @@
  */
 var net = require("net");
 var fs = require("fs");
-var filecontent = fs.readFileSync("dummy.json", "utf8")
+var filecontent = fs.readFileSync("dummy.json", "utf8");
 var os = require("os");
+var esbapi = require("../esb/").api;
+var getted = 0;
 
 var server = net.createServer(function (socket) {
   socket.setNoDelay(true);
   socket.on("data", function(data) {
   	var dataStr = data.toString();
-  	console.log(dataStr+"\n");
-  	socket.write(filecontent); 
+  	var obj = JSON.parse(dataStr);
+  	getted++;
+  	console.log(obj.header.name + " ez a " + getted + ". csomag");
+  	if (obj.header.name === 'esb_login_req') {
+  		console.log('login_req');
+  		socket.write(filecontent); 
+  	} else {
+  		
+  	}
+  	
   });
 });
 
@@ -31,5 +41,4 @@ server.listen(port, host);
 console.info("dummyserver started on %s: %d", host, port);
 }
 
-module.export = server;
-exports.listen = listen;
+listen(5521, "localhost");
