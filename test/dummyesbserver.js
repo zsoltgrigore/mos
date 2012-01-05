@@ -11,7 +11,8 @@ var getted = 0;
 var server = net.createServer(function (socket) {
   socket.setNoDelay(true);
   socket.on("data", function(data) {
-  	var dataStr = data.toString();
+  	var dataStr = data.toString("utf-8");
+  	console.log(dataStr);
   	var obj = JSON.parse(dataStr);
   	getted++;
   	console.log(obj.header.name + " ez a " + getted + ". csomag");

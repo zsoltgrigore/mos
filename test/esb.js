@@ -10,9 +10,9 @@ var fs = require("fs");
 
 var esbSockets = new Array();
 var numOfSockets = 1;
-//var meshConf = { host: "meshnetwork.hu", source: "test"+i };
+//var meshConf = { host: "meshnetwork.hu"};
 
 for (var i=0; i<numOfSockets; i++) {
-	esbSockets.push(new esb.EsbSocket({ host: "meshnetwork.hu", source: "test"+i, helloInterval: 10}));
+	esbSockets.push(new esb.EsbSocket({ host: "meshnetwork.hu", source: "test"+i, helloInterval: 500}));
 	esbSockets[i].connectToEsb();
 }
