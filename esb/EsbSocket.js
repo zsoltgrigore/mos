@@ -30,7 +30,7 @@ var EsbSocket = function (esbSocketConfig) {
 	this.port = esbSocketConfig.port || 5521;
 	this.source = esbSocketConfig.source || "test";
 	this.password = esbSocketConfig.password || "test2";
-	this.sessionId = esbSocketConfig.sessionId || "123456";
+	this.sessionId = esbSocketConfig.sessionId || "" + Math.floor(Math.random()*65535) + "";
 	this.destination = esbSocketConfig.destination || "ANY";
 	this.helloInterval = esbSocketConfig.helloInterval || 1000;
 	
@@ -141,6 +141,9 @@ EsbSocket.prototype.dataBufferHandler = function (dataChunk){
 		
 		this.esbSocketBuffer = "";
 	
+	} else {
+		console.info("JSON ERROR!");
+		console.info(dataChunk.toString());
 	}
 	
 }
@@ -160,7 +163,10 @@ EsbSocket.prototype.startHeartBeat = function(esb_login_resp) {
 		this.esb_hello_req.header.security_id = esb_login_resp.header.security_id;
 	}
 
-	this.esb_hello_req.header.session_id = "123456";//esb_login_resp.header.session_id;				//minden adott, csak a seurity Id változik ha újra kell kapcsolódni
+//	this.esb_hello_req.header.session_id = "123456";//esb_login_resp.header.session_id;				//minden adott, csak a seurity Id változik ha újra kell kapcsolódni
+
+	// Random session_id: 0..65535
+	this.esb_hello_req.header.session_id = "" + Math.floor(Math.random()*65535) + "";				// J.
 	
 	this.helloTimerId = setInterval(this.sendEsbHelloReq.bind(this), this.helloInterval);
 }
@@ -242,6 +248,7 @@ EsbSocket.prototype.sendEsbHelloReq = function(){
 		this.connection.write(JSON.stringify(this.esb_hello_req), "utf8", function(){
 			this.flushed++;
 			console.log("Login request flushed to the kernel. %d", this.flushed);
+			console.info("Output: %s", JSON.stringify(this.esb_hello_req));			// J.
 		}.bind(this));
 		this.wrote++;
 		console.info("Write happened esb_hello_req message! %d", this.wrote);
@@ -263,13 +270,15 @@ EsbSocket.prototype.sendEsbHelloReq = function(){
  * 		Ha sikerül átalakítani akkor kész Object, ha nem akkor SyntaxError Object 
  */
 EsbSocket.prototype.stringBufferIsJson = function () {
-	console.log("JSON vagy JSON szelet: \n" + this.esbSocketBuffer);
+	console.log("JSON vagy JSON szelet (input) : \n" + this.esbSocketBuffer);
 	try {
 		var json = JSON.parse(this.esbSocketBuffer);
+		this.esbSocketBuffer = "";							// J.
 		return json;
 	} catch(e) {
 		console.log(e.stack);
 		console.log(e.message);
+		this.esbSocketBuffer = "";							// J. - Itt van a kutya elásva!
 		return e;
 	}
 }
