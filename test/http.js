@@ -2,7 +2,9 @@
  * @author Grigore András Zsolt
  */
 
-var MdsHttp = require('../http/MdsHttp.js');
-var mdsHttp = new MdsHttp({});
+var MosHttp = require('../http/MosHttp.js');
+var mosRoutes = require('../http/mosRoutes.js')
 
-var server = mdsHttp.createServer();
+var mosHttp = new MosHttp({});
+mosRoutes.registerRoutes(mosHttp.server, {});
+mosHttp.start();

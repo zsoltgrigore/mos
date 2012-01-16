@@ -13,6 +13,6 @@ var numOfSockets = 1;
 //var meshConf = { host: "meshnetwork.hu"};
 
 for (var i=0; i<numOfSockets; i++) {
-	esbSockets.push(new esb.EsbSocket({ host: "meshnetwork.hu", source: "test"+i, helloInterval: 500}));
+	esbSockets.push(new esb.EsbSocket({ host: "meshnetwork.hu", source: "test"+i, helloInterval: 1000}));
 	esbSockets[i].connectToEsb();
 }

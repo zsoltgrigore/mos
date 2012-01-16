@@ -8,17 +8,20 @@ var util = require("util");
 
 /*
  * @classDescription 
- * 		EsbSocket osztály a core Socket osztályból származik
- * 		ESB specifikus adatokkal és eseményekezelőkkel egészül ki
-
+ * 		EsbSocket osztály aEventEmitter osztályból származik
+ * 		ESB specifikus adatok és eseményekezelők illetve maga a socket ojjektum
+ *
  * @param {Object} config
- * 		A socket objektumhoz rendelt konfigurációs objektum amit a <socketInstance>.esbSocketConfig fog tartalmazni
+ * 		A esbSocket példányhoz rendelt konfigurációs objektum
  * 		TODO: Egyelőre csak paraméterként adódnak hozzá de ha szükséges akkor függvények is kerülhetnek bele
  * 		esbSocketConfig = {
- * 			source : {String} username,
- * 			password : {String} password,
- * 			host : {String} host;
- * 			port : {Number} port;
+ * 			host : {String} //host amihez kapcsolódunk
+ * 			port : {Number} //port amihez kapcsolódunk
+ * 			source : {String} //username
+ * 			password : {String} //password
+ * 			destination : {String} //ide küldjük az üzenetet
+ * 			helloInterval : {Number} //a szívdobbanások közti szünet
+ * 			webSessionId : {Number} //a kapcsolódott user web session azonosítója
  * 		}
  */
 var EsbSocket = function (esbSocketConfig) {
@@ -32,6 +35,7 @@ var EsbSocket = function (esbSocketConfig) {
 	this.password = esbSocketConfig.password || "test2";
 	this.destination = esbSocketConfig.destination || "ANY";
 	this.helloInterval = esbSocketConfig.helloInterval || 1000;
+	this.webSessionId = esbSocketConfig.webSessionId || false;
 	
 	//Nem annyira publikus változók
 	//-----------------------------
@@ -43,14 +47,12 @@ var EsbSocket = function (esbSocketConfig) {
 	this.helloTimerId = null;
 	
 	//Statisztika info
-	//----------------
 	this.reconnectTimes = 0;		//Mennyi újrakapcsolódás történt
 	this.flushed = 0;
 	this.wrote = 0;		
 	
-	
-	
-	
+	//Service flags
+	this._reconnecting = false;
 	
 	//this.setTimeout(3000);
 	
@@ -84,6 +86,7 @@ EsbSocket.prototype.connectToEsb = function () {
  * 
  */
 EsbSocket.prototype.sendLoginRequest = function() {
+	this._reconnecting = false;
 	console.info("[%s] kapocsolódott a következőn %s:%d", this.source, this.connection.remoteAddress, this.connection.remotePort);
 	if (this.esb_login_req === undefined) {											//ha van már kitöltött login request akkor haszbáljuk azt, ha nem akkor adjunk hozzá újat
 		this.esb_login_req = new esb.api.esb_login_req();
@@ -163,8 +166,6 @@ EsbSocket.prototype.startHeartBeat = function(esb_login_resp) {
 		this.esb_hello_req.header.security_id = esb_login_resp.header.security_id;
 	}
 	
-	
-	
 	this.helloTimerId = setInterval(this.sendEsbHelloReq.bind(this), this.helloInterval);
 }
 
@@ -180,6 +181,7 @@ EsbSocket.prototype.timeOutHandler = function() {
  * Alapértelmezett hibakezelő függvény, ha meghívódik akkor újrakapcsolódunk
  */
 EsbSocket.prototype.errorHandler = function(exception) {
+	if(!this.connection) this._reconnecting = false;
 	console.error("Hiba történt a %s felhasználóhoz rendelt socket-en. Kivétel: ", this.source);
 	console.error(exception);
 	this.reconnect();
@@ -224,25 +226,32 @@ EsbSocket.prototype.accessDenied = function(esb_login_resp) {
  * 		EsbSocket ami leszakadt valamelyik ESB szerverrről
  */
 EsbSocket.prototype.reconnect = function() {
-	this.reconnectTimes++;
-	if (this.helloTimerId) {
-		console.log("Hello Timer törlése");
-		clearInterval(this.helloTimerId);
-		this.helloTimerId = null;
+	if (!this._reconnecting) {
+		
+		this._reconnecting = true;
+		this.reconnectTimes++;
+		
+		if (this.helloTimerId) {
+			console.log("Hello Timer törlése");
+			clearInterval(this.helloTimerId);
+			this.helloTimerId = null;
+		}
+	
+		this.connection.end();
+		console.log("socket.end() eredménye:");
+		console.log(this.connection);
+		this.connection.destroy();
+		console.log("socket.destroy() eredménye");
+		console.log(this.connection);
+		this.connection = false;
+	
+		console.log("Újrakapcsolódás 10 másodperc múlva...");
+		setTimeout(function() {
+			console.log("Újrakapcsolódás most.");
+			console.log(this);
+			this.connectToEsb();
+		}.bind(this), 10000);
 	}
-	
-	this.connection.end();
-	console.log("socket.end() eredménye:");
-	console.log(this.connection);
-	this.connection.destroy();
-	console.log("socket.destroy() eredménye");
-	console.log(this.connection);
-	
-	setTimeout(function() {
-		console.log("Újrakapcsolódás most.");
-		console.log(this);
-		//this.connectToEsb();
-	}.bind(this), 1000);
 }
 
 /*

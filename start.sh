@@ -17,4 +17,4 @@ echo ""
 echo "Server started..."
 
 killall node
-node server.js
+node core.js

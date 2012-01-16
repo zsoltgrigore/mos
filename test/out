@@ -1,0 +1,321 @@
+[test0] kapocsolódni próbál a következőn meshnetwork.hu:5521
+[test0] kapocsolódott a következőn 195.5.177.214:5521
+[test0] esb_login_req üzenetet írt a socketre. Mérete: 172  | 1
+[test0] Login request flushed to the kernel. 1
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"","name":"esb_login_resp","source":"esbd1.prod@meshnetwork.hu","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI"},"data":{"login_success":"1"}} 
+
+Write happened esb_hello_req message! 2
+Login request flushed to the kernel. 2
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 3
+Login request flushed to the kernel. 3
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 4
+Login request flushed to the kernel. 4
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 5
+Login request flushed to the kernel. 5
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 6
+Login request flushed to the kernel. 6
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 7
+Login request flushed to the kernel. 7
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 8
+Login request flushed to the kernel. 8
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 9
+Login request flushed to the kernel. 9
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 10
+Login request flushed to the kernel. 10
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 11
+Login request flushed to the kernel. 11
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 12
+Login request flushed to the kernel. 12
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 13
+Login request flushed to the kernel. 13
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 14
+Login request flushed to the kernel. 14
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 15
+Login request flushed to the kernel. 15
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 16
+Login request flushed to the kernel. 16
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 17
+Login request flushed to the kernel. 17
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 18
+Login request flushed to the kernel. 18
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 19
+Login request flushed to the kernel. 19
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 20
+Login request flushed to the kernel. 20
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 21
+Login request flushed to the kernel. 21
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 22
+Login request flushed to the kernel. 22
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 23
+Login request flushed to the kernel. 23
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 24
+Login request flushed to the kernel. 24
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 25
+Login request flushed to the kernel. 25
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 26
+Login request flushed to the kernel. 26
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 27
+Login request flushed to the kernel. 27
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 28
+Login request flushed to the kernel. 28
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 29
+Login request flushed to the kernel. 29
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 30
+Login request flushed to the kernel. 30
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 31
+Login request flushed to the kernel. 31
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 32
+Login request flushed to the kernel. 32
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 33
+Login request flushed to the kernel. 33
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 34
+Login request flushed to the kernel. 34
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 35
+Login request flushed to the kernel. 35
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 36
+Login request flushed to the kernel. 36
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 37
+Login request flushed to the kernel. 37
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 38
+Login request flushed to the kernel. 38
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 39
+Login request flushed to the kernel. 39
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 40
+Login request flushed to the kernel. 40
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 41
+Login request flushed to the kernel. 41
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 42
+Login request flushed to the kernel. 42
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 43
+Login request flushed to the kernel. 43
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 44
+Login request flushed to the kernel. 44
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 45
+Login request flushed to the kernel. 45
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 46
+Login request flushed to the kernel. 46
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 47
+Login request flushed to the kernel. 47
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 48
+Login request flushed to the kernel. 48
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 49
+Login request flushed to the kernel. 49
+JSON vagy JSON szelet érkezett: 
+ {"header":{"protocol":"mcp5","destination":"test0","session_id":"123456","security_id":"toSYDWKpHscRDfAkPxhTMwa42vzcqreI","name":"esb_hello_resp","source":"esbd1.prod@meshnetwork.hu"},"data":{}} 
+
+ESB kapcsolat él! Csomag neve: esb_hello_resp
+Write happened esb_hello_req message! 50
+Login request flushed to the kernel. 50
+Write happened esb_hello_req message! 51
+Login request flushed to the kernel. 51
+Volt error? false
+
+net.js:446
+  var writeReq = this._handle.write(data);
+                              ^
+TypeError: Cannot call method 'write' of null
+    at Socket._write (net.js:446:31)
+    at Socket.write (net.js:438:15)
+    at [object Object].sendEsbHelloReq (/nodejs_dev/aptanaWS/mesh-owners-site/esb/EsbSocket.js:242:19)
+    at Timer.<anonymous> (native)
+    at Timer.ontimeout (timers.js:203:14)
+grigo@grigo-laptop:/nodejs_dev/aptanaWS/mesh-owners-site/test$ node esb.js > out
+
+node.js:201
+        throw e; // process.nextTick error, or 'error' event on first tick
+              ^
+TypeError: Cannot read property 'source' of undefined
+    at [object Object].closeHandler (/nodejs_dev/aptanaWS/mesh-owners-site/esb/EsbSocket.js:191:92)
+    at Socket.<anonymous> (native)
+    at Socket.emit (events.js:67:17)
+    at Array.0 (net.js:314:10)
+    at EventEmitter._tickCallback (node.js:192:40)
