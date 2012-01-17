@@ -21,7 +21,7 @@ var util = require("util");
  * 			password : {String} //password
  * 			destination : {String} //ide küldjük az üzenetet
  * 			helloInterval : {Number} //a szívdobbanások közti szünet
- * 			webSessionId : {Number} //a kapcsolódott user web session azonosítója
+ * 			webSocket : {Object} //a kapcsolódott user web socket példánya
  * 		}
  */
 var EsbSocket = function (esbSocketConfig) {
