@@ -35,7 +35,7 @@ var EsbSocket = function (esbSocketConfig) {
 	this.password = esbSocketConfig.password || "test2";
 	this.destination = esbSocketConfig.destination || "ANY";
 	this.helloInterval = esbSocketConfig.helloInterval || 1000;
-	this.webSessionId = esbSocketConfig.webSessionId || false;
+	this.webSocket = esbSocketConfig.webSocket || false;
 	
 	//Nem annyira publikus változók
 	//-----------------------------
@@ -65,6 +65,7 @@ var EsbSocket = function (esbSocketConfig) {
 util.inherits(EsbSocket, EventEmitter);
 
 EsbSocket.prototype.connectToEsb = function () {
+	this._reconnecting = false;
 	this.connection = net.createConnection(this.port, this.host);
 	this.connection.setNoDelay(true);
 	
@@ -80,13 +81,12 @@ EsbSocket.prototype.connectToEsb = function () {
 }
 
 /*
- * Kapcsolódákor elküld egy login request-et a megfelelő adatokkal kitöltve
+ * Kapcsolódáskor elküld egy login request-et a megfelelő adatokkal kitöltve
  * 		source és password a socketpéldányban van
  * 		sessionId-t majd generálni kell vagy a webes loginnál kapottat adjuk
  * 
  */
 EsbSocket.prototype.sendLoginRequest = function() {
-	this._reconnecting = false;
 	console.info("[%s] kapocsolódott a következőn %s:%d", this.source, this.connection.remoteAddress, this.connection.remotePort);
 	if (this.esb_login_req === undefined) {											//ha van már kitöltött login request akkor haszbáljuk azt, ha nem akkor adjunk hozzá újat
 		this.esb_login_req = new esb.api.esb_login_req();
@@ -206,6 +206,7 @@ EsbSocket.prototype.endHandler = function() {
  */
 EsbSocket.prototype.connectionLive = function(esb_hello_resp) {
 	console.info("ESB kapcsolat él! Csomag neve: %s", esb_hello_resp.header.name);
+	if (this.webSocket) this.webSocket.emit('mcp message', "ESB2me", esb_hello_resp.header.name);
 }
 
 /*

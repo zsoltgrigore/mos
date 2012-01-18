@@ -20,7 +20,8 @@ var server = net.createServer(function (socket) {
   		console.log('login_req');
   		socket.write(filecontent); 
   	} else {
-  		
+  		console.log('login_req');
+  		socket.write(JSON.stringify(new esbapi.esb_hello_resp()));
   	}
   	
   });

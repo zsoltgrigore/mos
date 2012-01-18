@@ -11,4 +11,3 @@ var mosWebSockets = new MosWebSockets({ httpInstance : mosHttp.server});
 mosWebSockets.start();
 mosRoutes.registerRoutes(mosHttp.server, {});
 mosHttp.start();
-console.log(mosHttp);
