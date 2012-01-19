@@ -6,7 +6,7 @@ var fs = require("fs");
 /**
  * Load content
  */
-var index = fs.readFileSync('staticview/index.html', 'utf-8'); 
+var index = fs.readFileSync('http/staticview/index.html', 'utf-8'); 
 
 /**
 * App.
@@ -19,7 +19,7 @@ var app = express.createServer();
 */
 
 app.configure(function () {
-  app.use(express.static(__dirname + '/public'));
+  app.use(express.static(__dirname + '/http/public'));
 });
 
 /**
