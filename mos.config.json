@@ -1,0 +1,32 @@
+{
+	"http" : {
+		"general" : {
+			"use" : [
+				
+			],
+			"routes" : [
+				{ "path" : "/" }
+			]
+		},
+		"development" : {
+			"host" : "localhost",
+			"port" : 8080,
+			"use" : [
+				
+			],
+			"routes" : [
+			]
+		},
+		"production" : {
+			"host" : "meshnetwork.hu",
+			"port" : 80,
+			"use" : [
+				
+			],
+			"routes" : [
+			]
+		}
+	},
+	"websockets" : {
+	}
+}

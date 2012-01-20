@@ -6,4 +6,4 @@ function registerRoutes(server, routeConfig) {
 	console.info("Routes registered");
 }
 
-exports.registerRoutes = registerRoutes;
+module.exports = registerRoutes;
