@@ -1,4 +1,4 @@
-function registerRoutes(server, routeConfig) {
+function mosroutes(server, routeConfig) {
 	server.get("/", function (req, res) {
   		res.sendfile(__dirname +'/staticview/index.html');
 	});
@@ -6,4 +6,4 @@ function registerRoutes(server, routeConfig) {
 	console.info("Routes registered");
 }
 
-module.exports = registerRoutes;
+module.exports = mosroutes;

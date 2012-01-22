@@ -7,48 +7,47 @@ var util = require("util");
 var fs = require("fs");
 
 var server = express.createServer();
+var runEnv = process.env.NODE_ENV || 'development';
+var config = {};
 var core = false;
-
-var attachCore = function (core) {
-	core = this.core
-}
 
 var listen = function() {
 	configure();
-	server.listen(8080);
-	console.info("Server running on %s:%d", "localhost", 8080);
+	server.listen(config[runEnv].port, config[runEnv].host, function () {
+  		var addr = server.address();
+  		console.log('   M-O-S http listening on http://' + addr.address + ':' + addr.port);
+	});
 }
 
-var registerRoutes = function(callback) {
-	
-	callback(server, core || null);
-	
+var init = function(httpConfig, routes) {
+	config = httpConfig;
+	routes(server, config.routes);
 }
 
 /******************Public variables*********/
 exports.core = core;
 exports.server = server;
 /******************Public functions*********/
-exports.attachCore = attachCore;
 exports.listen = listen;
-exports.registerRoutes = registerRoutes;
+exports.init = init;
 /*******************************************/
 
 var configure = function() {
 	server.configure(function(){
-    	server.use(express.methodOverride());
-    	server.use(express.bodyParser());
-    	server.use(server.router);
+    	configfn('general');
 	});
 
 	server.configure('development', function(){
-    	server.use(express.static(__dirname + '/public'));
-    	server.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+    	configfn('development');
 	});
 
 	server.configure('production', function(){
-  		var oneYear = 31557600000;
-  		server.use(express.static(__dirname + '/public', { maxAge: oneYear }));
-  		server.use(express.errorHandler());
+  		configfn('production');
 	});
+}
+
+var configfn = function(current_runEnv) {
+	for (var index in config[current_runEnv].use) {
+    		server.use(eval(config[current_runEnv].use[index]));
+    }
 }

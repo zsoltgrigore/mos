@@ -2,7 +2,9 @@
 	"http" : {
 		"general" : {
 			"use" : [
-				
+				"express.bodyParser()",
+				"express.methodOverride()",
+				"server.router"
 			],
 			"routes" : [
 				{ "path" : "/" }
@@ -12,7 +14,8 @@
 			"host" : "localhost",
 			"port" : 8080,
 			"use" : [
-				
+				"express.static(__dirname + '/public')",
+    			"express.errorHandler({ dumpExceptions: true, showStack: true })"
 			],
 			"routes" : [
 			]
@@ -20,13 +23,18 @@
 		"production" : {
 			"host" : "meshnetwork.hu",
 			"port" : 80,
-			"use" : [
-				
+			"use" : [				
+				"express.errorHandler()"
 			],
 			"routes" : [
 			]
 		}
 	},
 	"websockets" : {
+	},
+	"esb" : {
+		"host" : "localhost", 
+		"source" : "test",
+		"helloInterval" : 1000
 	}
 }
