@@ -9,7 +9,8 @@
   ],
   "dependencies": {
     "express": "2.5.x",
-    "socket.io": "0.8.x"
+    "socket.io": "0.8.x",
+	"connect": "git://github.com/senchalabs/connect.git" 
   },
   "devDependencies": {
     

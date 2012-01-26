@@ -14,8 +14,10 @@ var fs = require('fs'),
  * Load config
  */
 var config = eval('(' + fs.readFileSync('mos.config.json', 'utf-8') + ')');
-console.info(config);
 
+/*
+ * Init & Listen
+ */
 mosHttp.init(config.http, mosRoutes);
 mosHttp.listen();
 mosWebSockets.listen(mosHttp.server);

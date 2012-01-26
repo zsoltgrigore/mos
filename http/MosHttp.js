@@ -2,14 +2,17 @@
  * @author Grigore András Zsolt
  */
 
-var express = require("express");
-var util = require("util");
-var fs = require("fs");
+var express = require("express"),
+	util = require("util"),
+	fs = require("fs"),
+	MemoryStore = express.session.MemoryStore;
 
-var server = express.createServer();
-var runEnv = process.env.NODE_ENV || 'development';
-var config = {};
-var core = false;
+var server = express.createServer(),
+	sessionStore = new MemoryStore(),
+	runEnv = process.env.NODE_ENV || 'development';
+
+var config = {},
+	core = false;
 
 var listen = function() {
 	configure();
@@ -44,6 +47,7 @@ var configure = function() {
 	server.configure('production', function(){
   		configfn('production');
 	});
+	server.sessionStore = sessionStore;
 }
 
 var configfn = function(current_runEnv) {

@@ -2,8 +2,11 @@
 	"http" : {
 		"general" : {
 			"use" : [
+				"express.cookieParser()",
 				"express.bodyParser()",
 				"express.methodOverride()",
+				"express.static(__dirname + '/public')",
+				"express.session({store: sessionStore, secret: 'secret', key: 'express.sid'})",
 				"server.router"
 			],
 			"routes" : [
@@ -14,7 +17,6 @@
 			"host" : "localhost",
 			"port" : 8080,
 			"use" : [
-				"express.static(__dirname + '/public')",
     			"express.errorHandler({ dumpExceptions: true, showStack: true })"
 			],
 			"routes" : [
