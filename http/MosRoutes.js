@@ -1,3 +1,7 @@
+/**
+ * @author Grigore András Zsolt
+ */
+//TODO: ide bevarázsolni valahogy a különböző middleware-eket
 function mosroutes(server, routeConfig) {
 	server.get("/", function (req, res) {
   		var toc = ""+
@@ -12,9 +16,13 @@ function mosroutes(server, routeConfig) {
   		res.sendfile(__dirname +'/staticview/load_chart.html');
 	});
 	
-	server.get("/chat", function (req, res) {
+	server.get("/chat" /*,restrict*/  ,function (req, res) {
   		res.sendfile(__dirname +'/staticview/chat.html');
 	});
+	
+	/*
+	 loginhoz szükséges routok get és post /login illetve get chat (restricted)!!! 
+	 * */
 		
 	console.info("Routes registered");
 }

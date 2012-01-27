@@ -23,7 +23,7 @@ var listen = function(httpServer) {
 	io.sockets.on('connection', connectionHandler);
 }
 
-	console.log(io.server);//TODO:-----vajon a sessionStore-t hogy szedem ki innen???
+	//console.log(io.server);//TODO:-----vajon a sessionStore-t hogy szedem ki innen???
 /******************Public variables*********/
 exports.io = io;
 /******************Public functions*********/
