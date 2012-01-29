@@ -15,9 +15,24 @@ function mosroutes(server, routeConfig) {
   		//res.sendfile(__dirname +'/staticview/index.html');
 	});
 	
-	server.get("/load_chart", function (req, res) {
+	server.get("/load_chart", function (req, res, id) {
 		console.log(this);
   		res.sendfile(__dirname +'/staticview/load_chart.html');
+	});
+	
+	server.get("/chart_data_1", function (req, res) {
+		console.log(this);
+  		res.sendfile(__dirname +'/staticview/chart_data_1.json');
+	});
+	
+	server.get("/chart_data_2", function (req, res) {
+		console.log(this);
+  		res.sendfile(__dirname +'/staticview/chart_data_2.json');
+	});
+	
+	server.get("/chart_data_3", function (req, res) {
+		console.log(this);
+  		res.sendfile(__dirname +'/staticview/chart_data_3.json');
 	});
 	
 	server.get("/chat", accountMW.restrict, accountMW.accessLogger ,function (req, res) {
