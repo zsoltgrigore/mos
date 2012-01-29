@@ -1,13 +1,38 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
+<!DOCTYPE html>
+<html>
+	<head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Login Page</title>
+    <title>Mesh Data Systems - Login Page</title>
+	<link rel="stylesheet" href="css/login.css" type="text/css" />
+	<script type="text/javascript" src="js/jquery.min.js"></script>	
+	<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+	<script type="text/javascript" charset="utf-8">
+	// dom manipulation
+	$(function () {	
+	  $('#send-login').submit(function (ev) {
+	    /*socket.emit('nickname', $('#nick').val(), function (set) {
+	      if (!set) {
+	        clear();
+	        return $('#chat').addClass('nickname-set');
+	      }
+	      $('#nickname-err').css('visibility', 'visible');
+	    });*/
+	    
+	    return false;
+	  });
+	});
+	</script>
   </head>
   <body>
-    <form>
-    	
-    </form>
+      <div id="nickname">
+	    <form class="wrap" id="send-login" action="login" method="post">
+	      <p>Adja meg a felhasználónevét és jelszavát majd üssön Enter-t!</p>
+		  <input id="nick" type="text" placeholder="Felhasználónév"/>
+		  <input id="passwd" type="password" placeholder="Jelszó"/>
+		  <input type="submit"/>
+	    </form>
+	  </div>
   </body>
 </html>
+
+

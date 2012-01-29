@@ -2,8 +2,8 @@
 	"http" : {
 		"general" : {
 			"use" : [
-				"express.cookieParser()",
 				"express.bodyParser()",
+				"express.cookieParser()",
 				"express.methodOverride()",
 				"express.static(__dirname + '/public')",
 				"express.session({store: sessionStore, secret: 'secret', key: 'express.sid'})",

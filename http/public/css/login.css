@@ -1,0 +1,35 @@
+#nickname,
+#connecting {
+  position: absolute;
+  border: 1px solid #ccc;
+  height: 467px;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  background: #fff;
+  text-align: center;
+  width: 600px;
+  font: 15px Georgia;
+  color: #666;
+  display: block;
+}
+#nickname .wrap,
+#connecting .wrap {
+  padding-top: 150px;
+}
+#nickname input {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+#nickname input[type='submit'] {
+  display: none;
+}
+#nickname input:focus {
+  border-color: #999;
+  outline: 0;
+}
+#nickname #nickname-err {
+  color: #8b0000;
+  font-size: 12px;
+  visibility: hidden;
+}

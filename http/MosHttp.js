@@ -8,60 +8,40 @@ var express = require("express"),
 	MemoryStore = express.session.MemoryStore;
 
 var server = express.createServer(),
-	sessionStore = new MemoryStore(),
-	runEnv = process.env.NODE_ENV || 'development';
+	sessionStore = new MemoryStore();
 
+//TODO: van olyan hogy singleton és hogyan lehet elérni? Ha van akkor ezt arra kell cserélni
 var _core = false;
 
 var listen = function() {
-	configure();
-	server.listen(_core.config.http[runEnv].port, _core.config.http[runEnv].host, function () {
+	server.listen(_core.config.http[_core.runEnv].port, _core.config.http[_core.runEnv].host, function () {
   		var addr = server.address();
   		console.log('   M-O-S http listening on http://' + addr.address + ':' + addr.port);
 	});
 }
 
-var init = function(core, routes) {
+var init = function(core, addRoutes) {
 	_core = core;
-	var routeConfig = null;
-	/* merge general and currEnv routes
-	 * TODO: test
-	var routeConfig = _core.config.http.general.routes;
-	for (var i=0; i<_core.config.http[runEnv].routes.length; i++)
-		routeConfig.push(_core.config.http[runEnv].routes[i]);
-	*/
-	routes(server, routeConfig);
-}
-
-var add = function(key, value) {
-	server[key] = value;
+	var generalMiddleWares = _core.config.http.general.use;
+	var envMiddleWares = _core.config.http[_core.runEnv].use;
+	var generalRoutes = _core.config.http.general.routes;
+	var envRoutes = _core.config.http[_core.runEnv].routes;
+	
+	server.sessionStore = sessionStore;
+	
+	addExpressMiddleWares(generalMiddleWares.concat(envMiddleWares));
+	addRoutes(server, generalRoutes.concat(envRoutes));
 }
 
 /******************Public variables*********/
 exports.server = server;
 /******************Public functions*********/
 exports.init = init;
-exports.add = add;
 exports.listen = listen;
 /*******************************************/
 
-var configure = function() {
-	server.configure(function(){
-    	configfn('general');
-	});
-
-	server.configure('development', function(){
-    	configfn('development');
-	});
-
-	server.configure('production', function(){
-  		configfn('production');
-	});
-	server.sessionStore = sessionStore;
-}
-
-var configfn = function(current_runEnv) {
-	for (var index in _core.config.http[current_runEnv].use) {
-    		server.use(eval(_core.config.http[current_runEnv].use[index]));
+var addExpressMiddleWares = function(middleWares) {
+	for (var index in middleWares) {
+    		server.use(eval(middleWares[index]));
     }
 }

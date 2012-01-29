@@ -15,7 +15,7 @@ function authenticate(name, pass, fn) {
   // Otherwise password is invalid
   fn(new Error('invalid password'));
 }
-/*
+
 function restrict(req, res, next) {
   if (req.session.user) {
     next();
@@ -29,5 +29,7 @@ function accessLogger(req, res, next) {
   console.log('/restricted accessed by %s', req.session.user.name);
   next();
 }
-*/
+
 exports.authenticate = authenticate;
+exports.restrict = restrict;
+exports.accessLogger = accessLogger;
