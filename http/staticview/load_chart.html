@@ -1,12 +1,76 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Load Avarage Chart</title>
+
+    <link href="css/layout.css" rel="stylesheet" type="text/css">
+    <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../excanvas.min.js"></script><![endif]-->
+    <script language="javascript" type="text/javascript" src="js/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript" src="js/jquery.flot.js"></script>
   </head>
   <body>
     <h1>Itt lesz egy jó chart</h1>
+	Frissítés: <select class="intervalSpeed">
+		<option values="1">1</option>
+		<option values="2">2</option>
+		<option values="3">3</option>
+		<option values="4">4</option>
+		<option values="5">5</option>
+	</select> sec
+    <div id="placeholder" style="width:600px;height:300px;"></div>
+
+	<script type="text/javascript">
+	$(function () {
+	    var options = {
+	        lines: { show: true },
+	        points: { show: true },
+	        xaxis: { tickDecimals: 0, tickSize: 1 }
+	    };
+	    var data = [];
+	    var placeholder = $("#placeholder");
+
+	    $.plot(placeholder, data, options);
+
+	    var alreadyFetched = {};
+
+	    $("document").ready(function () {
+	        data = [];
+	        alreadyFetched = {};
+
+	        $.plot(placeholder, data, options);
+
+	        var iteration = 0;
+			var intervalSpeed = $('.intervalSpeed').val() * 1000
+
+	        function fetchData() {
+	            ++iteration;
+				var intervalSpeed = $('.intervalSpeed').val() * 1000
+
+	            function onDataReceived(series) {
+	                data = [ series ];
+
+	                $.plot($("#placeholder"), data, options);
+	            }
+
+	            $.ajax({
+	                url: "chart_data_"+iteration,
+	                method: 'GET',
+	                dataType: 'json',
+	                success: onDataReceived
+	            });
+
+	            if (iteration < 3)
+	                setTimeout(fetchData, intervalSpeed);
+	            else {
+					iteration = 0;
+					setTimeout(fetchData, intervalSpeed);
+	            }
+	        }
+
+	        setTimeout(fetchData, intervalSpeed);
+	    });
+	});
+	</script>
   </body>
-  <script type="text/javascript" src="js/jquery.min.js"></script>
 </html>
