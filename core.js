@@ -17,21 +17,21 @@ var config = eval('(' + fs.readFileSync('mos.config.json', 'utf-8') + ')');
 exports.config = config;
 
 /*
- * DB-ből egy global system socketen keresztül lehet lecopkodni
+ * Utils és memorydb :)
  */
 function hash(msg, key) {
   return crypto.createHmac('sha256', key).update(msg).digest('hex');
 }
 var users = {
-  grigo: {
+  test: {
     name: 'test',
     salt: 'essé-mán-le-a-fárúl',
     pass: hash('test2', 'essé-mán-le-a-fárúl')
   }
 };
 exports.users = users;
-global.hash = hash;
-global.users = users;
+global.hash = hash;					//mehet ki mos.commons.utils-ba
+global.users = users;				//ehelyett egy system socket amin keresztül db-től lehet lekérdezni
 
 /*
  * Init & Listen

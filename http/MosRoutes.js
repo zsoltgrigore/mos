@@ -15,24 +15,9 @@ function mosroutes(server, routeConfig) {
   		//res.sendfile(__dirname +'/staticview/index.html');
 	});
 	
-	server.get("/load_chart", function (req, res, id) {
+	server.get("/load_chart", function (req, res) {
 		console.log(this);
   		res.sendfile(__dirname +'/staticview/load_chart.html');
-	});
-	
-	server.get("/chart_data_1", function (req, res) {
-		console.log(this);
-  		res.sendfile(__dirname +'/staticview/chart_data_1.json');
-	});
-	
-	server.get("/chart_data_2", function (req, res) {
-		console.log(this);
-  		res.sendfile(__dirname +'/staticview/chart_data_2.json');
-	});
-	
-	server.get("/chart_data_3", function (req, res) {
-		console.log(this);
-  		res.sendfile(__dirname +'/staticview/chart_data_3.json');
 	});
 	
 	server.get("/chat", accountMW.restrict, accountMW.accessLogger ,function (req, res) {
@@ -43,7 +28,7 @@ function mosroutes(server, routeConfig) {
 		if (req.session.user) {
     		req.session.success = 'Authenticated as ' + req.session.user.name
       			+ ' click to <a href="/logout">logout</a>. '
-      			+ ' You may now access <a href="/restricted">/restricted</a>.';
+      			+ ' You may now access <a href="/chart">/restricted</a>.';
   		}
   		res.sendfile(__dirname +'/staticview/login.html');
 	});
@@ -66,12 +51,12 @@ function mosroutes(server, routeConfig) {
         		// in the session store to be retrieved,
         		// or in this case the entire user object
         		req.session.user = user;
-        		res.redirect('back');
+        		res.redirect('/chat');
       		});
     	} else {
       		req.session.error = 'Authentication failed, please check your '
         	+ ' username and password.'
-        	+ ' (use "tj" and "foobar")';
+        	+ ' (use "test" and "test2")';
       		res.redirect('back');
     		}
   		});

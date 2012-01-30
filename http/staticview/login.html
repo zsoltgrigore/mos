@@ -17,8 +17,11 @@
 	      }
 	      $('#nickname-err').css('visibility', 'visible');
 	    });*/
+	    if (formPropertiesNotValid) {
+	    	return false;
+	    }
 	    
-	    return false;
+	    return true;
 	  });
 	});
 	</script>
@@ -27,8 +30,8 @@
       <div id="nickname">
 	    <form class="wrap" id="send-login" action="login" method="post">
 	      <p>Adja meg a felhasználónevét és jelszavát majd üssön Enter-t!</p>
-		  <input id="nick" type="text" placeholder="Felhasználónév"/>
-		  <input id="passwd" type="password" placeholder="Jelszó"/>
+		  <input id="username" name="username" type="text" placeholder="Felhasználónév"/>
+		  <input id="password" name="password" type="password" placeholder="Jelszó"/>
 		  <input type="submit"/>
 	    </form>
 	  </div>

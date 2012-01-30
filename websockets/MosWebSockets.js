@@ -34,7 +34,7 @@ var connectionHandler = function(webSocketClient) {
 	//console.log(webSocketClient);
 	//core.config-ból
 	
-	console.log('A socket with sessionID ' + socket.handshake.sessionID + ' connected!');
+	console.log('A socket with sessionID ' + webSocketClient.handshake.sessionID + ' connected!');
 	
 	webSocketClient.esbSocketClient = new esb.EsbSocket({ 
 				//host: "meshnetwork.hu",

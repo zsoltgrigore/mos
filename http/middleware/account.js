@@ -2,17 +2,17 @@
  * @author Grigore András Zsolt
  */
 
-//TODO: ide valahogy bevarázsolni a usereket!
-
 function authenticate(name, pass, fn) {
-  var user = users[name];
-  // query the db for the given username
+  console.log("   %s próbál kapcsolódni", name);
+  var user = global.users[name];
+  // a kapott usernévvel megkérdezni system socketen hogy van-e ilyen user
+  // ha van akkor tovább ha nincs akkor Error
   if (!user) return fn(new Error('cannot find user'));
-  // apply the same algorithm to the POSTed password, applying
-  // the hash against the pass / salt, if there is a match we
-  // found the user
-  if (user.pass == hash(pass, user.salt)) return fn(null, user);
-  // Otherwise password is invalid
+  // a talált userre hash(pass,salt) és ha ugyanaz a hash akkor megvan a user és error = null
+  console.log("   %s létezik, vajon jó a jelszva?", name);
+  if (user.pass == global.hash(pass, user.salt)) return fn(null, user);
+  console.log("   %s hibás jelszót adott meg");
+  // Minden egyébb esetben hibás a pass
   fn(new Error('invalid password'));
 }
 
