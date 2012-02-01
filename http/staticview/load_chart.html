@@ -15,6 +15,8 @@
 
 		<script type="text/javascript">
 			var dataArray = [];
+			var numArrayLength = 25;
+			var numRandomVal = 1;
 			var startTMPVal = 1800;
 			var placeholder = $("#placeholder");
 			var options = {
@@ -27,8 +29,18 @@
 				$.plot(placeholder, dataArray, options);
 
 				setInterval(function(){
-					updateChart(Math.floor(Math.random()*11), dataArray)
-				},1000)
+					if (Math.random()*5 > 3 || numRandomVal <= 0 ) {
+						if (Math.random()*2 > 1)
+							numRandomVal += 0.2;
+					} else {
+						numRandomVal -= 0.2;
+					}
+
+					if (numRandomVal < 0)
+						numRandomVal = 0;
+
+					updateChart(numRandomVal, dataArray)
+				},500)
 			});
 
 			function rebuildChart(series) {
@@ -47,6 +59,10 @@
 					tmp = [startTMPVal++, value];
 
 					dataArray.push(tmp);
+
+					if (dataArray.length >= numArrayLength) {
+						delete dataArray[dataArray.length - numArrayLength]
+					}
 
 					if (jsonObj == undefined) {
 						var jsonObj = {
