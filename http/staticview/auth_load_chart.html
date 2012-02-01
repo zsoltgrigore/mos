@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Load Avarage Chart</title>
+    <script language="javascript" type="text/javascript" src="js/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript" src="js/jquery.flot.js"></script>
+    <script language="javascript" type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" charset="utf-8">
+	    var socket = io.connect();
+		var arr = [];
+		
+		socket.on('connect', function () {
+	      $('#connected').text("connected");
+	    });
+	    
+	    socket.on('username', function (username) {
+	      var str = $('#connected').text();
+    	  $('#connected').text(str + " as " + username);
+	    });
+	    
+	    socket.on('esb hb', function (data) {
+	      var str = $('#heartbeatlog').html();
+    	  $('#heartbeatlog').html(str + data + "<br/>");
+	    });
+	    
+	    socket.on('esb other', function (data) {
+		  var lastOneMinute = parseFloat(data.split(" ",1)[0]);
+		  updateChart(lastOneMinute, dataArray);
+	      
+	      //var str = $('#arrayContent').html();
+    	  //$('#arrayContent').html(str + data + "<br/>");
+	    });
+	    
+	    socket.on('reconnecting', function () {
+	      $('#connected').html("no connection to httpServer, reload the page! <a href='/login'></a>");
+	    });
+	    
+	    function getloadavg(dest) {
+	    	socket.emit("getloadavg", dest);
+	    }	    
+	</script>
+  </head>
+  <body>
+	<h3 id="connected"></h3>
+	<div id="placeholder" style="height:300px;"></div>
+
+		<script type="text/javascript">
+			var dataArray = [];
+			var startTMPVal = 1800;
+			var placeholder = $("#placeholder");
+			var options = {
+				lines: { show: true },
+				points: { show: true },
+				xaxis: { tickDecimals: 0, tickSize: 1 }
+			};
+
+			$(document).ready(function () {
+				$.plot(placeholder, dataArray, options);
+
+				
+			});
+
+			function rebuildChart(series) {
+				data = [ series ];
+
+				$.plot($("#placeholder"), data, options);
+			}
+
+			function updateChart (value, dataArray) {
+
+				if (dataArray == undefined) {
+					var dataArray = [];
+				}
+
+				if (value != undefined) {
+					tmp = [startTMPVal++, value];
+
+					dataArray.push(tmp);
+
+					if (jsonObj == undefined) {
+						var jsonObj = {
+							"label": "Load AVG",
+						    "data": dataArray
+						};
+					} else {
+						jsonObj = {
+							"label": "Load AVG",
+						    "data": dataArray
+						};
+					}
+
+					rebuildChart(jsonObj);
+				}
+			}
+		</script>
+	<div id="heartbeatlog" style="overflow:auto; border:1px solid #ccc; height: 300px; width: 200px; float: left;">
+		heartbeatlog: <br/>
+	</div><br/>
+	<div id="loadavgreq" onclick="getloadavg('esbd1.prod@meshnetwork.hu');" style="border: 1px solid red; cursor: pointer; float: left;">Get load avg of esbd1.prod</div>
+  </body>
+</html>

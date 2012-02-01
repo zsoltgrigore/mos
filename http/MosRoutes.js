@@ -9,7 +9,7 @@ function mosroutes(server, routeConfig) {
 	server.get("/", function (req, res) {
   		var toc = ""+
   			"<a href='load_chart'>Avarege Load Chart</a><br>" + 
-  			"<a href='login'>Chat</a>";
+  			"<a href='login'>Login</a>";
   		
   		res.end(toc);
   		//res.sendfile(__dirname +'/staticview/index.html');
@@ -20,8 +20,8 @@ function mosroutes(server, routeConfig) {
   		res.sendfile(__dirname +'/staticview/load_chart.html');
 	});
 	
-	server.get("/chat", accountMW.restrict, accountMW.accessLogger ,function (req, res) {
-  		res.sendfile(__dirname +'/staticview/chat.html');
+	server.get("/auth_load_chart", accountMW.restrict, accountMW.accessLogger ,function (req, res) {
+  		res.sendfile(__dirname +'/staticview/auth_load_chart.html');
 	});
 	
 	server.get("/login", function (req, res) {
@@ -51,7 +51,7 @@ function mosroutes(server, routeConfig) {
         		// in the session store to be retrieved,
         		// or in this case the entire user object
         		req.session.user = user;
-        		res.redirect('/chat');
+        		res.redirect('/auth_load_chart');
       		});
     	} else {
       		req.session.error = 'Authentication failed, please check your '

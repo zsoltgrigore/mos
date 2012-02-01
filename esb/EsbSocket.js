@@ -139,7 +139,11 @@ EsbSocket.prototype.dataBufferHandler = function (dataChunk){
 				this.emit("remote heartbeat", esbJsonMsg);
 				break;
 			default:
+				console.log("------------egyébb esb üzenet érkezett:");
+				console.log(esbJsonMsg);
 				this.emit("esb msg", esbJsonMsg);
+				//TODO: hipertodó ennek és a hb msg-nek az msgproc-ban a helye de sietni kelll
+				if (this.webSocket) this.webSocket.emit('esb other', esbJsonMsg);
   		}
 		
 		this.esbSocketBuffer = "";
@@ -159,11 +163,13 @@ EsbSocket.prototype.dataBufferHandler = function (dataChunk){
  */
 EsbSocket.prototype.startHeartBeat = function(esb_login_resp) {
 	
+	this.esb_login_resp = esb_login_resp;
+	
 	if (this.esb_hello_req === undefined) {
 		this.esb_hello_req = new esb.api.esb_hello_req();
 		this.esb_hello_req.header.source = this.esb_login_req.header.source;
 		this.esb_hello_req.header.destination = this.esb_login_req.header.destination;
-		this.esb_hello_req.header.security_id = esb_login_resp.header.security_id;
+		this.esb_hello_req.header.security_id = this.esb_login_resp.header.security_id;
 	}
 	
 	this.helloTimerId = setInterval(this.sendEsbHelloReq.bind(this), this.helloInterval);
@@ -206,7 +212,8 @@ EsbSocket.prototype.endHandler = function() {
  */
 EsbSocket.prototype.connectionLive = function(esb_hello_resp) {
 	console.info("ESB kapcsolat él! Csomag neve: %s", esb_hello_resp.header.name);
-	if (this.webSocket) this.webSocket.emit('mcp message', "ESB2me", esb_hello_resp.header.name);
+	//TODO: hipertodó ennek és a default msg-nek az msgproc-ban a helye de sietni kelll
+	if (this.webSocket) this.webSocket.emit('esb hb', esb_hello_resp.header.name);
 }
 
 /*
@@ -300,9 +307,33 @@ EsbSocket.prototype.stringBufferIsJson = function () {
 	} catch(e) {
 		console.log(e.stack);
 		console.log(e.message);
+		console.log(this.esbSocketBuffer);
 		this.esbSocketBuffer = "";
 		return e;
 	}
 }
+
+
+//pici taknyolás, ennek szintén msg proc-ban a helye
+EsbSocket.prototype.getLoadAvg = function (dest) {
+	console.info("[%s] get_loadavg_req-t küld %s címre", this.source, dest);
+	var get_loadavg_req = new esb.api.get_loadavg_req();
+	
+	get_loadavg_req.header.source = this.source;
+	get_loadavg_req.header.destination = dest;
+	get_loadavg_req.header.session_id = "" + Math.floor(Math.random()*65535) + "";
+	get_loadavg_req.header.security_id = this.esb_login_resp.header.security_id;
+	
+	console.log(get_loadavg_req);
+	
+	this.connection.write(JSON.stringify(get_loadavg_req), "utf8", function(){
+		this.flushed++;
+		console.log("[%s] get_loadavg_req flushed to the kernel. %d", this.source, this.flushed);
+	}.bind(this));
+	this.wrote++;
+	console.info("[%s] get_loadavg_req-t üzenetet írt a socketre. Mérete: %d  | %d", this.source, this.connection.bytesWritten, this.wrote);
+}
+
+
 
 module.exports = EsbSocket;
