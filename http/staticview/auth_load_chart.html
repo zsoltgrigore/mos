@@ -94,9 +94,11 @@
 				}
 			}
 		</script>
+	<input type="text" style="float: left;" id="destination" size="30" value="esbd1.prod@meshnetwork.hu"/>
+	<div id="loadavgreq" onclick="getloadavg($('#destination').val());" style="border: 1px solid red; cursor: pointer; float: left;">Get load avg of esbd1.prod</div><div style="clear: both;"></div>
+	<br />
 	<div id="heartbeatlog" style="overflow:auto; border:1px solid #ccc; height: 300px; width: 200px; float: left;">
 		heartbeatlog: <br/>
-	</div><br/>
-	<div id="loadavgreq" onclick="getloadavg('esbd1.prod@meshnetwork.hu');" style="border: 1px solid red; cursor: pointer; float: left;">Get load avg of esbd1.prod</div>
+	</div>
   </body>
 </html>

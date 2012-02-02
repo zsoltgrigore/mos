@@ -143,7 +143,7 @@ EsbSocket.prototype.dataBufferHandler = function (dataChunk){
 				console.log(esbJsonMsg);
 				this.emit("esb msg", esbJsonMsg);
 				//TODO: hipertodó ennek és a hb msg-nek az msgproc-ban a helye de sietni kelll
-				if (this.webSocket) this.webSocket.emit('esb other', esbJsonMsg);
+				if (this.webSocket) this.webSocket.emit('esb other', esbJsonMsg.data.loadavg);
   		}
 		
 		this.esbSocketBuffer = "";
@@ -276,7 +276,7 @@ EsbSocket.prototype.sendEsbHelloReq = function(){
 		this.connection.write(JSON.stringify(this.esb_hello_req), "utf8", function(){
 			this.flushed++;
 			console.info("Output: %s", JSON.stringify(this.esb_hello_req));
-			console.log("Login request flushed to the kernel. %d", this.flushed);
+			console.log("Hello request flushed to the kernel. %d", this.flushed);
 		}.bind(this));
 		
 		this.wrote++;
