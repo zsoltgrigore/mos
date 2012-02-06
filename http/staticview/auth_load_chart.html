@@ -1,54 +1,21 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Load Avarage Chart</title>
-    <script language="javascript" type="text/javascript" src="js/jquery.min.js"></script>
-    <script language="javascript" type="text/javascript" src="js/jquery.flot.js"></script>
-    <script language="javascript" type="text/javascript" src="/socket.io/socket.io.js"></script>
-    <script type="text/javascript" charset="utf-8">
-	    var socket = io.connect();
-		var arr = [];
-		
-		socket.on('connect', function () {
-	      $('#connected').text("connected");
-	    });
-	    
-	    socket.on('username', function (username) {
-	      var str = $('#connected').text();
-    	  $('#connected').text(str + " as " + username);
-	    });
-	    
-	    socket.on('esb hb', function (data) {
-	      var str = $('#heartbeatlog').html();
-    	  $('#heartbeatlog').html(str + data + "<br/>");
-	    });
-	    
-	    socket.on('esb other', function (data) {
-		  var lastOneMinute = parseFloat(data.split(" ",1)[0]);
-		  updateChart(lastOneMinute, dataArray);
-	      
-	      //var str = $('#arrayContent').html();
-    	  //$('#arrayContent').html(str + data + "<br/>");
-	    });
-	    
-	    socket.on('reconnecting', function () {
-	      $('#connected').html("no connection to httpServer, reload the page! <a href='/login'></a>");
-	    });
-	    
-	    function getloadavg(dest) {
-	    	socket.emit("getloadavg", dest);
-	    }	    
-	</script>
-  </head>
-  <body>
-	<h3 id="connected"></h3>
-	<div id="placeholder" style="height:300px;"></div>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>Load Avarage Chart</title>
+		<script language="javascript" type="text/javascript" src="js/jquery.min.js"></script>
+		<script language="javascript" type="text/javascript" src="js/jquery.flot.js"></script>
+		<script language="javascript" type="text/javascript" src="/socket.io/socket.io.js"></script>
+		<script type="text/javascript" charset="utf-8">
+			var socket = io.connect();
+			var arr = [];
+			var isInit = true;
 
-		<script type="text/javascript">
 			var dataArray = [];
 			var startTMPVal = 1800;
 			var placeholder = $("#placeholder");
+			var numArrayLength = 40;
+
 			var options = {
 				lines: { show: true },
 				points: { show: true },
@@ -57,9 +24,56 @@
 
 			$(document).ready(function () {
 				$.plot(placeholder, dataArray, options);
-
-				
 			});
+
+			socket.on('connect', function () {
+				$('#connected').text("connected");
+			});
+
+			socket.on('username', function (username) {
+				var str = $('#connected').text();
+				$('#connected').text(str + " as " + username);
+			});
+
+			socket.on('esb hb', function (data) {
+				var str = $('#heartbeatlog').html();
+				$('#heartbeatlog').html(str + data + "<br/>");
+				if (isInit == true) {
+					autoUpdateChart();
+					isInit = false;
+				}
+			});
+
+			socket.on('esb other', function (data) {
+				var lastOneMinute = parseFloat(data.split(" ",1)[0]);
+				updateChart(lastOneMinute, dataArray);
+
+				//var str = $('#arrayContent').html();
+				//$('#arrayContent').html(str + data + "<br/>");
+			});
+
+			socket.on('reconnecting', function () {
+				$('#connected').html("no connection to httpServer, reload the page! <a href='/login'></a>");
+			});
+
+			function getloadavg(dest) {
+				socket.emit("getloadavg", dest);
+			}
+
+			function autoUpdateChart() {
+				var numInterval = $('#esb-chart-interval').val();
+				var strChartData = $('#destination').val();
+				
+				if (numInterval == undefined || numInterval == 0) {
+					numInterval = 1;
+				}
+
+				getloadavg(strChartData);
+
+				setTimeout(function() {
+					autoUpdateChart();
+				}, numInterval * 1000)
+			}
 
 			function rebuildChart(series) {
 				data = [ series ];
@@ -78,6 +92,10 @@
 
 					dataArray.push(tmp);
 
+					if (dataArray.length >= numArrayLength) {
+						delete dataArray[dataArray.length - numArrayLength]
+					}
+
 					if (jsonObj == undefined) {
 						var jsonObj = {
 							"label": "Load AVG",
@@ -94,11 +112,26 @@
 				}
 			}
 		</script>
-	<input type="text" style="float: left;" id="destination" size="30" value="esbd1.prod@meshnetwork.hu"/>
-	<div id="loadavgreq" onclick="getloadavg($('#destination').val());" style="border: 1px solid red; cursor: pointer; float: left;">Get load avg of esbd1.prod</div><div style="clear: both;"></div>
-	<br />
-	<div id="heartbeatlog" style="overflow:auto; border:1px solid #ccc; height: 300px; width: 200px; float: left;">
-		heartbeatlog: <br/>
-	</div>
-  </body>
+	</head>
+	<body>
+		<h3 id="connected"></h3>
+		<div id="placeholder" style="height:300px;"></div>
+		<span id="esb-chart-interval-div">
+			&nbsp;Refresh interval (sec): <select id="esb-chart-interval">
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+			</select>
+		</span>
+		<!--<input type="text" style="float: left;" id="destination" size="30" value="esbd1.prod@meshnetwork.hu"/>-->
+		<input type="text" style="float: left;" id="destination" size="30" value="gyerman1@dev.meshnetwork.hu"/>
+
+		<div style="clear: both; float: none; margin-bottom: 12px;"></div>
+
+		<div id="heartbeatlog" style="overflow:auto; border:1px solid #ccc; height: 300px; width: 200px; float: left;">
+			heartbeatlog: <br/>
+		</div>
+	</body>
 </html>
