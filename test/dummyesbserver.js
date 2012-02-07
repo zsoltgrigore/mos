@@ -3,6 +3,7 @@
  */
 var net = require("net");
 var fs = require("fs");
+var os = require("os");
 var filecontent = fs.readFileSync("dummy.json", "utf8");
 var os = require("os");
 var esbapi = require("../esb/").api;
@@ -16,14 +17,22 @@ var server = net.createServer(function (socket) {
   	var obj = JSON.parse(dataStr);
   	getted++;
   	console.log(obj.header.name + " ez a " + getted + ". csomag");
-  	if (obj.header.name === 'esb_login_req') {
-  		console.log('login_req');
-  		socket.write(filecontent); 
-  	} else {
-  		console.log('login_req');
-  		socket.write(JSON.stringify(new esbapi.esb_hello_resp()));
+  	switch(obj.header.name) {
+		case "esb_login_req":
+			socket.write(filecontent);
+			break; 
+		case "esb_hello_req":
+			socket.write(JSON.stringify(new esbapi.esb_hello_resp()));
+			break;
+		case "get_loadavg_req":
+			var get_loadavg_resp = new esbapi.get_loadavg_resp();
+			var osloadavg = os.loadavg();
+			get_loadavg_resp.data.loadavg = "" + osloadavg[0] + " " + osloadavg[1] + " " + osloadavg[2];
+			socket.write(JSON.stringify(get_loadavg_resp));
+			break;
+		default:
+			console.log("Ismeretlen üzenet, nincs válasz!");
   	}
-  	
   });
 });
 

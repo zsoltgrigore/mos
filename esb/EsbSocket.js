@@ -3,8 +3,9 @@
  */
 var EventEmitter = require('events').EventEmitter
 var net = require("net");
-var esb = require("./");
 var util = require("util");
+var Logger = require('../utils/Logger');
+var esb = require("./");
 
 /*
  * @classDescription 
@@ -45,6 +46,10 @@ var EsbSocket = function (esbSocketConfig) {
 	this.sessionId = "" + Math.floor(Math.random()*65535) + "";
 	this.isConnected = false;
 	this.helloTimerId = null;
+	this.logger = new Logger(/*{target: "EsbSocket" + this.source}*/);
+	
+	this.logger.info("megy a loggolás %s", "string");
+	this.logger.debug("megy a loggolás %s", "string");
 	
 	//Statisztika info
 	this.reconnectTimes = 0;		//Mennyi újrakapcsolódás történt

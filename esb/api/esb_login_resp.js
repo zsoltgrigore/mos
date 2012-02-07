@@ -4,16 +4,16 @@
  * @author Grigore András Zsolt
  */
 
-var esb_login_resp = {
-	header : {
+var esb_login_resp = function() {
+	this.header = {
 		protocol : "mcp5",
 		name : "esb_login_resp",
 		source : "",
 		destination : "",
 		session_id : "",				//random szám 10000 és 50000 közt
 		security_id : ""
-	},
-	data : {
+	};
+	this.data = {
 		login_success : "",				//1 ha success 0 ha failure
   	}
 };

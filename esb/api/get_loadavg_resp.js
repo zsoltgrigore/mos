@@ -4,18 +4,18 @@
  * @author Grigore András Zsolt
  */
 
-var get_loadavg_resp = {
-	header : {
+var get_loadavg_resp = function() {
+	this.header = {
 		protocol : "mcp5",
 		name : "get_loadavg_resp",
 		source : "",
 		destination : "",
 		session_id : "",
 		security_id : ""
-	},
-	data : {
+	};
+	this.data = {
 		loadavg : "",							//pl "1.22 1.13 0.94" 
-  	}
+  	};
 };
 
 module.exports = get_loadavg_resp;
