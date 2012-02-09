@@ -1,13 +1,1 @@
-{
-  "header": {
-    "protocol": "mcp5",
-    "destination": "test",
-    "session_id": "",
-    "name": "esb_login_resp",
-    "source": "johnny@dev.meshnetwork.hu",
-    "security_id": "2ocyDbOWMrhr54tA3CdFYOlde8Ec8KmW"
-  },
-  "data": {
-    "login_success": "1"
-  }
-}
+{"header":{"protocol":"mcp5","destination":"test","session_id":"","name":"esb_login_resp","source":"johnny@dev.meshnetwork.hu","security_id":"2ocyDbOWMrhr54tA3CdFYOlde8Ec8KmWŐ"},"data":{"login_success":"1"}}

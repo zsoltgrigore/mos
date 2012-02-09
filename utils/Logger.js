@@ -72,9 +72,9 @@ function nowStr () {
 var Logger = module.exports = function (opts) {
   opts = opts || {}
   this.colors = false !== tty.isatty(process.stdout.fd);
-  this.level = 3 || opts.level;
-  this.enabled = true
-  this.target = 'N/A' || opts.target;
+  this.level = opts.level || 3;
+  this.enabled = opts.enabled || true;
+  this.target = opts.target || "N/A";
 };
 
 /**
@@ -88,12 +88,10 @@ Logger.prototype.log = function (type) {
 
   if (index > this.level || !this.enabled)
     return this;
-
-	console.info(['asd'] + toArray(arguments).slice(1));
   
   var msghdr = this.colors
-        		? '\033[' + colors[index] + 'm' + nowStr() + " " + pad(type) + ' -\033[39m '
-        		: nowStr() + " " + type + ': ';
+        		? '\033[' + colors[index] + 'm' + nowStr() + ' ' + this.target + ' ' + pad(type) + ' -\033[39m '
+        		: nowStr() + ' ' + this.target + ' ' + type + ': ';
   var msg = msghdr + arguments[1]; 
   
   console.log.apply(console, [msg].concat(toArray(arguments).slice(2)));

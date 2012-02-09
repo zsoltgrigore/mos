@@ -26,6 +26,7 @@ var esb = require("./");
  * 		}
  */
 var EsbSocket = function (esbSocketConfig) {
+	esbSocketConfig = esbSocketConfig || {};
 	EventEmitter.call(this);
 	
 	//Publikus változók
@@ -46,11 +47,8 @@ var EsbSocket = function (esbSocketConfig) {
 	this.sessionId = "" + Math.floor(Math.random()*65535) + "";
 	this.isConnected = false;
 	this.helloTimerId = null;
-	this.logger = new Logger(/*{target: "EsbSocket" + this.source}*/);
-	
-	this.logger.info("megy a loggolás %s", "string");
-	this.logger.debug("megy a loggolás %s", "string");
-	
+	this.logger = new Logger({target : "EsbSocket"});
+		
 	//Statisztika info
 	this.reconnectTimes = 0;		//Mennyi újrakapcsolódás történt
 	this.flushed = 0;
@@ -127,10 +125,11 @@ EsbSocket.prototype.sendLoginRequest = function() {
  * 		Visszaadja az EsbSocket-et hogy az event-ek láncolhatóak legyenek (chainable)
  */
 EsbSocket.prototype.dataBufferHandler = function (dataChunk){
-	//console.info(dataChunk);
+	//console.info(dataChunk.length);
+	//console.info(this.connection.bytesRead); //ez nulla valamiért
 	this.esbSocketBuffer += dataChunk.toString("utf-8");									//minden üzenetet Stringgé alakít, ha szükséges akkor bináris buffer is használható (pl.: videó Stream)
 	
-	var esbJsonMsg = this.stringBufferIsJson();
+	var esbJsonMsg = this.stringBufferToJson();
 	
 	if (!(esbJsonMsg instanceof SyntaxError)) {
 		
@@ -294,6 +293,8 @@ EsbSocket.prototype.sendEsbHelloReq = function(){
 
 /*
  * Megpróbálja a paraméterben kapott Stringet javascript objektummá alakítani.
+ * Első probálkozásra optimisták vagyunk és nekiesünk, ha nincs hiba akkor mehetünk tovább.
+ * Ha hiba van akkor vagy nem jött át a teljes JSON vagy feltorlódtak az üzenetek és több is van a bufferben
  * 
  * TODO: Normális logging arra az esetre ha nem sikerül alakítani látható legyen hogy melyik socketről van szó
  * TODO: Több ehhez hasonlóan független függvény esetén külön modulba tenni azokat
@@ -304,15 +305,32 @@ EsbSocket.prototype.sendEsbHelloReq = function(){
  * @return {Object}
  * 		Ha sikerül átalakítani akkor kész Object, ha nem akkor SyntaxError Object 
  */
-EsbSocket.prototype.stringBufferIsJson = function () {
-	console.log("JSON vagy JSON szelet (input): \n %s \n", this.esbSocketBuffer);
+EsbSocket.prototype.stringBufferToJson = function () {
+	//console.log("JSON vagy JSON szelet (input %d): \n%s\n", this.esbSocketBuffer.length, this.esbSocketBuffer);
 	try {
 		var json = JSON.parse(this.esbSocketBuffer);
 		return json;
 	} catch(e) {
-		console.log(e.stack);
-		console.log(e.message);
-		console.log(this.esbSocketBuffer);
+		var bufferSize = this.esbSocketBuffer.length;
+		var position = 0;
+		var numOfparsed = 0;
+		while (position != -1){			//ez mindíg kisebb lesz
+			position = this.esbSocketBuffer.indexOf("}", position);
+						
+			try {
+				JSON.parse(this.esbSocketBuffer.slice(0,position+1));
+				//ha írjuk az elsődleges buffert akkor lock-olni kell és minden közben bejövő üzenetet egy másodlagosba pakolni
+				this.esbSocketBuffer = this.esbSocketBuffer.slice(position+1);
+				bufferSize = this.esbSocketBuffer.length;
+				position = 0;
+				numOfparsed++;
+			} catch(err) {
+				//console.log("%s @ %d", err.message, position);
+				//console.log(this.esbSocketBuffer);  //ez vagy üres vagy ha töredék JSON volt a végén akkor a töredék
+				if (position != -1) position++;
+			} 
+			
+		}
 		this.esbSocketBuffer = "";
 		return e;
 	}
