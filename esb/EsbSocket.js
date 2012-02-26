@@ -48,6 +48,7 @@ var EsbSocket = function (esbSocketConfig) {
 	this.isConnected = false;
 	this.helloTimerId = null;
 	this.logger = new Logger({target : "EsbSocket"});
+	//this.msgproc = new esb.EsbMsgProcessor(); parent dolog???
 		
 	//Statisztika info
 	this.reconnectTimes = 0;		//Mennyi újrakapcsolódás történt
@@ -70,7 +71,7 @@ util.inherits(EsbSocket, EventEmitter);
 EsbSocket.prototype.connectToEsb = function () {
 	this._reconnecting = false;
 	this.connection = net.createConnection(this.port, this.host);
-	this.connection.setNoDelay(true);
+	this.connection.setNoDelay(true); //kifelé kell Nagle de lehet hogy nem
 	
 	this.connection.on("timeout", this.timeOutHandler.bind(this));
 	this.connection.on("error", this.errorHandler.bind(this));
@@ -314,7 +315,7 @@ EsbSocket.prototype.stringBufferToJson = function () {
 		var bufferSize = this.esbSocketBuffer.length;
 		var position = 0;
 		var numOfparsed = 0;
-		while (position != -1){			//ez mindíg kisebb lesz
+		while (position != -1){
 			position = this.esbSocketBuffer.indexOf("}", position);
 						
 			try {
@@ -334,6 +335,25 @@ EsbSocket.prototype.stringBufferToJson = function () {
 		this.esbSocketBuffer = "";
 		return e;
 	}
+}
+
+EsbSocket.prototype.stringBufferToJsonExt = function () {
+	var hasObject = true;
+	var error = {};
+	var num = 0;
+	while(hasObject) {
+		try {
+			var untilPos = error.at-1 || this.esbSocketBuffer.length;  console.log(untilPos);
+			json_parse(this.esbSocketBuffer.slice(0, untilPos));
+			this.esbSocketBuffer = this.esbSocketBuffer.slice(untilPos);
+			num++;
+		} catch (err) {
+			console.log(err);
+			error.at ? hasObject = false : error = err;
+		}
+	}
+	//console.log(num);
+	return this.esbSocketBuffer;
 }
 
 
