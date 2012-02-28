@@ -4,7 +4,8 @@
  * 
  * @author Grigore András Zsolt
  */
-
+json_parse = require("../utils/json_parse_rec.js");
+logger = {"level" : 2};
 var esb = require("../esb/");
 var fs = require("fs");
 
@@ -14,7 +15,7 @@ var numOfSockets = 1;
 
 for (var i=0; i<numOfSockets; i++) {
 	esbSockets.push(new esb.EsbSocket({ /*host: "meshnetwork.hu",*/ source: "test"+i, helloInterval: 1000}));
-	esbSockets[i].connectToEsb();
+	esbSockets[i].connect();
 }
 
 setTimeout(function(){

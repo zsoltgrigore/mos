@@ -72,7 +72,7 @@ function nowStr () {
 var Logger = module.exports = function (opts) {
   opts = opts || {}
   this.colors = false !== tty.isatty(process.stdout.fd);
-  this.level = opts.level || 3;
+  this.level =  logger.level || opts.level || 3;
   this.enabled = opts.enabled || true;
   this.target = opts.target || "N/A";
 };
