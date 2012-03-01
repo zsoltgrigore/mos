@@ -2,7 +2,6 @@
  * @author Grigore András Zsolt
  */
 /* Globals */
-json_parse = require("/utils/json_parse_rec.js");
 logger = {"level" : 3};
 
 /* Dependencies */

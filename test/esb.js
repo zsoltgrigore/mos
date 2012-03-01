@@ -20,5 +20,5 @@ for (var i=0; i<numOfSockets; i++) {
 
 setTimeout(function(){
 //	esbSockets[0].getLoadAvg("esbd1.prod@meshnetwork.hu");
-	esbSockets[0].getLoadAvg("gyerman1@dev.meshnetwork.hu");
+//	esbSockets[0].getLoadAvg("gyerman1@dev.meshnetwork.hu");
 }, 3500)

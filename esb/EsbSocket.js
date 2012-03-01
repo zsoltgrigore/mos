@@ -6,11 +6,24 @@ var net = require("net");
 var util = require("util");
 var Logger = require('../utils/Logger');
 var esb = require("./");
+var json_parse = require("../utils/json_parse_rec.js");
 
 /*
  * @classDescription 
- * 		EsbSocket osztály aEventEmitter osztályból származik
- * 		ESB specifikus adatok és eseményekezelők illetve maga a socket ojjektum
+ * 		EsbSocket osztály EventEmitter osztályból származik
+ * 		ESB specifikus adatok és eseményekezelők illetve maga a socket ojjektum alkotják
+ * 
+ * @events
+ * 		"connect"			@see net.Socket
+ * 		"data" 				@see net.Socket
+ * 		"error"				@see net.Socket
+ * 		"close"				@see net.Socket
+ * 		"end"				@see net.Socket
+ * 
+ * 		"succesfull login"	Sikeres bejelentkezést tartalmazó esb_login_resp üzenet után dobódik
+ * 		"access denied"		Sikertelen bejelentkezést tartalmazó esb_login_resp üzenet után dobódik
+ * 		"<esb.api.*>"		Ezek olyan események melyek valamilyen esb.api üzenetet tartalmaznak,
+ * 								elkapásukhoz az adott típusú ESB üzenetre kell figyelni
  *
  * @param {Object} config
  * 		A esbSocket példányhoz rendelt konfigurációs objektum
@@ -22,7 +35,6 @@ var esb = require("./");
  * 			password : {String} //password
  * 			destination : {String} //ide küldjük az üzenetet
  * 			helloInterval : {Number} //a szívdobbanások közti szünet
- * 			webSocket : {Object} //a kapcsolódott user web socket példánya
  * 		}
  */
 var EsbSocket = function (esbSocketConfig) {
@@ -85,6 +97,13 @@ EsbSocket.prototype.connect = function () {
 	this.logger.info("Kapcsolódás... %s:%d", this.host, this.port);
 };
 
+/*
+ * A paraméterben kapott Objektumot JSON sztringgé alakítjuk.
+ * A natív socket.write metódus segítségével küldjük tovább a szervernek.
+ * 
+ * @param {Object} obj
+ * 		esb api szerinti objektumok
+ */
 EsbSocket.prototype.writeObject = function (obj) {
 	if (!this._reconnecting) {
 		this.connection.write(JSON.stringify(obj), "utf8", function(){
@@ -99,10 +118,8 @@ EsbSocket.prototype.writeObject = function (obj) {
 };
 
 /*
- * Kapcsolódáskor elküld egy login request-et a megfelelő adatokkal kitöltve
- * 		source és password a socketpéldányban van
- * 		sessionId-t majd generálni kell vagy a webes loginnál kapottat adjuk
- * 
+ * Kapcsolódáskor elküld egy login request-et a megfelelő adatokkal kitöltve.
+ * Source, password a webes loginból jön, sessionId-t pedig konstruktorban generálunk
  */
 EsbSocket.prototype.sendLoginRequest = function() {
 	this.logger.info("Kapocsolódott: %s:%d", this.connection.remoteAddress, this.connection.remotePort);
@@ -117,31 +134,16 @@ EsbSocket.prototype.sendLoginRequest = function() {
 	this.writeObject(this.esb_login_req);
 }
 
-EsbSocket.prototype.loginRespHandler = function(esb_login_resp) {
-	if (esb_login_resp.data.login_success == "1") {
-		this.logger.info("Sikeres bejelentkezés.");
-		this.emit("succesfull login", esb_login_resp);
-	} else {
-		this.logger.info("Sikertelen bejelentkezés.");
-		this.emit("access denied", esb_login_resp);
-	}
-}
-
 /*
- * A core Socket-hez rendelt "data" eseménykezelő, mivel hosszabb String vagy bináris adat estén azt a
- * TCP/IP szétvágja ezért minden egyes darab megérkezésekor dobódik "data". A core Socket osztályhoz
- * rendelt priBuffer mindendaddig tárolja amíg valid JSON nem alakítható belőle. Ha megérkezik minden
- * szükséges csomag (nem SyntaxError az átalakítás eredménye) akkor előfeldolgozást végez.
- * 		Ha csomag neve
- * 			esb_login_resp és login_success == 1 akkor "succesfull login",
- * 			esb_login_resp és login_success == 0 akkor "access denied",
- * 			esb_hello_resp akkor "remote heartbeat",
- * 			minden egyéb esetben "esb msg" esemény dobódik.
+ * A core Socket-hez rendelt "data" eseménykezelő.
+ * Amikor meghívódik, akkor a chunk paraméter vagy egy töredék, vagy több vagy pontosan egy darab JSON sztringet
+ * 		tartalmazhat. Ameddig kivesszük ezeket és JS Objektumokká alakítjuk addig egy zászló (priBuferLock) jelzi,
+ * 		hogy éppen feldolgozás alatt van az elsődleges buffer.
+ * Ha feldolgozás közben ismét kiváltódik a "data" esemény akkor addig a másodlagos bufferbe írunk,
+ * 		majd a feldolgozás végeztével hozzáadjuk az elsődlege buferhez a másodlagos tartalmát és feloldjuk a zárat.
  * 
- * @param {Buffer} dataChunk
- * 		A beérkezett csomag vagy csomag darab
- * @return {esb.EsbSocket} 
- * 		Visszaadja az EsbSocket-et hogy az event-ek láncolhatóak legyenek (chainable)
+ * @param {Buffer} chunk
+ * 		A beérkezett csomagok, csomag vagy csomag darab
  */
 EsbSocket.prototype.dataHandler = function (chunk){
 	this.logger.debug("data chunk (%d) -> socket", chunk.length);
@@ -152,8 +154,8 @@ EsbSocket.prototype.dataHandler = function (chunk){
 			this.logger.debug("Elsődleges Buffer zárolva"): 
 			this.logger.debug("Elsődleges Buffer írható");
 	if (!this.priBufferLock){
-		this.priBufferLock = true;
 		this.priBuffer += chunkUTF;
+		this.priBufferLock = true;
 		this.processPriBuffer(function() {
 			//sorrend: összemásoljuk a kettőt feloldjuk a zárat és csak utána ürítjük a másodlagost
 			this.priBuffer += this.secBuffer;
@@ -166,6 +168,14 @@ EsbSocket.prototype.dataHandler = function (chunk){
 	
 }
 
+/*
+ * Az elsődleges bufferben található JSON sztringeket és töredékeket választja szét és
+ * 		a valid JSON sztringeket JS Objektumokká alakítja.
+ * Ez a logika nem a natív JSON parser metódust használja hanem egy külső rekurzív megvalósítást.
+ * 
+ * @param {Function} callback
+ * 		A beérkezett csomagok, csomag vagy csomag darab
+ */
 EsbSocket.prototype.processPriBuffer = function (callback) {
 	this.logger.debug("priBuffer tárolva, processBuffers() elkezdi kiolvasni a helyes JSON sztringeket:"
 			+ "\nPRI: %s\nSEC: %s", this.priBuffer, this.secBuffer);
@@ -205,10 +215,28 @@ EsbSocket.prototype.processPriBuffer = function (callback) {
 }
 
 /*
- * Sikeres authentikációt követően a mesh ESB szabvány szerinti HeartBeat (hello_req) csomagot küldünk 1s-es időközökkel
+ * Login válasz üzenetet feldolgozó eseménykezelő.
+ * Ha a login_success mező értékétől függő üzenetet dobunk.
  * 
- * @param {String}
- * 		Sikeres bejelenkezés után kapott válasz üzenet, ez alapján töltödik ki a HeartBeat csomag
+ * @param {api.esb_login_resp} esb_login_resp
+ * 		Sikeres bejelenkezés után kapott válasz üzenet (login_resp)
+ */
+EsbSocket.prototype.loginRespHandler = function(esb_login_resp) {
+	if (esb_login_resp.data.login_success == "1") {
+		this.logger.info("Sikeres bejelentkezés.");
+		this.emit("succesfull login", esb_login_resp);
+	} else {
+		this.logger.info("Sikertelen bejelentkezés.");
+		this.emit("access denied", esb_login_resp);
+	}
+}
+
+/*
+ * Sikeres authentikációt követően a mesh ESB szabvány szerinti HeartBeat (hello_req) csomagot küldünk 
+ * 		1s-es időközökkel.
+ * 
+ * @param {api.esb_login_resp} esb_login_resp
+ * 		Sikeres bejelenkezés után kapott válasz üzenet (login_resp), ez alapján töltödik ki a HeartBeat csomag
  */
 EsbSocket.prototype.startHeartBeat = function(esb_login_resp) {
 	
@@ -226,57 +254,11 @@ EsbSocket.prototype.startHeartBeat = function(esb_login_resp) {
 }
 
 /*
- * Ha a socket példányban van nyoma sikeres authentikációnak akkor küldünk egy hello csomagot
+ * Ha hibásak a bejelentkezési adatok akkor hívódik meg ez a függvény.
+ * Ebben az esetben nem is próbálunk újrakapcsolódni.
  * 
- * @param {EsbSocket}
- * 		EsbSocket példány
- */
-EsbSocket.prototype.sendEsbHelloReq = function(){
-	if (this.esb_hello_req != undefined) {
-		// Random session_id: 0..65535 
-		this.esb_hello_req.header.session_id = "" + Math.floor(Math.random()*65535) + "";
-		this.writeObject(this.esb_hello_req);
-		
-	} else {
-		this.logger.error("Authorizált socket szükséges Hello csomag küldéséhez!");
-	}
-	
-}
-
-/*
- * Alapértelmezett szívdobbanás válasz kezelő függvény. Logba írja hogy minden ok.
- */
-EsbSocket.prototype.helloRespHandler = function(esb_hello_resp) {
-	this.logger.debug("ESB kapcsolat él!");
-	//TODO: kiszerverzni
-	if (this.webSocket) this.webSocket.emit('esb hb', esb_hello_resp.header.name);
-}
-
-/*
- * Alapértelmezett hibakezelő függvény, ha meghívódik akkor újrakapcsolódunk
- */
-EsbSocket.prototype.errorHandler = function(exception) {
-	if(!this.connection) this._reconnecting = false;
-	this.logger.error("Hiba történt!");
-	//console.error(exception);
-	this.reconnect();
-}
-
-EsbSocket.prototype.closeHandler = function(had_error) {
-	if (had_error) {
-		this.logger.error("Kapcsolat váratlanul bezárult!");
-	} else {
-		this.logger.warn("Kapcsolat bezárult, semmi jele hibának!");
-	}
-	this.reconnect();
-}
-
-EsbSocket.prototype.endHandler = function() {
-	this.logger.error("Kapcsolat FIN-el zárult. end event!");
-}
-
-/*
- * Ha hibásak a bejelentkezési attribútumok akkor hívódik meg ez a függvény és ebben az esetben nem is próbálunk újrakapcsolódni
+ * @param {api.esb_login_resp} esb_login_resp
+ * 		login válasz üzenet benne a hibás adatokkal
  */
 EsbSocket.prototype.accessDenied = function(esb_login_resp) {
 	this.connection.end();
@@ -285,15 +267,77 @@ EsbSocket.prototype.accessDenied = function(esb_login_resp) {
 }
 
 /*
- * Ha bármilyen oknál fogva megszakad a kapcsolat akkor újrakapcsolódik ESB-hez
+ * Ha a socket példányban van nyoma sikeres authentikációnak, azaz van felparaméterezett "hello" csomag
+ * 		akkor azt random sessionId-vel elküldjük
+ */
+EsbSocket.prototype.sendEsbHelloReq = function(){
+	if (this.esb_hello_req != undefined) {
+		// Random session_id: 0..65535 
+		this.esb_hello_req.header.session_id = "" + Math.floor(Math.random()*65535) + "";
+		this.writeObject(this.esb_hello_req);
+	} else {
+		this.logger.error("Authorizált socket szükséges Hello csomag küldéséhez!");
+	}
+	
+}
+
+/*
+ * Alapértelmezett szívdobbanás válasz kezelő függvény. Logba írja hogy minden ok.
+ * TODO: ennek segítségével mérhetünk kapcsolat sebességet req és resp közti időt használva
+ * 			kb a console.time('parse-1'); console.timeEnd('parse-1') mintára
  * 
- * @param {EsbSocket}
- * 		EsbSocket ami leszakadt valamelyik ESB szerverrről
+ * @param {api.esb_hello_resp} esb_hello_resp
+ * 		hello válasz üzenet
+ */
+EsbSocket.prototype.helloRespHandler = function(esb_hello_resp) {
+	this.logger.debug("ESB kapcsolat él!");
+}
+
+/*
+ * Alapértelmezett hibakezelő függvény, ha meghívódik akkor újrakapcsolódunk
+ * 
+ * @param {Exception} exception
+ * 		Arról ad némi infót hogy mi lehet a hiba
+ */
+EsbSocket.prototype.errorHandler = function(exception) {
+	if(!this.connection) this._reconnecting = false;
+	this.logger.error("Hiba történt!");
+	this.logger.error(exception.toString);
+	this.reconnect();
+}
+
+/*
+ * Kapcsolat megszakadását kezelő függvény, ha meghívódik akkor újrakapcsolódunk
+ * 
+ * @param {boolean} had_error
+ * 		hibával záródott (true) vagy másik oldal kezdeményezte a bezárást
+ */
+EsbSocket.prototype.closeHandler = function(had_error) {
+	if (had_error) {
+		this.logger.error("Kapcsolat valami hiba folytán bezárult!");
+	} else {
+		this.logger.warn("Kapcsolat bezárult, semmi jele hibának!");
+	}
+	this.reconnect();
+}
+
+/*
+ * Ha close vagy error meghívódik akor end is ezért itt nem hívjuk feleslegesen a reconnect() fgvt.
+ */
+EsbSocket.prototype.endHandler = function() {
+	this.logger.error("Kapcsolat FIN-el zárult. end event!");
+}
+
+/*
+ * Ha bármilyen oknál fogva megszakad a kapcsolat akkor újrakapcsolódik ESB-hez.
+ * Ha már folyamatban van újrakapcsolódás akkor nem teszünk semmit egyébként billentjük a zászlót
+ * 		és megpróbálunk ismét kapcsolódni, egészen addig amíg nem sikerül..
  */
 EsbSocket.prototype.reconnect = function() {
 	if (!this._reconnecting) {
-		this.logger.warn("Újrakapcsolódás");
 		this._reconnecting = true;
+		this.emit("reconnecting");
+		this.logger.warn("Újrakapcsolódás");
 		this.reconnectTimes++;
 		
 		if (this.helloTimerId) {
@@ -312,24 +356,6 @@ EsbSocket.prototype.reconnect = function() {
 			this.logger.debug("Újrakapcsolódás most.");
 			this.connect();
 		}.bind(this), 10000);
-	}
-}
-
-//pici taknyolás, ennek szintén msg proc-ban a helye
-EsbSocket.prototype.getLoadAvg = function (dest) {
-	//ezt minden írásnál meg kéne vizsgálni
-	if (this.esb_login_resp != undefined) {
-		var get_loadavg_req = new esb.api.get_loadavg_req();
-		
-		get_loadavg_req.header.source = this.source;
-		get_loadavg_req.header.destination = dest;
-		get_loadavg_req.header.session_id = "" + Math.floor(Math.random()*65535) + "";
-		get_loadavg_req.header.security_id = this.esb_login_resp.header.security_id;
-		
-		this.writeObject(get_loadavg_req);
-		
-	} else {
-		this.logger.error("Authorizált socket szükséges üzenet küldéséhez!");
 	}
 }
 
