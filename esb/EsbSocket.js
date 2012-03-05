@@ -50,6 +50,7 @@ var EsbSocket = function (esbSocketConfig) {
 	this.destination = esbSocketConfig.destination || "ANY";
 	this.helloInterval = esbSocketConfig.helloInterval || 1000;
 	this.webSocket = esbSocketConfig.webSocket || false;
+	this.reconnectDelay = esbSocketConfig.reconnectDelay || 3000;
 	
 	//Nem annyira publikus változók
 	//-----------------------------
@@ -108,12 +109,13 @@ EsbSocket.prototype.writeObject = function (obj) {
 	if (!this._reconnecting) {
 		this.connection.write(JSON.stringify(obj), "utf8", function(){
 			this.flushed++;
-			this.logger.info("Üzenet küldés. Típusa: %s; Cél: %s", obj.header.name, obj.header.destination);
+			this.logger.info("--> Üzenet küldés. Típusa: %s; Cél: %s, SeddionID: %d, Eddig kiküldve: %d", 
+					obj.header.name, obj.header.destination, obj.header.session_id, this.wrote);
 			this.logger.debug("%s üzenet -> kernel | sorszám: %d", obj.header.name, this.flushed);
 		}.bind(this));
 		this.wrote++;
-		this.logger.debug("%s üzenet (méret: %d) -> socket | sorszám: %d",
-				obj.header.name, this.connection.bytesWritten, this.wrote);
+		this.logger.debug("%s üzenet (méret: %d, sessionid: %d) -> socket | sorszám: %d",
+				obj.header.name, this.connection.bytesWritten, obj.header.session_id, this.wrote);
 	}
 };
 
@@ -203,7 +205,7 @@ EsbSocket.prototype.processPriBuffer = function (callback) {
 		
 		if(incomingObj.header) {
 			this.emit(incomingObj.header.name, incomingObj);
-			this.logger.info("Üzenet a bufferből: %s", incomingObj.header.name);
+			this.logger.info("<-- Üzenet a bufferből: %s", incomingObj.header.name);
 		}
 		
 		if (this.priBuffer.length == 0 || !hasObject) { //ha kiürült vagy már csak töredék akkor lépjünk ki
@@ -337,7 +339,8 @@ EsbSocket.prototype.reconnect = function() {
 	if (!this._reconnecting) {
 		this._reconnecting = true;
 		this.emit("reconnecting");
-		this.logger.warn("Újrakapcsolódás");
+		this.logger.warn("Újrakapcsolódás %d.", this.reconnectTimes);
+
 		this.reconnectTimes++;
 		
 		if (this.helloTimerId) {
@@ -351,11 +354,11 @@ EsbSocket.prototype.reconnect = function() {
 		this.connection = false;
 		this.logger.debug("Kapcsolat lebontása: end->destroy->false");
 	
-		this.logger.debug("Újrakapcsolódás 10 másodperc múlva...");
+		this.logger.debug("Újrakapcsolódás %d másodperc múlva...", this.reconnectDelay);
 		setTimeout(function() {
 			this.logger.debug("Újrakapcsolódás most.");
 			this.connect();
-		}.bind(this), 10000);
+		}.bind(this), this.reconnectDelay);
 	}
 }
 

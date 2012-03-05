@@ -4,9 +4,7 @@
 var net = require("net");
 var fs = require("fs");
 var os = require("os");
-var filecontent = fs.readFileSync("dummy.json", "utf8");
-var os = require("os");
-var esbapi = require("../esb/").api;
+var esb = require("../esb/");
 var getted = 0;
 
 var server = net.createServer(function (socket) {
@@ -19,13 +17,28 @@ var server = net.createServer(function (socket) {
   	console.log(obj.header.name + " ez a " + getted + ". csomag");
   	switch(obj.header.name) {
 		case "esb_login_req":
-			socket.write(filecontent);
+			var esb_login_resp = new esb.api.esb_login_resp();
+			esb_login_resp.header.source = "dummy@localhost";
+			esb_login_resp.header.destination = obj.header.source;
+			esb_login_resp.header.session_id = obj.header.session_id;
+			esb_login_resp.header.security_id = "" + Math.floor(Math.random()*255000) + "";
+			esb_login_resp.data.login_success = "1";
+			socket.write(JSON.stringify(esb_login_resp));
 			break; 
 		case "esb_hello_req":
-			socket.write(JSON.stringify(new esbapi.esb_hello_resp()));
+			var esb_hello_resp = new esb.api.esb_hello_resp();
+			esb_hello_resp.header.source = "dummy@localhost";
+			esb_hello_resp.header.destination = obj.header.source;
+			esb_hello_resp.header.session_id = obj.header.session_id;
+			esb_hello_resp.header.security_id = obj.header.security_id;
+			socket.write(JSON.stringify(esb_hello_resp));
 			break;
 		case "get_loadavg_req":
-			var get_loadavg_resp = new esbapi.get_loadavg_resp();
+			var get_loadavg_resp = new esb.api.get_loadavg_resp();
+			get_loadavg_resp.header.source = "dummy@localhost";
+			get_loadavg_resp.header.destination = obj.header.source;
+			get_loadavg_resp.header.session_id = obj.header.session_id;
+			get_loadavg_resp.header.security_id = obj.header.security_id;
 			var osloadavg = os.loadavg();
 			get_loadavg_resp.data.loadavg = "" + osloadavg[0] + " " + osloadavg[1] + " " + osloadavg[2];
 			socket.write(JSON.stringify(get_loadavg_resp));
@@ -35,17 +48,6 @@ var server = net.createServer(function (socket) {
   	}
   });
 });
-
-function sendBigJson(socket){
-  socket.write(filecontent.slice(0,300));
-  setTimeout(function () {  
-  	socket.write(filecontent.slice(300));;  
-  }, 2000)
-}
-
-function sendLoadAvg(socket){
-  	socket.write(os.loadavg());
-}
 
 function listen (port, host) {
 server.listen(port, host);
