@@ -8,8 +8,7 @@
  * Module dependencies.
  */
 
-var generalUtils = require('./general')
-  , toArray = generalUtils.toArray;
+var toArray = require('./general').toArray;
 var tty = require('tty');
 
 /**
@@ -71,6 +70,7 @@ function nowStr () {
 
 var Logger = module.exports = function (opts) {
   opts = opts || {}
+  var logger = logger || {};
   this.colors = false !== tty.isatty(process.stdout.fd);
   this.level =  logger.level || opts.level || 3;
   this.enabled = opts.enabled || true;

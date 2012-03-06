@@ -4,7 +4,6 @@
 
 var express = require("express"),
 	util = require("util"),
-	fs = require("fs"),
 	MemoryStore = express.session.MemoryStore;
 
 var server = express.createServer(),

@@ -2,7 +2,7 @@
  * @author Grigore András Zsolt
  */
 
-var accountMW = require("./middleware/account.js");
+var accountMW = require("./middlewares/account.js");
 
 //TODO: ide bevarázsolni valahogy a különböző custom middleware-eket
 function mosroutes(server, routeConfig) {

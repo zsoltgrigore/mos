@@ -2,6 +2,7 @@
  * @author Grigore András Zsolt
  */
 json_parse = require("../utils/json_parse_rec.js");
+rndbtw = require("../utils/general.js").rndbtw;
 logger = {"level" : 3};
 
 var fs = require("fs");
@@ -10,9 +11,6 @@ var fcLength = filecontent.length;
 var esb = require("../esb/");
 var client = new esb.EsbSocket();
 
-function rndbtw(max, min){
-	return min+(Math.floor(Math.random()*(max-min+1)));	
-}
 var testData = [
 				'',
 				''+filecontent,

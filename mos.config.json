@@ -10,7 +10,10 @@
 				"server.router"
 			],
 			"routes" : [
-				{ "path" : "/" }
+				{ "path" : "/", "method" : "get", "middlewares" : ["public", "rootReqHandler"]},
+				{ "path" : "/login" , "method" : "get", "middlewares" : ["public", "loginReqHandler"]},
+				{ "path" : "/login" , "method" : "post", "middlewares" : ["public", "processLoginData"]},
+				{ "path" : "/app" , "method" : "get", "middlewares" : ["private", "accessLogger", "appReqHandler"]}
 			]
 		},
 		"development" : {
@@ -33,10 +36,40 @@
 		}
 	},
 	"websockets" : {
+		"general" : {
+
+		},
+		"development" : {
+
+		},
+		"production" : {
+
+		}
 	},
 	"esb" : {
-		"host" : "localhost", 
-		"source" : "test",
-		"helloInterval" : 1000
+		"general" : {
+		},
+		"development" : {
+			"host" : "localhost",
+			"port" : 5521,
+			"helloInterval" : 1000
+		},
+		"production" : {
+			"host" : "meshnetwork.hu",
+			"port" : 5521,
+			"helloInterval" : 1000
+		}
+	},
+	"global" : {
+		"development" : {
+			"logger" : {
+				"level" : 3
+			}
+		},
+		"production" : {
+			"logger" : {
+				"level" : 1
+			}
+		}
 	}
 }
