@@ -4,7 +4,62 @@
 var sio = require("socket.io");
 var parseCookie = require('connect').utils.parseCookie;
 var Session = require('connect').middleware.session.Session;
+var Logger = require('../utils/Logger');
 
+var MosWebSockets = function (mosWebSocketsConfig) {
+	mosWebSocketsConfig = mosWebSocketsConfig || {};
+	
+	//Publikus változók
+	//-----------------
+	this.host = mosWebSocketsConfig.host || "localhost";
+	this.port = mosWebSocketsConfig.port || 8080;
+	
+	//Nem annyira publikus változók
+	//-----------------------------
+	this.io = false;
+	this.logger = new Logger({target : "MosWebSockets<Server>"});
+	
+}
+
+MosWebSockets.prototype.listen = function (mosHttp) {
+	if (mosHttp)
+		this.io = sio.listen(mosHttp.server);
+	else
+		this.io = sio.listen(port, host);
+	
+	this.io.sockets.on('connection', this.connectionHandler.bind(this));
+};
+
+MosWebSockets.prototype.connectionHandler = function(webSocketClient) {
+	console.log("itt a session a websocketben");
+	console.log(webSocketClient.handshake.session);
+	
+	webSocketClient.on('agv_get_xy_req', function(agv_get_xy_req) {
+		console.log(agv_get_xy_req);
+		webSocketClient.emit('agv_get_xy_resp', new agv_get_xy_resp);
+	})
+	//TODO: kirakni de akár itt is jó illetve socketmap-ba egy bejegyzést legyártani, ha megvolt az auth akkor egy esbsocket-et mellécsapni
+}
+
+module.exports = MosWebSockets;
+
+var agv_get_xy_resp = function() {
+	this.header = {
+		protocol :"mcp5",
+        name : "agv_get_xy_resp",
+		source : "robot1@miskolc.gammadigital.hu",
+        destination : "admin@gammadigital.hu",
+        session_id : "1234567",
+        security_id : "6X1xx9lyhbn0EFtjPR9oLzzqTtKNY0ST"
+	};
+	this.data = {
+		x :"311",
+		y :"1943",
+		phi :"91",
+    };
+}
+
+/*
 var esb = require("../esb/");
 
 var io = false;
@@ -26,11 +81,11 @@ var listen = function(httpServer) {
 
 	//console.log(io.server);//TODO:-----vajon a sessionStore-t hogy szedem ki innen???
 /******************Public variables*********/
-exports.io = io;
+//exports.io = io;
 /******************Public functions*********/
-exports.listen = listen;
+//exports.listen = listen;
 /*******************************************/
-
+/*
 var connectionHandler = function(webSocketClient) {
 	//console.log(webSocketClient);
 	//core.config-ból
@@ -77,3 +132,4 @@ var setAuth = function (data, accept) {
        return accept('No cookie transmitted.', false);
     }
 }
+*/

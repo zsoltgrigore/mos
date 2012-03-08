@@ -6,8 +6,8 @@
 				"express.cookieParser()",
 				"express.methodOverride()",
 				"express.static(__dirname + '/public')",
-				"express.session({store: sessionStore, secret: 'secret', key: 'express.sid'})",
-				"server.router"
+				"express.session({store: this.sessionStore, secret: 'secret', key: 'express.sid'})",
+				"this.server.router"
 			],
 			"routes" : [
 				{ "path" : "/", "method" : "get", "middlewares" : ["public", "rootReqHandler"]},

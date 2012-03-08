@@ -1,5 +1,5 @@
 /**
- * ESB kapcsolódáshoz és a kapott csomahok feldolgozásához használt osztályok 
+ * ESB kapcsolódáshoz és a kapott csomagok feldolgozásához használt osztályok 
  * "esb" namespace-en belülre kerülnek.
  * 
  * @author Grigore András Zsolt

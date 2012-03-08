@@ -49,7 +49,6 @@ var EsbSocket = function (esbSocketConfig) {
 	this.password = esbSocketConfig.password || "test2";
 	this.destination = esbSocketConfig.destination || "ANY";
 	this.helloInterval = esbSocketConfig.helloInterval || 1000;
-	this.webSocket = esbSocketConfig.webSocket || false;
 	this.reconnectDelay = esbSocketConfig.reconnectDelay || 3000;
 	
 	//Nem annyira publikus változók
