@@ -16,21 +16,21 @@ var MosHttp = function (mosHttpConfig) {
 	//-----------------
 	this.host = mosHttpConfig.host || "localhost";
 	this.port = mosHttpConfig.port || 8080;
+	this.routes = mosHttpConfig.routes || [{ path: "/", method: "get", middlewares: []}];
 	this.expressMiddlewares = mosHttpConfig.use || {};
 	
 	//Nem annyira publikus változók
 	//-----------------------------
 	this.address = false;
-	this.mosMiddlewares = false;
 	this.server = express.createServer();
 	this.sessionStore = new MemoryStore();
 	this.logger = new Logger({target : "MosHttp<Server>"});
 	
 	//Init
 	this.addExpressMiddleWares();
-	this.collectMosMiddlewares();
+	this.applyMosMiddlewares();
 	//this.addWorkingRoutes();
-	this.addTester();
+	//TODO: ez eddig syncron, vajon node is így gondolja???
 }
 
 MosHttp.prototype.addExpressMiddleWares = function () {
@@ -40,18 +40,33 @@ MosHttp.prototype.addExpressMiddleWares = function () {
     }
 };
 
-MosHttp.prototype.addTester = function() {
-	var mosHttp = this;
-	mosHttp.server.get("/", function (req, res) {
-		mosHttp.logger.info("'/'-re érkezett req");
-  		res.sendfile(__dirname +'/staticview/tester.html');
-	})
-}
-
-MosHttp.prototype.collectMosMiddlewares = function () {
-	
+MosHttp.prototype.applyMosMiddlewares = function () {
+	for (var route in this.routes) {
+		var numOfAvailableMW = 0;
+		for (var middleware in this.routes[route].middlewares) {
+			if (getMiddlewareValue(this.routes[route].middlewares[middleware])){
+				//ha nem false akkor rögzítsük a megtalált handler-t
+			}
+		}
+		//ha van annyi elérhető middleware amennyire szükség van a route kezeléséhez
+		//akkor adjuk hozzá a szerverhez pl.:
+		//eval(this.server[this.routes[route].method](this.routes[route].path , <arrayofhandlers>))
+	}
 	console.log(middlewares);
 };
+
+//áthidalás, ki kell majd dobni és
+//TODO: kicserélni util/general.objectGetKeyValue
+function getMiddlewareValue(middlewareName) {
+	for (var category in middlewares) {
+		for (var middlewareDefName in middlewares[category]) {
+			if (middlewareName == middlewareDefName)
+				return middlewares[category][middlewareDefName];
+		}
+	}
+	return false;
+}
+
 
 MosHttp.prototype.listen = function () {
 	var mosHttp = this;

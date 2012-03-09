@@ -10,10 +10,6 @@
 				"this.server.router"
 			],
 			"routes" : [
-				{ "path" : "/", "method" : "get", "middlewares" : ["public", "rootReqHandler"]},
-				{ "path" : "/login" , "method" : "get", "middlewares" : ["public", "loginReqHandler"]},
-				{ "path" : "/login" , "method" : "post", "middlewares" : ["public", "processLoginData"]},
-				{ "path" : "/app" , "method" : "get", "middlewares" : ["private", "accessLogger", "appReqHandler"]}
 			]
 		},
 		"development" : {
@@ -23,6 +19,10 @@
     			"express.errorHandler({ dumpExceptions: true, showStack: true })"
 			],
 			"routes" : [
+				{ "path" : "/", "method" : "get", "middlewares" : ["accessLogger", "rootReqHandler"]},
+				{ "path" : "/login" , "method" : "get", "middlewares" : ["accessLogger", "loginReqHandler"]},
+				{ "path" : "/login" , "method" : "post", "middlewares" : ["accessLogger", "processLoginData"]},
+				{ "path" : "/app" , "method" : "get", "middlewares" : ["private", "accessLogger", "appReqHandler"]}
 			]
 		},
 		"production" : {

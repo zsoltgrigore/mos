@@ -14,9 +14,9 @@ var	MosWebSockets = require('./websockets/MosWebSockets.js');
 configuration = config.createGlobalConfig(fs.readFileSync('mos.config.json', 'utf-8'));
 
 var mosHttp = new MosHttp(configuration.http);
-var mosWebSockets = new MosWebSockets(configuration.websockets)
+//var mosWebSockets = new MosWebSockets(configuration.websockets)
 mosHttp.listen();
-mosWebSockets.listen(mosHttp); //ki kell tudja szedni a memoryStore-t és a server-t
+//mosWebSockets.listen(mosHttp); //ki kell tudja szedni a memoryStore-t és a server-t
 
 /*
  * Utils és memorydb :)

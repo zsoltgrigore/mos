@@ -1,6 +1,7 @@
 /**
  * @author Grigore András Zsolt
  */
+
 function authenticate(name, pass, fn) {
   console.log("   %s próbál kapcsolódni", name);
   var user = global.users[name];
@@ -15,17 +16,5 @@ function authenticate(name, pass, fn) {
   fn(new Error('invalid password'));
 }
 
-function restrict(req, res, next) {
-  if (req.session.user) {
-    next();
-  } else {
-    req.session.error = 'Access denied!';
-    res.redirect('/login');
-  }
-}
-
-
-
 exports.authenticate = authenticate;
-exports.restrict = restrict;
 exports.one = require("./test/one").one;

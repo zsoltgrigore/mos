@@ -3,7 +3,7 @@
  */
 
 /**
- * Converts an enumerable to an array.
+ * enum -> array
  */
 exports.toArray = function(enu) {
   var arr = [];
@@ -17,6 +17,33 @@ exports.toArray = function(enu) {
 exports.isArray = function(obj) {
   return obj.constructor == Array;
 };
+
+/*
+ * Megkeresi hogy van-e bármilyen szinten ilyen kulcs az objektumban.
+ *
+ * @param {Object} obj
+ * 		bármilyen objektum
+ * @param {String} key
+ * 		kulcs
+ *
+ * @return {value | function}
+ * 		kulcshoz tartozó érték, lehet függvény is!
+ */
+//TODO: fabejárás
+exports.objectGetKeyValue = function(obj, key) {
+	var keyfound = false;
+	while (!keyfound) {
+		for (var realKey in obj) {
+			if (realKey == key) {
+				return obj[key];
+				break;
+			}
+		}
+		
+	}
+	
+	return false;
+}
 
 exports.rndbtw = function() {
 	var min = 0;

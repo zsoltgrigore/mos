@@ -38,26 +38,9 @@ MosWebSockets.prototype.connectionHandler = function(webSocketClient) {
 		console.log(agv_get_xy_req);
 		webSocketClient.emit('agv_get_xy_resp', new agv_get_xy_resp);
 	})
-	//TODO: kirakni de akár itt is jó illetve socketmap-ba egy bejegyzést legyártani, ha megvolt az auth akkor egy esbsocket-et mellécsapni
 }
 
 module.exports = MosWebSockets;
-
-var agv_get_xy_resp = function() {
-	this.header = {
-		protocol :"mcp5",
-        name : "agv_get_xy_resp",
-		source : "robot1@miskolc.gammadigital.hu",
-        destination : "admin@gammadigital.hu",
-        session_id : "1234567",
-        security_id : "6X1xx9lyhbn0EFtjPR9oLzzqTtKNY0ST"
-	};
-	this.data = {
-		x :"311",
-		y :"1943",
-		phi :"91",
-    };
-}
 
 /*
 var esb = require("../esb/");
