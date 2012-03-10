@@ -29,8 +29,6 @@ var MosHttp = function (mosHttpConfig) {
 	//Init
 	this.addExpressMiddleWares();
 	this.applyMosMiddlewares();
-	//this.addWorkingRoutes();
-	//TODO: ez eddig syncron, vajon node is így gondolja???
 }
 
 MosHttp.prototype.addExpressMiddleWares = function () {
@@ -41,18 +39,30 @@ MosHttp.prototype.addExpressMiddleWares = function () {
 };
 
 MosHttp.prototype.applyMosMiddlewares = function () {
-	for (var route in this.routes) {
+	for (var routeIt in this.routes) {
 		var numOfAvailableMW = 0;
-		for (var middleware in this.routes[route].middlewares) {
-			if (getMiddlewareValue(this.routes[route].middlewares[middleware])){
-				//ha nem false akkor rögzítsük a megtalált handler-t
+		var availableMW = [];
+		for (var middlewareIt in this.routes[routeIt].middlewares) {
+			var middlewareImpl = getMiddlewareValue(this.routes[routeIt].middlewares[middlewareIt]);
+			if (middlewareImpl){
+				availableMW.push(middlewareImpl.bind(this)); //minden routeHandler-nek a mosHttp a kontextusa
+				numOfAvailableMW++;
 			}
 		}
-		//ha van annyi elérhető middleware amennyire szükség van a route kezeléséhez
-		//akkor adjuk hozzá a szerverhez pl.:
-		//eval(this.server[this.routes[route].method](this.routes[route].path , <arrayofhandlers>))
+		if (this.routes[routeIt].middlewares.length == numOfAvailableMW) {
+			this.logger.info("'%s' útvonalhoz tartozó '%s' method kérés lekezelhető. Hozzáadva!",
+					this.routes[routeIt].path, this.routes[routeIt].method);
+			//hozzáad a szerverhez egy "method" típusú és "path" elérésű útvonalat a megtalált kezelő fügvényekkel
+			this.server[this.routes[routeIt].method](this.routes[routeIt].path , availableMW);
+		} else {
+			this.logger.warn("'%s' útvonalhoz tartozó '%s' method kérés lekezeléséhez nincs háttér logika. Eldobva!",
+					this.routes[routeIt].path, this.routes[routeIt].method);
+		}
+		//console.log(availableMW.shift());
+		//console.log(availableMW.length);
 	}
-	console.log(middlewares);
+	//console.log(middlewares); elérhető middleware implementációk akár tesztelni is lehetne őket a jövőben
+	//és csak működő implementációt használni az egyes útvonalakon
 };
 
 //áthidalás, ki kell majd dobni és

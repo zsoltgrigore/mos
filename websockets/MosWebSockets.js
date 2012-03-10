@@ -5,6 +5,8 @@ var sio = require("socket.io");
 var parseCookie = require('connect').utils.parseCookie;
 var Session = require('connect').middleware.session.Session;
 var Logger = require('../utils/Logger');
+var EsbSocket = require('../esb/').EsbSocket;
+var User = require('./User');
 
 var MosWebSockets = function (mosWebSocketsConfig) {
 	mosWebSocketsConfig = mosWebSocketsConfig || {};
@@ -13,6 +15,8 @@ var MosWebSockets = function (mosWebSocketsConfig) {
 	//-----------------
 	this.host = mosWebSocketsConfig.host || "localhost";
 	this.port = mosWebSocketsConfig.port || 8080;
+	this.loggedInUsers = {};
+	this.eventsToListen = ["connected", "reconnecting", "succesfull login", "access denied"];
 	
 	//Nem annyira publikus változók
 	//-----------------------------
@@ -34,9 +38,27 @@ MosWebSockets.prototype.connectionHandler = function(webSocketClient) {
 	console.log("itt a session a websocketben");
 	console.log(webSocketClient.handshake.session);
 	
+	//this.loggedInUsers['gui1@dev.meshnetwork.hu'] = new User('gui1@dev.meshnetwork.hu', 'test2', )
+	
+	webSocketClient.esbSocketClient = new EsbSocket(configuration.esb);
+	webSocketClient.esbSocketClient.source = "gui1@dev.meshnetwork.hu";
+	webSocketClient.esbSocketClient.password = "test2";
+	
+	webSocketClient.esbSocketClient.connect();
+	
+	webSocketClient.esbSocketClient.on("succesfull login", function(message){
+		webSocketClient.emit("succesfull login", message);
+	})
+	
+	webSocketClient.esbSocketClient.on("web message", function(eventType, payload){
+		console.log("%s emitted", eventType);
+		console.log(payload);
+		webSocketClient.emit(eventType, payload);
+	})
+	
 	webSocketClient.on('agv_get_xy_req', function(agv_get_xy_req) {
 		console.log(agv_get_xy_req);
-		webSocketClient.emit('agv_get_xy_resp', new agv_get_xy_resp);
+		webSocketClient.esbSocketClient.writeObject(agv_get_xy_req);
 	})
 }
 

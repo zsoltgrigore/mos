@@ -15,7 +15,7 @@
   "devDependencies": {
     
   },
-  "main": "server",
+  "main": "core",
   "scripts": {
     
   },

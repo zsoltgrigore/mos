@@ -21,7 +21,11 @@ var json_parse = require("../utils/json_parse_rec.js");
  * 		"end"				@see net.Socket
  * 
  * 		"succesfull login"	Sikeres bejelentkezést tartalmazó esb_login_resp üzenet után dobódik
+ * 				data : teljes esb_login_resp üzenet //User felé csak login_success értéke mehet
  * 		"access denied"		Sikertelen bejelentkezést tartalmazó esb_login_resp üzenet után dobódik
+ * 				data : teljes esb_login_resp üzenet //User felé csak login_success értéke mehet
+ * 		"reconnecting"      Ha lebomlik a kapcsolat valami oknál fogva akkor dobódik
+ * 				data : mikor próbálja újrakapcsolni
  * 		"<esb.api.*>"		Ezek olyan események melyek valamilyen esb.api üzenetet tartalmaznak,
  * 								elkapásukhoz az adott típusú ESB üzenetre kell figyelni
  *
@@ -73,6 +77,7 @@ var EsbSocket = function (esbSocketConfig) {
 	this._reconnecting = false;
 	
 	//EsbSocket authentikációs események
+	//nem succesfull hanem successfull !!!
 	this.on("succesfull login", this.startHeartBeat);
 	this.on("access denied", this.accessDenied);
 	//esb api események
@@ -203,7 +208,12 @@ EsbSocket.prototype.processPriBuffer = function (callback) {
 		}
 		
 		if(incomingObj.header) {
-			this.emit(incomingObj.header.name, incomingObj);
+			if (!this._events.hasOwnProperty(incomingObj.header.name)) {
+				this.logger.debug("%s csomagtípushoz nincs eseménykezelő. Web felé dobva!", incomingObj.header.name);
+				this.emit("web message", incomingObj.header.name, incomingObj);
+			} else {
+				this.emit(incomingObj.header.name, incomingObj);
+			}
 			this.logger.info("<-- Üzenet a bufferből: %s", incomingObj.header.name);
 		}
 		
@@ -337,7 +347,7 @@ EsbSocket.prototype.endHandler = function() {
 EsbSocket.prototype.reconnect = function() {
 	if (!this._reconnecting) {
 		this._reconnecting = true;
-		this.emit("reconnecting");
+		this.emit("reconnecting", this.reconnectDelay);
 		this.logger.warn("Újrakapcsolódás %d.", this.reconnectTimes);
 
 		this.reconnectTimes++;

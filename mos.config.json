@@ -21,6 +21,7 @@
 			"routes" : [
 				{ "path" : "/", "method" : "get", "middlewares" : ["accessLogger", "rootReqHandler"]},
 				{ "path" : "/login" , "method" : "get", "middlewares" : ["accessLogger", "loginReqHandler"]},
+				{ "path" : "/tester" , "method" : "get", "middlewares" : ["accessLogger", "testerReqHandler"]},
 				{ "path" : "/login" , "method" : "post", "middlewares" : ["accessLogger", "processLoginData"]},
 				{ "path" : "/app" , "method" : "get", "middlewares" : ["private", "accessLogger", "appReqHandler"]}
 			]
@@ -50,7 +51,7 @@
 		"general" : {
 		},
 		"development" : {
-			"host" : "localhost",
+			"host" : "meshnetwork.hu",
 			"port" : 5521,
 			"helloInterval" : 1000
 		},
