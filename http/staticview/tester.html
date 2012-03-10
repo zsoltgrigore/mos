@@ -13,6 +13,7 @@
 	
 	var source = "";
 	var destination = "agv1.miskolc@dev.gammadigital.hu";
+	var sendmsgEnabled = false;
 	//ezt a websockets module teszi majd bele
 	var securityId = "";
 	//agv_get_xy_req üzenetet reprezentáló osztály
@@ -35,7 +36,7 @@
 	socket.on('succesfull login', function (msg) {
 		source = msg.header.destination;
 		securityId = msg.header.security_id;
-		
+		sendmsgEnabled = true;
 	});
 	
 	socket.on('agv_get_xy_resp', function (agv_get_xy_resp) {
@@ -63,8 +64,10 @@
 		agvGetXYReq.header.destination = destination;
 		agvGetXYReq.header.security_id = securityId;
 		agvGetXYReq.header.session_id = "" + Math.floor(Math.random()*65535);
-		socket.emit('agv_get_xy_req', agvGetXYReq);
-		$('#log').append("<b>agv_get_xy_req</b>.header.session_id: " + agvGetXYReq.header.session_id + " <br/>");
+		if (sendmsgEnabled){
+			socket.emit('agv_get_xy_req', agvGetXYReq);
+			$('#log').append("<b>agv_get_xy_req</b>.header.session_id: " + agvGetXYReq.header.session_id + " <br/>");
+		}
 	}, 1000);
 	</script>
   </head>

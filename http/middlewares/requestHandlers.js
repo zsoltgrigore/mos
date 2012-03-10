@@ -18,7 +18,7 @@ function loginReqHandler(req, res) {
 }
 
 function testerReqHandler(req, res) {
-	res.sendfile('/nodejs_dev/aptanaWS/mesh-owners-site/http/staticview/tester.html');
+	res.sendfile(this.httpPath + '/staticview/tester.html');
 }
 
 exports.rootReqHandler = rootReqHandler;

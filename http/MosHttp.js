@@ -22,6 +22,7 @@ var MosHttp = function (mosHttpConfig) {
 	//Nem annyira publikus változók
 	//-----------------------------
 	this.address = false;
+	this.httpPath = __dirname;
 	this.server = express.createServer();
 	this.sessionStore = new MemoryStore();
 	this.logger = new Logger({target : "MosHttp<Server>"});
