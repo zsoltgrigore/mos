@@ -9,7 +9,8 @@
 	<script language="javascript" type="text/javascript" src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript" charset="utf-8">
 	var socket = io.connect();
-	var msgnum = 0;
+	var msgsent = 0;
+	var msgreceived = 0;
 	
 	var source = "";
 	var destination = "agv1.miskolc@dev.gammadigital.hu";
@@ -29,6 +30,18 @@
 		this.data = {};
 	}
 	
+	function agv_get_status_req() {
+		this.header = {
+			protocol :"mcp5",
+            name : "agv_get_status_req",
+            source : "",
+            destination : "",
+            session_id : "",
+            security_id :""
+		};
+		this.data = {};
+	}
+	
 	socket.on('connect', function () {
 		
 	});
@@ -37,42 +50,85 @@
 		source = msg.header.destination;
 		securityId = msg.header.security_id;
 		sendmsgEnabled = true;
+		$('#log').append("Kapcsolódott!<br/>");
 	});
 	
 	socket.on('agv_get_xy_resp', function (agv_get_xy_resp) {
-		//itt jó lenne ismerni hogy hogyan néz ki egy válasz ojjektum
-		//de a kéréshez hasonlóan fel lehet venni a válasz ojjektumot is és
-		//annak ismeretében már könnyű kiszedni a válaszból ami kell
-		//kevés üzenetnél úgyis tudjuk mi van benne, többnél majd írunk generikusabbat
-		//az alertet kiszedve kommentből, látszik hogy két másodpercenként jönnek a válaszok és dobják az alertet
 		console.log(agv_get_xy_resp);
-		$('#log').append("<b>agv_get_xy_resp</b>.header.session_id: " + agv_get_xy_resp.header.session_id + " <br/>" + 
+		$('#log').append(++msgreceived + ". <b>agv_get_xy_resp</b>.header.session_id: " + agv_get_xy_resp.header.session_id + " <br/>" + 
 				" X: " + agv_get_xy_resp.data.x +
 				", Y: " + agv_get_xy_resp.data.y + 
 				", Phi: " + agv_get_xy_resp.data.phi + "<br/>");
-		/*
-		alert("Üzenet érkezett, típusa:" + agv_get_xy_resp.header.name + " x:" + agv_get_xy_resp.data.x + 
-				" y:" + agv_get_xy_resp.data.y + " phi:" + agv_get_xy_resp.data.phi); */
 	});
 	
-	setInterval(function() {
-		//ennyi az üzenetküldés 
-		//dobunk (emit-tálunk :)) egy eseményt ami "agv_get_xy_req" típusú és egy új agv_get_xy_req ojjektum a paraméter
-		//felparaméterezzük egy random sessionID-vel és mehet
+	socket.on('agv_get_status_resp', function (agv_get_status_resp) {
+		console.log(agv_get_status_resp);
+		$('#log').append(++msgreceived + ". <b>agv_get_status_resp</b>.header.session_id: " + agv_get_status_resp.header.session_id + " <br/>" + 
+				" Uptime: " + agv_get_status_resp.data.uptime +
+				" X: " + agv_get_status_resp.data.x +
+				", Y: " + agv_get_status_resp.data.y + 
+				", Phi: " + agv_get_status_resp.data.phi + 
+				", Max Speed: " + agv_get_status_resp.data.max_speed + "<br/>");
+	});
+	
+	var setIntervalId = false;
+	var setTimeoutId = false;
+
+	function startInterval() {
+		
+		var interval = $('#interval').val();
+		var timeout = $('#timeout').val();
+		
+		setIntervalId = setInterval(function() {
+			var agvGetStatusReq = new agv_get_status_req();
+			agvGetStatusReq.header.source = source;
+			agvGetStatusReq.header.destination = destination;
+			agvGetStatusReq.header.security_id = securityId;
+			agvGetStatusReq.header.session_id = "" + Math.floor(Math.random()*65535);
+			if (sendmsgEnabled){
+				socket.emit('esb message', agvGetStatusReq);
+				$('#log').append(++msgsent + ". <b>agv_get_status_req</b>.header.session_id: " + agvGetStatusReq.header.session_id + " <br/>");
+			} else {
+				$('#log').append("Küldeném az agv_get_status_req csomagot, de esb még nem kapcsolódott! <br/>");
+			}
+		}, interval);
+		
+		setTimeoutId = setTimeout(function(){
+			stopInterval;
+		}, timeout)
+	}
+
+	function stopInterval() {
+		if (setIntervalId) {
+			$('#log').append("TIMER OFF<br/>");
+			clearInterval(setIntervalId);
+			setIntervalId = false;
+		}
+	}
+	
+	function sendGetXYReq() {
 		var agvGetXYReq = new agv_get_xy_req();
 		agvGetXYReq.header.source = source;
 		agvGetXYReq.header.destination = destination;
 		agvGetXYReq.header.security_id = securityId;
 		agvGetXYReq.header.session_id = "" + Math.floor(Math.random()*65535);
 		if (sendmsgEnabled){
-			socket.emit('agv_get_xy_req', agvGetXYReq);
-			$('#log').append("<b>agv_get_xy_req</b>.header.session_id: " + agvGetXYReq.header.session_id + " <br/>");
+			socket.emit('esb message', agvGetXYReq);
+			$('#log').append(++msgsent + ". <b>agv_get_xy_req</b>.header.session_id: " + agvGetXYReq.header.session_id + " <br/>");
+		} else {
+			$('#log').append("Küldeném az agv_get_xy_req csomagot, de esb még nem kapcsolódott! <br/>");
 		}
-	}, 1000);
+	}
+
 	</script>
   </head>
   <body>
     <h1>Üzenetek</h1>
-    <div id="log" style="width: 600px; height: 500px; border: 1px solid brown; overflow: auto;"></div>
+    <div id="log" style="width: 800px; height: 500px; border: 1px solid brown; overflow: auto; float: left;"></div>
+    <label for="interval" style="margin-right: 5px;">Interval Delay (ms):</label><input type="text" name="interval" value="1000" id="interval"/><br/>
+    <label for="timeout" style="margin-right: 5px;">Clear Interval After (ms):</label><input type="text" name="timeout" value="60000" id="timeout"/><br/>
+    <input type="button" name="startInterval" value="Start Interval" id="startInterval" onclick="startInterval();"/><br/>
+    <input type="button" name="stopInterval" value="Stop Interval" id="stopInterval" onclick="stopInterval();"/><br/>
+    <input type="button" name="sendGetXYReq" value="Send GET_XY_REQ" id="sendGetXYReq" onclick="sendGetXYReq();"/><br/>
   </body>
 </html>

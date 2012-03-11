@@ -56,9 +56,9 @@ MosWebSockets.prototype.connectionHandler = function(webSocketClient) {
 		webSocketClient.emit(eventType, payload);
 	})
 	
-	webSocketClient.on('agv_get_xy_req', function(agv_get_xy_req) {
-		console.log(agv_get_xy_req);
-		webSocketClient.esbSocketClient.writeObject(agv_get_xy_req);
+	webSocketClient.on('esb message', function(message) {
+		console.log(message);
+		webSocketClient.esbSocketClient.writeObject(message);
 	})
 }
 
