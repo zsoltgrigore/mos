@@ -64,7 +64,8 @@ var EsbSocket = function (esbSocketConfig) {
 	this.connection = false;		//Kapcsolódási infók illetve maga az esb kapcsolat miután felépült
 	this.sessionId = "" + Math.floor(Math.random()*65535) + "";
 	this.isConnected = false;
-	this.helloTimerId = null;
+	this.helloIntervalId = false;
+	this.reconnectTimeoutId = false;
 	this.logger = new Logger({target : "EsbSocket<"+this.source+">"});
 	//this.msgproc = new esb.EsbMsgProcessor(); parent dolog???
 		
@@ -100,6 +101,20 @@ EsbSocket.prototype.connect = function () {
 	this.connection.on("end", this.endHandler.bind(this));
 	
 	this.logger.info("Kapcsolódás... %s:%d", this.host, this.port);
+};
+
+EsbSocket.prototype.end = function () {
+	if (this.helloIntervalId) {
+		clearInterval(this.helloIntervalId);
+	}
+	if (this.reconnectTimeoutId) {
+		clearTimeout(this.reconnectTimeoutId);
+	}
+	this.removeAllListeners();
+	this.connection.removeAllListeners();
+	this.connection.end();
+	this.logger.info("%s:%d kapcsolat (%s) lezárva.",
+			this.connection.remoteAddress, this.connection.remotePort, this.source);
 };
 
 /*
@@ -261,7 +276,7 @@ EsbSocket.prototype.startHeartBeat = function(esb_login_resp) {
 	}
 	
 	this.logger.info("Hello csomagok küdése %d másodpercenként", this.helloInterval/1000)
-	this.helloTimerId = setInterval(this.sendEsbHelloReq.bind(this), this.helloInterval);
+	this.helloIntervalId = setInterval(this.sendEsbHelloReq.bind(this), this.helloInterval);
 }
 
 /*
@@ -352,10 +367,10 @@ EsbSocket.prototype.reconnect = function() {
 
 		this.reconnectTimes++;
 		
-		if (this.helloTimerId) {
+		if (this.helloIntervalId) {
 			this.logger.debug("Hello Timer törlése");
-			clearInterval(this.helloTimerId);
-			this.helloTimerId = null;
+			clearInterval(this.helloIntervalId);
+			this.helloIntervalId = false;
 		}
 	
 		this.connection.end();
@@ -364,7 +379,7 @@ EsbSocket.prototype.reconnect = function() {
 		this.logger.debug("Kapcsolat lebontása: end->destroy->false");
 	
 		this.logger.debug("Újrakapcsolódás %d másodperc múlva...", this.reconnectDelay);
-		setTimeout(function() {
+		this.reconnectTimeoutId = setTimeout(function() {
 			this.logger.debug("Újrakapcsolódás most.");
 			this.connect();
 		}.bind(this), this.reconnectDelay);

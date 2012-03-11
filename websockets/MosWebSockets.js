@@ -48,18 +48,23 @@ MosWebSockets.prototype.connectionHandler = function(webSocketClient) {
 	
 	webSocketClient.esbSocketClient.on("succesfull login", function(message){
 		webSocketClient.emit("succesfull login", message);
-	})
+	});
 	
 	webSocketClient.esbSocketClient.on("web message", function(eventType, payload){
 		console.log("%s emitted", eventType);
 		console.log(payload);
 		webSocketClient.emit(eventType, payload);
-	})
+	});
 	
 	webSocketClient.on('esb message', function(message) {
 		console.log(message);
 		webSocketClient.esbSocketClient.writeObject(message);
-	})
+	});
+	
+	webSocketClient.on('disconnect', function () {
+		webSocketClient.esbSocketClient.end();
+    	delete webSocketClient.esbSocketClient;
+  	});
 }
 
 module.exports = MosWebSockets;
