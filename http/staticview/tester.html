@@ -122,22 +122,32 @@
 
 		if(canSend && customJsonMsg.hasOwnProperty("header") && customJsonMsg.header.hasOwnProperty("name") && customJsonMsg.header.name.length > 0) {
 			customJsonMsg.header.session_id = "" + Math.floor(Math.random()*65535);
-			if(!socket.$events.hasOwnProperty(customJsonMsg.header.name)){
-				socket.on(customJsonMsg.header.name, function(data){
-					$('#log').append(++msgreceived + " Custom üzenet <br/> " +JSON.stringify(data));
-				})
+			var eventToAttach = customJsonMsg.header.name;
+			if(eventToAttach.indexOf("req") > -1){
+				eventToAttach = eventToAttach.slice(0,eventToAttach.indexOf("req")) + "resp";
 			}
+			registerEventHandler(eventToAttach);
 			sendReq(customJsonMsg);
 		} else {
 			if(canSend) alert("Nincs header!");
 		}
 	}
 	
+	function registerEventHandler(eventName){
+		console.log(eventName);
+		if(!socket.$events.hasOwnProperty(eventName)){
+			socket.on(eventName, function(data){
+				$('#log').append(++msgreceived + " Custom üzenet <br/> " +JSON.stringify(data) + "</br>");
+			});
+		}
+	}
+	
 	function sendReq(msg_obj) {
 		if (sendmsgEnabled){
+			console.log(socket.$events);
 			socket.emit('esb message', msg_obj);
 			$('#log').append(++msgsent + ". <b>" + msg_obj.header.name + "</b>.header.session_id: " + msg_obj.header.session_id + " <br/>");
-			$('#log').append(JSON.stringify(msg_obj));
+			$('#log').append(JSON.stringify(msg_obj) + "</br>");
 		} else {
 			$('#log').append("Küldeném az " + msg_obj.header.name + "csomagot, de esb még nem kapcsolódott! <br/>");
 		}
