@@ -54,7 +54,7 @@
 	});
 	
 	socket.on('agv_get_xy_resp', function (agv_get_xy_resp) {
-		console.log(agv_get_xy_resp);
+		//console.log(agv_get_xy_resp);
 		$('#log').append(++msgreceived + ". <b>agv_get_xy_resp</b>.header.session_id: " + agv_get_xy_resp.header.session_id + " <br/>" + 
 				" X: " + agv_get_xy_resp.data.x +
 				", Y: " + agv_get_xy_resp.data.y + 
@@ -62,7 +62,7 @@
 	});
 	
 	socket.on('agv_get_status_resp', function (agv_get_status_resp) {
-		console.log(agv_get_status_resp);
+		//console.log(agv_get_status_resp);
 		$('#log').append(++msgreceived + ". <b>agv_get_status_resp</b>.header.session_id: " + agv_get_status_resp.header.session_id + " <br/>" + 
 				" Uptime: " + agv_get_status_resp.data.uptime +
 				" X: " + agv_get_status_resp.data.x +
@@ -135,7 +135,7 @@
 	
 	function sendReq(msg_obj) {
 		if (sendmsgEnabled){
-			//socket.emit('esb message', msg_obj);
+			socket.emit('esb message', msg_obj);
 			$('#log').append(++msgsent + ". <b>" + msg_obj.header.name + "</b>.header.session_id: " + msg_obj.header.session_id + " <br/>");
 			$('#log').append(JSON.stringify(msg_obj));
 		} else {
