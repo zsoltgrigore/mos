@@ -8,6 +8,18 @@ var Logger = require('../utils/Logger');
 var EsbSocket = require('../esb/').EsbSocket;
 var User = require('./User');
 
+/**
+ * @classDescription 
+ * 		MosWebSockets osztály
+ * 		Socket.IO könyvtárat használja websocket szerver készítéséhez és a kapcsolatok kezeléséhez
+ *
+ * @param {Object} config
+ * 		A esbSocket példányhoz rendelt konfigurációs objektum
+ * 		esbSocketConfig = {
+ * 			host : {String} //host amihez kapcsolódunk
+ * 			port : {Number} //port amihez kapcsolódunk
+ * 		}
+ */
 var MosWebSockets = function (mosWebSocketsConfig) {
 	mosWebSocketsConfig = mosWebSocketsConfig || {};
 	
@@ -16,28 +28,41 @@ var MosWebSockets = function (mosWebSocketsConfig) {
 	this.host = mosWebSocketsConfig.host || "localhost";
 	this.port = mosWebSocketsConfig.port || 8080;
 	this.loggedInUsers = {};
-	this.eventsToListen = ["connected", "reconnecting", "succesfull login", "access denied"];
 	
 	//Nem annyira publikus változók
 	//-----------------------------
-	this.io = false;
+	this.ioServer = false;
 	this.logger = new Logger({target : "MosWebSockets<Server>"});
-	
 }
 
+/**
+ * Hallgatózás: ha van parméterben egy futó http vagy https szerver akkor azt használjuk
+ *				ha nincs akkor konstruktorban megadott host és port értékeket
+ * Itt csatolunk a szerver egyetlen eseményéhez, kezelő függvényt (connectionHandler)
+ *
+ * @param {MosHttp} mosHttp
+ *		egy MosHttp osztály példány
+ *
+ */
 MosWebSockets.prototype.listen = function (mosHttp) {
 	if (mosHttp)
-		this.io = sio.listen(mosHttp.server);
+		this.ioServer = sio.listen(mosHttp.server);
 	else
-		this.io = sio.listen(port, host);
+		this.ioServer = sio.listen(port, host);
 	
-	this.io.sockets.on('connection', this.connectionHandler.bind(this));
+	this.ioServer.sockets.on('connection', this.connectionHandler.bind(this));
 };
 
+/**
+ * Kliens kapcsolódáskor hívódik meg, egyenlőre még képlékeny
+ * TODO: auth!
+ *
+ * @param {Object} webSocketClient
+ *		A kapcsolódott klienst reprezentáló objektum
+ */
 MosWebSockets.prototype.connectionHandler = function(webSocketClient) {
-	console.log("itt a session a websocketben");
-	console.log(webSocketClient.handshake.session);
-	
+	//console.log("itt a session a websocketben");
+	//console.log(webSocketClient.handshake.session);
 	//this.loggedInUsers['gui1@dev.meshnetwork.hu'] = new User('gui1@dev.meshnetwork.hu', 'test2', )
 	
 	webSocketClient.esbSocketClient = new EsbSocket(configuration.esb);
@@ -47,6 +72,7 @@ MosWebSockets.prototype.connectionHandler = function(webSocketClient) {
 	webSocketClient.esbSocketClient.connect();
 	
 	webSocketClient.esbSocketClient.on("succesfull login", function(message){
+		message.header.security_id = "ChangeMe!:)";
 		webSocketClient.emit("succesfull login", message);
 	});
 	
@@ -57,6 +83,7 @@ MosWebSockets.prototype.connectionHandler = function(webSocketClient) {
 	});
 	
 	webSocketClient.on('esb message', function(message) {
+		message.header.security_id = webSocketClient.esbSocketClient.securityId;
 		console.log(message);
 		webSocketClient.esbSocketClient.writeObject(message);
 	});

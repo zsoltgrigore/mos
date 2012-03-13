@@ -21,6 +21,11 @@ function testerReqHandler(req, res) {
 	res.sendfile(this.httpPath + '/staticview/tester.html');
 }
 
+function appReqHandler(req, res) {
+	res.sendfile(this.httpPath + '/staticview/app.html');
+}
+
 exports.rootReqHandler = rootReqHandler;
 exports.loginReqHandler = loginReqHandler;
 exports.testerReqHandler = testerReqHandler;
+exports.appReqHandler = appReqHandler;

@@ -6,6 +6,7 @@
     <title>Tester</title>
     <script language="javascript" type="text/javascript" src="js/jquery.min.js"></script>
 	<script language="javascript" type="text/javascript" src="js/jquery.flot.js"></script>
+	<script language="javascript" type="text/javascript" src="js/json_parse.js"></script>
 	<script language="javascript" type="text/javascript" src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript" charset="utf-8">
 	var socket = io.connect();
@@ -15,8 +16,8 @@
 	var source = "";
 	var destination = "agv1.miskolc@dev.gammadigital.hu";
 	var sendmsgEnabled = false;
-	//ezt a websockets module teszi majd bele
-	var securityId = "";
+	
+	
 	//agv_get_xy_req üzenetet reprezentáló osztály
 	function agv_get_xy_req() {
 		this.header = {
@@ -48,7 +49,6 @@
 	
 	socket.on('succesfull login', function (msg) {
 		source = msg.header.destination;
-		securityId = msg.header.security_id;
 		sendmsgEnabled = true;
 		$('#log').append("Kapcsolódott!<br/>");
 	});
@@ -83,14 +83,8 @@
 			var agvGetStatusReq = new agv_get_status_req();
 			agvGetStatusReq.header.source = source;
 			agvGetStatusReq.header.destination = destination;
-			agvGetStatusReq.header.security_id = securityId;
 			agvGetStatusReq.header.session_id = "" + Math.floor(Math.random()*65535);
-			if (sendmsgEnabled){
-				socket.emit('esb message', agvGetStatusReq);
-				$('#log').append(++msgsent + ". <b>agv_get_status_req</b>.header.session_id: " + agvGetStatusReq.header.session_id + " <br/>");
-			} else {
-				$('#log').append("Küldeném az agv_get_status_req csomagot, de esb még nem kapcsolódott! <br/>");
-			}
+			sendReq(agvGetStatusReq);
 		}, interval);
 		
 		setTimeoutId = setTimeout(function(){
@@ -110,25 +104,56 @@
 		var agvGetXYReq = new agv_get_xy_req();
 		agvGetXYReq.header.source = source;
 		agvGetXYReq.header.destination = destination;
-		agvGetXYReq.header.security_id = securityId;
 		agvGetXYReq.header.session_id = "" + Math.floor(Math.random()*65535);
-		if (sendmsgEnabled){
-			socket.emit('esb message', agvGetXYReq);
-			$('#log').append(++msgsent + ". <b>agv_get_xy_req</b>.header.session_id: " + agvGetXYReq.header.session_id + " <br/>");
-		} else {
-			$('#log').append("Küldeném az agv_get_xy_req csomagot, de esb még nem kapcsolódott! <br/>");
-		}
+		sendReq(agvGetXYReq);
 	}
 
+	function sendCustomReq() {
+		var customJsonMsg = $("#custom_msg").val();
+		var canSend = false;
+		if (customJsonMsg.length > 0) {
+			try {
+				customJsonMsg = json_parse(customJsonMsg);
+				canSend = true;
+			} catch (e) {
+				alert(e.name + "@" + e.at + ": " + e.message);
+			}
+		}
+
+		if(canSend && customJsonMsg.hasOwnProperty("header") && customJsonMsg.header.hasOwnProperty("name") && customJsonMsg.header.name.length > 0) {
+			customJsonMsg.header.session_id = "" + Math.floor(Math.random()*65535);
+			if(!socket.$events.hasOwnProperty(customJsonMsg.header.name)){
+				socket.on(customJsonMsg.header.name, function(data){
+					$('#log').append(++msgreceived + " Custom üzenet <br/> " +JSON.stringify(data));
+				})
+			}
+			sendReq(customJsonMsg);
+		} else {
+			if(canSend) alert("Nincs header!");
+		}
+	}
+	
+	function sendReq(msg_obj) {
+		if (sendmsgEnabled){
+			//socket.emit('esb message', msg_obj);
+			$('#log').append(++msgsent + ". <b>" + msg_obj.header.name + "</b>.header.session_id: " + msg_obj.header.session_id + " <br/>");
+			$('#log').append(JSON.stringify(msg_obj));
+		} else {
+			$('#log').append("Küldeném az " + msg_obj.header.name + "csomagot, de esb még nem kapcsolódott! <br/>");
+		}
+	}
 	</script>
   </head>
   <body>
     <h1>Üzenetek</h1>
-    <div id="log" style="width: 800px; height: 500px; border: 1px solid brown; overflow: auto; float: left;"></div>
+    <div id="log" style="width: 800px; height: 500px; border: 1px solid brown; overflow: auto; float: left; margin: 0px 5px 5px 5px;"></div>
     <label for="interval" style="margin-right: 5px;">Interval Delay (ms):</label><input type="text" name="interval" value="1000" id="interval"/><br/>
     <label for="timeout" style="margin-right: 5px;">Clear Interval After (ms):</label><input type="text" name="timeout" value="60000" id="timeout"/><br/>
     <input type="button" name="startInterval" value="Start Interval" id="startInterval" onclick="startInterval();"/><br/>
     <input type="button" name="stopInterval" value="Stop Interval" id="stopInterval" onclick="stopInterval();"/><br/>
-    <input type="button" name="sendGetXYReq" value="Send GET_XY_REQ" id="sendGetXYReq" onclick="sendGetXYReq();"/><br/>
+    <input type="button" name="sendGetXYReq" value="Send GET_XY_REQ" id="sendGetXYReq" onclick="sendGetXYReq();"/><br/><br/><br/>
+    <label for="custom_msg">Custom JSON Message</label>
+    <textarea name="custom_msg" id="custom_msg" rows="18" cols="50"></textarea><br/>
+    <input type="button" name="sendCustomReq" value="Send Custom REQ" id="sendCustomReq" onclick="sendCustomReq();"/>
   </body>
 </html>

@@ -10,6 +10,7 @@
 				"this.server.router"
 			],
 			"routes" : [
+				{ "path" : "/", "method" : "get", "middlewares" : ["accessLogger", "rootReqHandler"]}
 			]
 		},
 		"development" : {
@@ -19,20 +20,20 @@
     			"express.errorHandler({ dumpExceptions: true, showStack: true })"
 			],
 			"routes" : [
-				{ "path" : "/", "method" : "get", "middlewares" : ["accessLogger", "rootReqHandler"]},
-				{ "path" : "/login" , "method" : "get", "middlewares" : ["accessLogger", "loginReqHandler"]},
 				{ "path" : "/tester" , "method" : "get", "middlewares" : ["accessLogger", "testerReqHandler"]},
-				{ "path" : "/login" , "method" : "post", "middlewares" : ["accessLogger", "processLoginData"]},
-				{ "path" : "/app" , "method" : "get", "middlewares" : ["private", "accessLogger", "appReqHandler"]}
+				{ "path" : "/app" , "method" : "get", "middlewares" : ["accessLogger", "appReqHandler"]}
 			]
 		},
 		"production" : {
 			"host" : "meshnetwork.hu",
-			"port" : 80,
+			"port" : 8080,
 			"use" : [				
 				"express.errorHandler()"
 			],
 			"routes" : [
+				{ "path" : "/login" , "method" : "get", "middlewares" : ["accessLogger", "loginReqHandler"]},
+				{ "path" : "/login" , "method" : "post", "middlewares" : ["accessLogger", "processLoginData"]},
+				{ "path" : "/app" , "method" : "get", "middlewares" : ["restrict", "accessLogger", "appReqHandler"]}
 			]
 		}
 	},
@@ -41,24 +42,28 @@
 
 		},
 		"development" : {
-
+			"host" : "localhost",
+			"port" : 8081
 		},
 		"production" : {
-
+			"host" : "localhost",
+			"port" : 8081
 		}
 	},
 	"esb" : {
 		"general" : {
 		},
 		"development" : {
-			"host" : "meshnetwork.hu",
+			"host" : "localhost",
 			"port" : 5521,
-			"helloInterval" : 1000
+			"helloInterval" : 1000,
+			"reconnectDelay" : 1000
 		},
 		"production" : {
 			"host" : "meshnetwork.hu",
 			"port" : 5521,
-			"helloInterval" : 1000
+			"helloInterval" : 1000,
+			"reconnectDelay" : 3000
 		}
 	},
 	"global" : {
