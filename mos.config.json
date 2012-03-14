@@ -54,7 +54,7 @@
 		"general" : {
 		},
 		"development" : {
-			"host" : "localhost",
+			"host" : "meshnetwork.hu",
 			"port" : 5521,
 			"helloInterval" : 1000,
 			"reconnectDelay" : 1000

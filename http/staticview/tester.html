@@ -43,6 +43,20 @@
 		this.data = {};
 	}
 	
+	function agv_set_dir_req (strDirection) {
+		this.header = {
+			protocol: "mcp5"
+			, name: "agv_relative_move_req"
+			, source: ""
+			, destination: ""
+			, session_id: ""
+			, security_id: ""
+		};
+		this.data = {
+			direction: strDirection
+		};
+	}
+
 	socket.on('connect', function () {
 		
 	});
@@ -71,6 +85,15 @@
 				", Max Speed: " + agv_get_status_resp.data.max_speed + "<br/>");
 	});
 	
+	socket.on('agv_set_dir_resp', function (agv_set_dir_resp) {
+		$('#log').append(++msgreceived + ". <b>agv_set_dir_resp</b>.header.session_id: " + agv_set_dir_resp.header.session_id + " <br/>" + 
+				" Uptime: " + agv_set_dir_resp.data.uptime +
+				" X: " + agv_set_dir_resp.data.x +
+				", Y: " + agv_set_dir_resp.data.y + 
+				", Phi: " + agv_set_dir_resp.data.phi + 
+				", Max Speed: " + agv_set_dir_resp.data.max_speed + "<br/>");
+	});
+
 	var setIntervalId = false;
 	var setTimeoutId = false;
 
@@ -134,7 +157,7 @@
 	}
 	
 	function registerEventHandler(eventName){
-		console.log(eventName);
+		//console.log(eventName);
 		if(!socket.$events.hasOwnProperty(eventName)){
 			socket.on(eventName, function(data){
 				$('#log').append(++msgreceived + " Custom üzenet <br/> " +JSON.stringify(data) + "</br>");
@@ -144,7 +167,7 @@
 	
 	function sendReq(msg_obj) {
 		if (sendmsgEnabled){
-			console.log(socket.$events);
+			//console.log(socket.$events);
 			socket.emit('esb message', msg_obj);
 			$('#log').append(++msgsent + ". <b>" + msg_obj.header.name + "</b>.header.session_id: " + msg_obj.header.session_id + " <br/>");
 			$('#log').append(JSON.stringify(msg_obj) + "</br>");
@@ -152,12 +175,25 @@
 			$('#log').append("Küldeném az " + msg_obj.header.name + "csomagot, de esb még nem kapcsolódott! <br/>");
 		}
 	}
+
+	function avgMoveHandler (strDirection) {
+		if (strDirection != undefined) {
+			var agvSetDirection = new agv_set_dir_req(strDirection);
+
+			agvSetDirection.header.source = source;
+			agvSetDirection.header.destination = destination;
+			agvSetDirection.header.session_id = "" + Math.floor(Math.random()*65535);
+			sendReq(agvSetDirection);
+		} else {
+			return false;
+		}
+	}
 	</script>
   </head>
   <body>
     <h1>Üzenetek</h1>
     <div id="log" style="width: 800px; height: 500px; border: 1px solid brown; overflow: auto; float: left; margin: 0px 5px 5px 5px;"></div>
-    <label for="interval" style="margin-right: 5px;">Interval Delay (ms):</label><input type="text" name="interval" value="1000" id="interval"/><br/>
+    <label for="interval" style="margin-right: 5px;">Interval Delay (ms):</label><input type="text" name="interval" value="1000" id="interval" /><br/>
     <label for="timeout" style="margin-right: 5px;">Clear Interval After (ms):</label><input type="text" name="timeout" value="60000" id="timeout"/><br/>
     <input type="button" name="startInterval" value="Start Interval" id="startInterval" onclick="startInterval();"/><br/>
     <input type="button" name="stopInterval" value="Stop Interval" id="stopInterval" onclick="stopInterval();"/><br/>
@@ -165,5 +201,12 @@
     <label for="custom_msg">Custom JSON Message</label>
     <textarea name="custom_msg" id="custom_msg" rows="18" cols="50"></textarea><br/>
     <input type="button" name="sendCustomReq" value="Send Custom REQ" id="sendCustomReq" onclick="sendCustomReq();"/>
+    <br />
+    Move<br />
+    <input type="button" value="^" name="" onmousedown="avgMoveHandler('forward')" onclick="avgMoveHandler('stop')" />
+    <input type="button" value="v" name="" onmousedown="avgMoveHandler('backward')" onclick="avgMoveHandler('stop')" />
+    <input type="button" value=">" name="" onmousedown="avgMoveHandler('right')" onclick="avgMoveHandler('stop')" />
+    <input type="button" value="<" name="" onmousedown="avgMoveHandler('left')" onclick="avgMoveHandler('stop')" />
+
   </body>
 </html>
