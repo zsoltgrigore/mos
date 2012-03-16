@@ -234,16 +234,6 @@
 			}
 		</script>
 		<style>
-			/********/
-			.takaro {
-				position: absolute;
-				background-color: #000;
-				height: 86px;
-				width: 111px;
-				margin-left: 93px;
-				margin-top: 312px;
-			}
-			/********/
 			.clear {
 				clear: both;
 				float: none;
@@ -252,59 +242,58 @@
 				position:  absolute;
 			}
 			.up {
-				margin-top: 169px;
-				margin-left: 127px;
-				width: 44px;
-				height: 34px;
+				margin: 111px 0 0 108px;
+				width: 59px;
+				height: 42px;
 				cursor: pointer;
 			}
 			.down {
-				margin-top: 250px;
-				margin-left: 127px;
-				width: 44px;
-				height: 34px;
+				margin: 200px 0 0 108px;
+				width: 58px;
+				height: 45px;
 				cursor: pointer;
 			}
 			.left {
-				margin-top: 202px;
-				margin-left: 92px;
-				width: 34px;
-				height: 49px;
+				margin: 150px 0 0 70px;
+				width: 43px;
+				height: 58px;
 				cursor: pointer;
 			}
 			.right {
-				margin-top: 202px;
-				margin-left: 173px;
-				width: 34px;
-				height: 49px;
+				margin: 148px 0 0 162px;
+				width: 44px;
+				height: 60px;
 				cursor: pointer;
 			}
 			.tape_1 {
-				margin-top: 434px;
-				margin-left: 111px;
+				margin-top: 289px;
 			}
 			.tape_2 {
-				margin-top: 500px;
-				margin-left: 111px;
+				margin-top: 354px;
 			}
 			.tape_left {
-				margin-left: 112px;
-				width: 31px;
+				margin-left: 70px;
+				width: 62px;
 				height: 31px;
 				cursor: pointer;
 			}
 			.tape_right {
-				margin-left: 158px;
-				width: 31px;
+				margin-left: 145px;
+				width: 64px;
 				height: 31px;
 				cursor: pointer;
 			}
 			#log {
-				margin-left: 350px !important;
-				margin-top: 50px;
+				margin: 10px 0 0 300px ;
 				width: 800px;
 				height: 500px;
 				float: left;
+			}
+			.stop {
+				margin: 420px 0 0 89px;
+				width: 98px;
+				height: 43px;
+				cursor: pointer;
 			}
 		</style>
 	</head>
@@ -336,18 +325,18 @@
 
 		<div class="controller">
 			<div class="absolute"><img src="images/avg_taviranyito_0_1.jpg" alt="AVG control panel" /></div>
-			<div class="absolute up" onmousedown="avgMoveHandler('forward')" onclick="avgMoveHandler('stop')">&nbsp;</div>
-			<div class="absolute down" onmousedown="avgMoveHandler('backward')" onclick="avgMoveHandler('stop')">&nbsp;</div>
-			<div class="absolute left" onmousedown="avgMoveHandler('left')" onclick="avgMoveHandler('stop')">&nbsp;</div>
-			<div class="absolute right" onmousedown="avgMoveHandler('right')" onclick="avgMoveHandler('stop')">&nbsp;</div>
+			<div title="Előre" class="absolute up" onmousedown="avgMoveHandler('forward')" onclick="avgMoveHandler('stop')">&nbsp;</div>
+			<div title="Hátra" class="absolute down" onmousedown="avgMoveHandler('backward')" onclick="avgMoveHandler('stop')">&nbsp;</div>
+			<div title="Jobbra" class="absolute left" onmousedown="avgMoveHandler('left')" onclick="avgMoveHandler('stop')">&nbsp;</div>
+			<div title="Balra" class="absolute right" onmousedown="avgMoveHandler('right')" onclick="avgMoveHandler('stop')">&nbsp;</div>
 
-			<div class="takaro"></div>
+			<div title="Hátra" class="absolute tape_1 tape_left" onmousedown="avgTapeMoveHandler(1,'-1')" onclick="avgTapeMoveHandler(1,'0')">&nbsp;</div>
+			<div title="Előre" class="absolute tape_1 tape_right" onmousedown="avgTapeMoveHandler(1,'+1')" onclick="avgTapeMoveHandler(1,'0')">&nbsp;</div>
 
-			<div class="absolute tape_1 tape_left" onmousedown="avgTapeMoveHandler(1,'-1')" onclick="avgTapeMoveHandler(1,'0')">&nbsp;</div>
-			<div class="absolute tape_1 tape_right" onmousedown="avgTapeMoveHandler(1,'+1')" onclick="avgTapeMoveHandler(1,'0')">&nbsp;</div>
+			<div title="Hátra" class="absolute tape_2 tape_left" onmousedown="avgTapeMoveHandler(2,'-1')" onclick="avgTapeMoveHandler(2,'0')">&nbsp;</div>
+			<div title="Előre" class="absolute tape_2 tape_right" onmousedown="avgTapeMoveHandler(2,'+1')" onclick="avgTapeMoveHandler(2,'0')">&nbsp;</div>
 
-			<div class="absolute tape_2 tape_left" onmousedown="avgTapeMoveHandler(2,'-1')" onclick="avgTapeMoveHandler(2,'0')">&nbsp;</div>
-			<div class="absolute tape_2 tape_right" onmousedown="avgTapeMoveHandler(2,'+1')" onclick="avgTapeMoveHandler(2,'0')">&nbsp;</div>
+			<div class="absolute stop" onclick="avgMoveHandler('stop');avgTapeMoveHandler(1,'0');avgTapeMoveHandler(2,'0');">&nbsp;</div>
 		</div>
 		<textarea id="log" style=""></textarea>
 	</body>
