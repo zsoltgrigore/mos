@@ -67,16 +67,10 @@
 					, session_id: ""
 					, security_id: ""
 				};
-
-				if (numTape == 1) {
-					this.data = {
-						conveyor_1: strDirection
-					};		
-				} else if (numTape == 2) {
-					this.data = {
-						conveyor_2: strDirection
-					};		
-				}
+				this.data = {
+					conveyor_id: numTape.toString()
+					, command: strDirection
+				};
 			}
 
 			socket.on('connect', function () {
