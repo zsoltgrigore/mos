@@ -1,297 +1,21 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<title>Tester</title>
+		<title>AVG controller</title>
 
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+		<link rel="stylesheet" type="text/css" href="css/avg_controller.css" />
 
 		<script language="javascript" type="text/javascript" src="js/jquery.min.js"></script>
 		<script language="javascript" type="text/javascript" src="js/jquery.flot.js"></script>
 		<script language="javascript" type="text/javascript" src="js/json_parse.js"></script>
 		<script language="javascript" type="text/javascript" src="/socket.io/socket.io.js"></script>
-		<script type="text/javascript" charset="utf-8">
-			var socket = io.connect();
-			var msgsent = 0;
-			var msgreceived = 0;
-			
-			var source = "";
-			var destination = "agv1.miskolc@dev.gammadigital.hu";
-			var sendmsgEnabled = false;
-			
-			
-			//agv_get_xy_req üzenetet reprezentáló osztály
-			function agv_get_xy_req() {
-				this.header = {
-					protocol:"mcp5"
-					, name: "agv_get_xy_req"
-					, source: ""
-					, destination: ""
-					, session_id: ""
-					, security_id: ""
-				};
-				this.data = {};
-			}
-			
-			function agv_get_status_req() {
-				this.header = {
-					protocol: "mcp5"
-					, name: "agv_get_status_req"
-					, source: ""
-					, destination: ""
-					, session_id: ""
-					, security_id: ""
-				};
-				this.data = {};
-			}
-			
-			function agv_set_dir_req (strDirection) {
-				this.header = {
-					protocol: "mcp5"
-					, name: "agv_relative_move_req"
-					, source: ""
-					, destination: ""
-					, session_id: ""
-					, security_id: ""
-				};
-				this.data = {
-					direction: strDirection
-				};
-			}
 
-			function agv_set_tape_dir_req (numTape, strDirection) {
-				this.header = {
-					protocol: "mcp5"
-					, name: "agv_tool_req"
-					, source: ""
-					, destination: ""
-					, session_id: ""
-					, security_id: ""
-				};
-				this.data = {
-					conveyor_id: numTape.toString()
-					, command: strDirection
-				};
-			}
-
-			socket.on('connect', function () {
-				
-			});
-			
-			socket.on('succesfull login', function (msg) {
-				source = msg.header.destination;
-				sendmsgEnabled = true;
-				$('#log').append("Kapcsolódott!<br/>");
-			});
-			
-			socket.on('agv_get_xy_resp', function (agv_get_xy_resp) {
-				//console.log(agv_get_xy_resp);
-				$('#log').append(++msgreceived + ". <b>agv_get_xy_resp</b>.header.session_id: " + agv_get_xy_resp.header.session_id + " <br/>" + 
-						" X: " + agv_get_xy_resp.data.x +
-						", Y: " + agv_get_xy_resp.data.y + 
-						", Phi: " + agv_get_xy_resp.data.phi + "<br/>");
-			});
-			
-			socket.on('agv_get_status_resp', function (agv_get_status_resp) {
-				//console.log(agv_get_status_resp);
-				$('#log').append(++msgreceived + ". <b>agv_get_status_resp</b>.header.session_id: " + agv_get_status_resp.header.session_id + " <br/>" + 
-						" Uptime: " + agv_get_status_resp.data.uptime +
-						" X: " + agv_get_status_resp.data.x +
-						", Y: " + agv_get_status_resp.data.y + 
-						", Phi: " + agv_get_status_resp.data.phi + 
-						", Max Speed: " + agv_get_status_resp.data.max_speed + "<br/>");
-			});
-			
-			socket.on('agv_set_dir_resp', function (agv_set_dir_resp) {
-				$('#log').append(++msgreceived + ". <b>agv_set_dir_resp</b>.header.session_id: " + agv_set_dir_resp.header.session_id + " <br/>" + 
-						" Uptime: " + agv_set_dir_resp.data.uptime +
-						" X: " + agv_set_dir_resp.data.x +
-						", Y: " + agv_set_dir_resp.data.y + 
-						", Phi: " + agv_set_dir_resp.data.phi + 
-						", Max Speed: " + agv_set_dir_resp.data.max_speed + "<br/>");
-			});
-
-			var setIntervalId = false;
-			var setTimeoutId = false;
-
-			function startInterval() {
-				
-				var interval = $('#interval').val();
-				var timeout = $('#timeout').val();
-				
-				setIntervalId = setInterval(function() {
-					var agvGetStatusReq = new agv_get_status_req();
-					agvGetStatusReq.header.source = source;
-					agvGetStatusReq.header.destination = destination;
-					agvGetStatusReq.header.session_id = "" + Math.floor(Math.random()*65535);
-					sendReq(agvGetStatusReq);
-				}, interval);
-				
-				setTimeoutId = setTimeout(function(){
-					stopInterval;
-				}, timeout)
-			}
-
-			function stopInterval() {
-				if (setIntervalId) {
-					$('#log').append("TIMER OFF<br/>");
-					clearInterval(setIntervalId);
-					setIntervalId = false;
-				}
-			}
-			
-			function sendGetXYReq() {
-				var agvGetXYReq = new agv_get_xy_req();
-				agvGetXYReq.header.source = source;
-				agvGetXYReq.header.destination = destination;
-				agvGetXYReq.header.session_id = "" + Math.floor(Math.random()*65535);
-				sendReq(agvGetXYReq);
-			}
-
-			function sendCustomReq() {
-				var customJsonMsg = $("#custom_msg").val();
-				var canSend = false;
-				if (customJsonMsg.length > 0) {
-					try {
-						customJsonMsg = json_parse(customJsonMsg);
-						canSend = true;
-					} catch (e) {
-						alert(e.name + "@" + e.at + ": " + e.message);
-					}
-				}
-
-				if(canSend && customJsonMsg.hasOwnProperty("header") && customJsonMsg.header.hasOwnProperty("name") && customJsonMsg.header.name.length > 0) {
-					customJsonMsg.header.session_id = "" + Math.floor(Math.random()*65535);
-					var eventToAttach = customJsonMsg.header.name;
-					if(eventToAttach.indexOf("req") > -1){
-						eventToAttach = eventToAttach.slice(0,eventToAttach.indexOf("req")) + "resp";
-					}
-					registerEventHandler(eventToAttach);
-					sendReq(customJsonMsg);
-				} else {
-					if(canSend) alert("Nincs header!");
-				}
-			}
-			
-			function registerEventHandler(eventName){
-				//console.log(eventName);
-				if(!socket.$events.hasOwnProperty(eventName)){
-					socket.on(eventName, function(data){
-						$('#log').append(++msgreceived + " Custom üzenet <br/> " +JSON.stringify(data) + "</br>");
-					});
-				}
-			}
-			
-			function sendReq(msg_obj) {
-				if (sendmsgEnabled){
-					//console.log(socket.$events);
-					socket.emit('esb message', msg_obj);
-					$('#log').append();
-					$('#log').append('\n' + ++msgsent + ". <b>" + msg_obj.header.name + "</b>.header.session_id: " + msg_obj.header.session_id + " <br/>");
-					$('#log').append(JSON.stringify(msg_obj) + "</br>");
-				} else {
-					$('#log').append("Küldeném az " + msg_obj.header.name + "csomagot, de esb még nem kapcsolódott! <br/>");
-				}
-
-				// auto scoll log
-				var logObj = document.getElementById('log');  
-				logObj.scrollTop = logObj.scrollHeight; 
-			}
-
-			// ROBOT MOZGATASA
-			function avgMoveHandler (strDirection) {
-				if (strDirection != undefined) {
-					var agvSetDirection = new agv_set_dir_req(strDirection);
-
-					agvSetDirection.header.source = source;
-					agvSetDirection.header.destination = destination;
-					agvSetDirection.header.session_id = "" + Math.floor(Math.random()*65535);
-
-					sendReq(agvSetDirection);
-				} else {
-					return false;
-				}
-			}
-
-			// SZALAGOK MOZGATASA
-			function avgTapeMoveHandler (numTape, strDirection) {
-				if (numTape != undefined && strDirection != undefined) {
-					var agvSetTapeDirection = new agv_set_tape_dir_req(numTape, strDirection);
-
-					agvSetTapeDirection.header.source = source;
-					agvSetTapeDirection.header.destination = destination;
-					agvSetTapeDirection.header.session_id = "" + Math.floor(Math.random()*65535);
-
-					sendReq(agvSetTapeDirection);			
-				} else {
-					return false;
-				}
-			}
-		</script>
-		<style>
-			.clear {
-				clear: both;
-				float: none;
-			}
-			.absolute {
-				position:  absolute;
-			}
-			.up {
-				margin: 111px 0 0 108px;
-				width: 59px;
-				height: 42px;
-				cursor: pointer;
-			}
-			.down {
-				margin: 200px 0 0 108px;
-				width: 58px;
-				height: 45px;
-				cursor: pointer;
-			}
-			.left {
-				margin: 150px 0 0 70px;
-				width: 43px;
-				height: 58px;
-				cursor: pointer;
-			}
-			.right {
-				margin: 148px 0 0 162px;
-				width: 44px;
-				height: 60px;
-				cursor: pointer;
-			}
-			.tape_1 {
-				margin-top: 289px;
-			}
-			.tape_2 {
-				margin-top: 354px;
-			}
-			.tape_left {
-				margin-left: 70px;
-				width: 62px;
-				height: 31px;
-				cursor: pointer;
-			}
-			.tape_right {
-				margin-left: 145px;
-				width: 64px;
-				height: 31px;
-				cursor: pointer;
-			}
-			#log {
-				margin: 10px 0 0 300px ;
-				width: 800px;
-				height: 500px;
-				float: left;
-			}
-			.stop {
-				margin: 420px 0 0 89px;
-				width: 98px;
-				height: 43px;
-				cursor: pointer;
-			}
-		</style>
+		<script language="javascript" type="text/javascript" src="/js/avg_controller.js"></script>
 	</head>
 	<body>
+
 <!--
 		<label for="interval" style="margin-right: 5px;">Interval Delay (ms):</label><input type="text" name="interval" value="1000" id="interval" /><br/>
 		<label for="timeout" style="margin-right: 5px;">Clear Interval After (ms):</label><input type="text" name="timeout" value="60000" id="timeout"/><br/>
@@ -301,23 +25,9 @@
 		<label for="custom_msg">Custom JSON Message</label>
 		<textarea name="custom_msg" id="custom_msg" rows="18" cols="50"></textarea><br/>
 		<input type="button" name="sendCustomReq" value="Send Custom REQ" id="sendCustomReq" onclick="sendCustomReq();"/>
-
-		<br />Move<br />
-		<input type="button" value="^" name="" onmousedown="avgMoveHandler('forward')" onclick="avgMoveHandler('stop')" />
-		<input type="button" value="v" name="" onmousedown="avgMoveHandler('backward')" onclick="avgMoveHandler('stop')" />
-		<input type="button" value=">" name="" onmousedown="avgMoveHandler('right')" onclick="avgMoveHandler('stop')" />
-		<input type="button" value="<" name="" onmousedown="avgMoveHandler('left')" onclick="avgMoveHandler('stop')" />
-
-		<br />Elso szallag<br />
-		<input type="button" value="<" name="" onmousedown="avgTapeMoveHandler(1,'-1')" onclick="avgTapeMoveHandler(1,'0')" />
-		<input type="button" value=">" name="" onmousedown="avgTapeMoveHandler(1,'+1')" onclick="avgTapeMoveHandler(1,'0')" />
-
-		<br />Hatso szallag<br />
-		<input type="button" value="<" name="" onmousedown="avgTapeMoveHandler(2,'-1')" onclick="avgTapeMoveHandler(2,'0')" />
-		<input type="button" value=">" name="" onmousedown="avgTapeMoveHandler(2,'+1')" onclick="avgTapeMoveHandler(2,'0')" />
 -->
 
-		<div class="controller">
+		<div class="avg_controller">
 			<div class="absolute"><img src="images/avg_taviranyito_0_1.jpg" alt="AVG control panel" /></div>
 			<div title="Előre" class="absolute up" onmousedown="avgMoveHandler('forward')" onclick="avgMoveHandler('stop')">&nbsp;</div>
 			<div title="Hátra" class="absolute down" onmousedown="avgMoveHandler('backward')" onclick="avgMoveHandler('stop')">&nbsp;</div>
@@ -332,6 +42,9 @@
 
 			<div class="absolute stop" onclick="avgMoveHandler('stop');avgTapeMoveHandler(1,'0');avgTapeMoveHandler(2,'0');">&nbsp;</div>
 		</div>
+
+		<div class="avg_map"></div>
+
 		<textarea id="log" style=""></textarea>
 	</body>
 </html>
