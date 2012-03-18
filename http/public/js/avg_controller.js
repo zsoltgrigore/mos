@@ -9,6 +9,12 @@ var sendmsgEnabled = false;
 var setIntervalId = false;
 var setTimeoutId = false;
 
+var dataArrayX = new Array();
+var dataArrayY = new Array();
+var numArrayLenght = 10;
+
+startInterval();
+
 //agv_get_xy_req üzenetet reprezentáló osztály
 function agv_get_xy_req() {
 	this.header = {
@@ -83,6 +89,7 @@ socket.on('succesfull login', function (msg) {
 });
 
 socket.on('agv_get_xy_resp', function (agv_get_xy_resp) {
+	drawMap(agv_get_xy_resp.data.x, agv_get_xy_resp.data.y);
 	$('#log').append(++msgreceived + ". <b>agv_get_xy_resp</b>.header.session_id: " + agv_get_xy_resp.header.session_id + " <br/>" + 
 			" X: " + agv_get_xy_resp.data.x +
 			", Y: " + agv_get_xy_resp.data.y + 
@@ -111,8 +118,11 @@ function startInterval() {
 	var interval = $('#interval').val();
 	var timeout = $('#timeout').val();
 
+	interval = (interval == undefined ? 1000 : interval);
+	timeout = (timeout  == undefined ? 1000 : timeout);
+
 	setIntervalId = setInterval(function() {
-		var agvGetStatusReq = new agv_get_status_req();
+		var agvGetStatusReq = new agv_get_xy_req();
 		agvGetStatusReq.header.source = source;
 		agvGetStatusReq.header.destination = destination;
 		agvGetStatusReq.header.session_id = "" + Math.floor(Math.random()*65535);
@@ -216,4 +226,35 @@ function avgTapeMoveHandler (numTape, strDirection) {
 	} else {
 		return false;
 	}
+}
+
+function drawMap (numX, numY) {
+	if (dataArrayX[0] != numX || dataArrayY[0] != numY) {
+		dataArrayX[0] = numX;
+		dataArrayY[0] = numY;
+
+		dataArrayX = shiftArray(dataArrayX);
+		dataArrayY = shiftArray(dataArrayY);
+
+		if (dataArrayX.length > numArrayLenght) {
+			delete(dataArrayX[numArrayLenght])
+		}
+
+		if (dataArrayY.length > numArrayLenght) {
+			delete(dataArrayY[numArrayLenght])
+		}
+
+		// TODO: draw map
+	}
+}
+
+function shiftArray(dataArray) {
+	var tmpArray = new Array();
+
+	for (var i = 0; i <= dataArray.length; i++)
+		if (dataArray[i] != undefined)
+			tmpArray[i+1] = dataArray[i]
+
+
+	return tmpArray;
 }
