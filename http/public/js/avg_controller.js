@@ -13,8 +13,6 @@ var dataArrayX = new Array();
 var dataArrayY = new Array();
 var numArrayLenght = 10;
 
-startInterval();
-
 //agv_get_xy_req üzenetet reprezentáló osztály
 function agv_get_xy_req() {
 	this.header = {
@@ -121,13 +119,7 @@ function startInterval() {
 	interval = (interval == undefined ? 1000 : interval);
 	timeout = (timeout  == undefined ? 1000 : timeout);
 
-	setIntervalId = setInterval(function() {
-		var agvGetStatusReq = new agv_get_xy_req();
-		agvGetStatusReq.header.source = source;
-		agvGetStatusReq.header.destination = destination;
-		agvGetStatusReq.header.session_id = "" + Math.floor(Math.random()*65535);
-		sendReq(agvGetStatusReq);
-	}, interval);
+	setIntervalId = setInterval(sendGetXYReq, interval);
 
 	setTimeoutId = setTimeout(function(){
 		stopInterval;
