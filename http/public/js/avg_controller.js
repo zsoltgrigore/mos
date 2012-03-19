@@ -11,6 +11,7 @@ var setTimeoutId = false;
 
 var coords = new Array();
 var coordsHistory = 10;
+var arrowPhi = 0;
 var agv_map = false;
 var agv_map_ctx = false;
 var agv_map_scale = 1;
@@ -91,7 +92,7 @@ socket.on('succesfull login', function (msg) {
 
 socket.on('agv_get_xy_resp', function (agv_get_xy_resp) {
 	writeLog(agv_get_xy_resp);
-	drawMap(agv_get_xy_resp.data.x, agv_get_xy_resp.data.y);
+	processCoordinates(agv_get_xy_resp.data.x, agv_get_xy_resp.data.y, agv_get_xy_resp.data.phi);
 });
 
 socket.on('agv_get_status_resp', function (agv_get_status_resp) {
@@ -220,31 +221,76 @@ function initMap(){
 		agv_map_ctx = agv_map.getContext('2d');
 		agv_map_ctx.strokeStyle="#FF0000";
 		agv_map_ctx.translate(agv_map.width/2, agv_map.height/2);
-		//alapból jobb lent van a pozitív negyed, de jobb fent kell legyen
 		agv_map_ctx.scale(agv_map_scale,-agv_map_scale);
 		//800x500-ból 3200x2000
-		agv_map_scale *= 0.25;
-		agv_map_ctx.scale(agv_map_scale, agv_map_scale);
+		//agv_map_scale *= 0.25;
+		//agv_map_ctx.scale(agv_map_scale, agv_map_scale);
 	}
 }
 
-function drawMap (numX, numY) {
-	if (coords[0]) {
-		if (coords[0]['x'] != numX || coords[0]['y'] != numY) {
-			coords.unshift({x:numX,y:numY})
-
+function processCoordinates (numX, numY, phi) {
+	arrowPhi = phi;
+	var lastCoordPos = coords.length - 1;
+	if (lastCoordPos == -1) {
+		coords.push({x:numX,y:numY});
+		setScale(numX, numY, phi);
+	} else {
+		if (coords[lastCoordPos]['x'] != numX || coords[lastCoordPos]['y'] != numY) {
+			coords.push({x:numX,y:numY});
+			setScale(numX, numY, phi);
 			if (coords.length > coordsHistory) {
-				coords.pop();
+				coords.shift();
 			}
 		}
-	} else {
-		coords.push({x:numX,y:numY});
 	}
-	//TODO: draw map
+}
+
+function setScale(numX, numY){
+	var scale = 1;
+	if (Math.abs(numX) > agv_map.width*agv_map_scale/2){
+		scale = (Math.abs(numX)*2)/agv_map.width*agv_map_scale;
+	}
+	if (Math.abs(numY) > agv_map.height*agv_map_scale/2){
+		scale = Math.max(scale,(Math.abs(numY)*2)/agv_map.height*agv_map_scale);
+	}
+	
+	if (agv_map_scale < scale) {
+		agv_map_scale = Math.ceil(scale);
+		agv_map_ctx.lineWidth = agv_map_scale;
+		agv_map_ctx.scale(1/agv_map_scale, 1/agv_map_scale);
+	}
+	//clearRect
+	agv_map_ctx.clearRect(-agv_map.width*agv_map_scale/2, agv_map.height*agv_map_scale/2, 
+								agv_map.width*agv_map_scale, -agv_map.height*agv_map_scale);
+
+	reDrawPath();
+	drawArrow();
+	console.log(agv_map_scale);
+}
+
+function reDrawPath(){
+	agv_map_ctx.beginPath();
+	for (coordIndex in coords) {
+		if (coordIndex == 0){
+			agv_map_ctx.moveTo(coords[coordIndex].x,coords[coordIndex].y);
+		} else {
+			agv_map_ctx.lineTo(coords[coordIndex].x,coords[coordIndex].y);
+		}
+	}			
+	agv_map_ctx.stroke();
+}
+
+function drawArrow(){
+	var arrowHalfSide = 7*agv_map_scale;
+	var arrowHeight = 15*agv_map_scale;
+	agv_map_ctx.save();
+	agv_map_ctx.translate(coords[coords.length-1].x,coords[coords.length-1].y);
+	agv_map_ctx.rotate(-arrowPhi*Math.PI/180);
 	agv_map_ctx.beginPath();
 	agv_map_ctx.moveTo(0,0);
-	agv_map_ctx.lineTo(coords[0].x, coords[0].y);
+	agv_map_ctx.lineTo(arrowHalfSide,-arrowHeight);
+	agv_map_ctx.moveTo(0,0);
+	agv_map_ctx.lineTo(-arrowHalfSide,-arrowHeight);
 	agv_map_ctx.stroke();
-
-	console.log(coords);
+	agv_map_ctx.restore();
 }

@@ -7,6 +7,7 @@
     <script type="text/javascript" charset="utf-8">
     	var coords = new Array();
     	var coordsHistory = 10;
+    	var arrowPhi = 0;
 		var agv_map = false;
 		var agv_map_ctx = false;
 		var agv_map_scale = 1;
@@ -25,28 +26,30 @@
 		}
 
 		var intervalId = setInterval(function() {
-    		processCoordinates(Math.floor(Math.random()*1600)-800, Math.floor(Math.random()*1200)-600);
+    		processCoordinates(Math.floor(Math.random()*1600)-800, Math.floor(Math.random()*1200)-600, Math.floor(Math.random()*360));
     	}, 1000);
     	
     	setTimeout(function(){
     		alert("vege");
     		clearInterval(intervalId);
-    	}, 30000)
+    	}, 3000)
     
-    	function processCoordinates (numX, numY) {
+    	function processCoordinates (numX, numY, phi) {
+    		arrowPhi = phi;
     		var lastCoordPos = coords.length - 1;
 			if (lastCoordPos == -1) {
 				coords.push({x:numX,y:numY});
-				setScale(numX, numY);
+				setScale(numX, numY, phi);
 			} else {
 				if (coords[lastCoordPos]['x'] != numX || coords[lastCoordPos]['y'] != numY) {
 					coords.push({x:numX,y:numY});
-					setScale(numX, numY);
+					setScale(numX, numY, phi);
 					if (coords.length > coordsHistory) {
 						coords.shift();
 					}
 				}
 			}
+			console.log(phi);
 		}
 	
 		function setScale(numX, numY){
@@ -67,6 +70,7 @@
 										agv_map.width*agv_map_scale, -agv_map.height*agv_map_scale);
 
 			reDrawPath();
+			drawArrow();
 			console.log("scale: " + agv_map_scale);
 			
 		}
@@ -81,6 +85,21 @@
 				}
 			}			
 			agv_map_ctx.stroke();
+		}
+		
+		function drawArrow(){
+			var arrowHalfSide = 7*agv_map_scale;
+			var arrowHeight = 15*agv_map_scale;
+			agv_map_ctx.save();
+			agv_map_ctx.translate(coords[coords.length-1].x,coords[coords.length-1].y);
+			agv_map_ctx.rotate(-arrowPhi*Math.PI/180);
+			agv_map_ctx.beginPath();
+			agv_map_ctx.moveTo(0,0);
+			agv_map_ctx.lineTo(arrowHalfSide,-arrowHeight);
+			agv_map_ctx.moveTo(0,0);
+			agv_map_ctx.lineTo(-arrowHalfSide,-arrowHeight);
+			agv_map_ctx.stroke();
+			agv_map_ctx.restore();
 		}
 /*
 		function drawPathChunk(){
