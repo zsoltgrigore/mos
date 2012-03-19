@@ -6,38 +6,98 @@
     <title>Mesh Data Systems Kft - Robot Kontroller és Monitorozó alkalmazás</title>
     <script type="text/javascript" charset="utf-8">
     	var coords = new Array();
-		var coordsHistory = 10;
-    	
-    	var intervalId = setInterval(function() {
-    		drawMap(Math.floor(Math.random()*10000), Math.floor(Math.random()*10000));
-    	}, 2000);
+    	var coordsHistory = 10;
+		var agv_map = false;
+		var agv_map_ctx = false;
+		var agv_map_scale = 1;
+    
+    	function initMap(){
+			agv_map = document.getElementById("agv_map");
+			if (agv_map.getContext) {
+				agv_map_ctx = agv_map.getContext('2d');
+				agv_map_ctx.strokeStyle="#FF0000";
+				agv_map_ctx.translate(agv_map.width/2, agv_map.height/2);
+				agv_map_ctx.scale(agv_map_scale,-agv_map_scale);
+				//800x500-ból 3200x2000
+				//agv_map_scale *= 0.25;
+				//agv_map_ctx.scale(agv_map_scale, agv_map_scale);
+			}
+		}
+
+		var intervalId = setInterval(function() {
+    		processCoordinates(Math.floor(Math.random()*1600)-800, Math.floor(Math.random()*1200)-600);
+    	}, 1000);
     	
     	setTimeout(function(){
     		alert("vege");
     		clearInterval(intervalId);
     	}, 30000)
     
-    	function drawMap (numX, numY) {
-			if (coords[0]) {
-				if (coords[0]['x'] != numX || coords[0]['y'] != numY) {
-					coords.unshift({x:numX,y:numY})
-
-					if (coords.length > coordsHistory) {
-						coords.pop();
-					}
-
-					// TODO: draw map
-				}
-			} else {
+    	function processCoordinates (numX, numY) {
+    		var lastCoordPos = coords.length - 1;
+			if (lastCoordPos == -1) {
 				coords.push({x:numX,y:numY});
+				setScale(numX, numY);
+			} else {
+				if (coords[lastCoordPos]['x'] != numX || coords[lastCoordPos]['y'] != numY) {
+					coords.push({x:numX,y:numY});
+					setScale(numX, numY);
+					if (coords.length > coordsHistory) {
+						coords.shift();
+					}
+				}
 			}
-			console.log(coords);
+		}
+	
+		function setScale(numX, numY){
+			var scale = 1;
+			if (Math.abs(numX) > agv_map.width*agv_map_scale/2){
+				scale = (Math.abs(numX)*2)/agv_map.width*agv_map_scale;
+			}
+			if (Math.abs(numY) > agv_map.height*agv_map_scale/2){
+				scale = Math.max(scale,(Math.abs(numY)*2)/agv_map.height*agv_map_scale);
+			}
+			
+			if (agv_map_scale < scale) {
+				agv_map_scale = Math.ceil(scale);
+				agv_map_ctx.scale(1/agv_map_scale, 1/agv_map_scale);
+			}
+			//clearRect
+			agv_map_ctx.clearRect(-agv_map.width*agv_map_scale/2, agv_map.height*agv_map_scale/2, 
+										agv_map.width*agv_map_scale, -agv_map.height*agv_map_scale);
+
+			reDrawPath();
+			console.log("scale: " + agv_map_scale);
+			
 		}
 
+		function reDrawPath(){
+			agv_map_ctx.beginPath();
+			for (coordIndex in coords) {
+				if (coordIndex == 0){
+					agv_map_ctx.moveTo(coords[coordIndex].x,coords[coordIndex].y);
+				} else {
+					agv_map_ctx.lineTo(coords[coordIndex].x,coords[coordIndex].y);
+				}
+			}			
+			agv_map_ctx.stroke();
+		}
+/*
+		function drawPathChunk(){
+			agv_map_ctx.beginPath();
+			if (coordsDrawed == 0) {
+				agv_map_ctx.moveTo(coords[coordsDrawed].x,coords[coordsDrawed].y);
+			} else {
+				agv_map_ctx.moveTo(coords[coordsDrawed-1].x,coords[coordsDrawed-1].y);
+			}
+			agv_map_ctx.lineTo(coords[coordsDrawed].x,coords[coordsDrawed].y);
+			agv_map_ctx.stroke();
+			coordsDrawed++;
+		}*/
     </script>
   </head>
-  <body>
-    <canvas id="agv_map" style="width: 800px; height: 600px; float: left;"></canvas>
+  <body onload="initMap();">
+    <canvas id="agv_map" width="800px" height="600px" style="height:600px; width:800px; border: 1px dashed brown;"></canvas>
 
   </body>
 </html>
