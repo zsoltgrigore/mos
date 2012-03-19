@@ -9,9 +9,11 @@ var sendmsgEnabled = false;
 var setIntervalId = false;
 var setTimeoutId = false;
 
-var dataArrayX = new Array();
-var dataArrayY = new Array();
-var numArrayLenght = 10;
+var coords = new Array();
+var coordsHistory = 10;
+var agv_map = false;
+var agv_map_ctx = false;
+var agv_map_scale = 1;
 
 //agv_get_xy_req üzenetet reprezentáló osztály
 function agv_get_xy_req() {
@@ -84,33 +86,26 @@ socket.on('succesfull login', function (msg) {
 	source = msg.header.destination;
 	sendmsgEnabled = true;
 	$('#log').append("Kapcsolódott!<br/>");
+	initMap();
 });
 
 socket.on('agv_get_xy_resp', function (agv_get_xy_resp) {
+	writeLog(agv_get_xy_resp);
 	drawMap(agv_get_xy_resp.data.x, agv_get_xy_resp.data.y);
-	$('#log').append(++msgreceived + ". <b>agv_get_xy_resp</b>.header.session_id: " + agv_get_xy_resp.header.session_id + " <br/>" + 
-			" X: " + agv_get_xy_resp.data.x +
-			", Y: " + agv_get_xy_resp.data.y + 
-			", Phi: " + agv_get_xy_resp.data.phi + "<br/>");
 });
 
 socket.on('agv_get_status_resp', function (agv_get_status_resp) {
-	$('#log').append(++msgreceived + ". <b>agv_get_status_resp</b>.header.session_id: " + agv_get_status_resp.header.session_id + " <br/>" + 
-			" Uptime: " + agv_get_status_resp.data.uptime +
-			" X: " + agv_get_status_resp.data.x +
-			", Y: " + agv_get_status_resp.data.y + 
-			", Phi: " + agv_get_status_resp.data.phi + 
-			", Max Speed: " + agv_get_status_resp.data.max_speed + "<br/>");
+	writeLog(agv_get_status_resp);
 });
 
 socket.on('agv_set_dir_resp', function (agv_set_dir_resp) {
-	$('#log').append(++msgreceived + ". <b>agv_set_dir_resp</b>.header.session_id: " + agv_set_dir_resp.header.session_id + " <br/>" + 
-			" Uptime: " + agv_set_dir_resp.data.uptime +
-			" X: " + agv_set_dir_resp.data.x +
-			", Y: " + agv_set_dir_resp.data.y + 
-			", Phi: " + agv_set_dir_resp.data.phi + 
-			", Max Speed: " + agv_set_dir_resp.data.max_speed + "<br/>");
+	writeLog(agv_set_dir_resp);
 });
+
+function writeLog(msg_obj){
+	$('#log').append("\n"+ ++msgreceived + ". recieved: " + msg_obj.header.name + ".header.session_id: " + msg_obj.header.session_id + " \n");
+	$('#log').append(JSON.stringify(msg_obj) + "\n");
+}
 
 function startInterval() {
 	var interval = $('#interval').val();
@@ -178,9 +173,8 @@ function registerEventHandler(eventName){
 function sendReq(msg_obj) {
 	if (sendmsgEnabled){
 		socket.emit('esb message', msg_obj);
-		$('#log').append();
-		$('#log').append('\n' + ++msgsent + ". <b>" + msg_obj.header.name + "</b>.header.session_id: " + msg_obj.header.session_id + " <br/>");
-		$('#log').append(JSON.stringify(msg_obj) + "</br>");
+		$('#log').append("\n"+ ++msgsent + ". sent: " + msg_obj.header.name + ".header.session_id: " + msg_obj.header.session_id + "\n");
+		$('#log').append(JSON.stringify(msg_obj) + "\n");
 	} else {
 		$('#log').append("Küldeném az " + msg_obj.header.name + "csomagot, de esb még nem kapcsolódott! <br/>");
 	}
@@ -220,33 +214,37 @@ function avgTapeMoveHandler (numTape, strDirection) {
 	}
 }
 
-function drawMap (numX, numY) {
-	if (dataArrayX[0] != numX || dataArrayY[0] != numY) {
-		dataArrayX[0] = numX;
-		dataArrayY[0] = numY;
-
-		dataArrayX = shiftArray(dataArrayX);
-		dataArrayY = shiftArray(dataArrayY);
-
-		if (dataArrayX.length > numArrayLenght) {
-			delete(dataArrayX[numArrayLenght])
-		}
-
-		if (dataArrayY.length > numArrayLenght) {
-			delete(dataArrayY[numArrayLenght])
-		}
-
-		// TODO: draw map
+function initMap(){
+	agv_map = document.getElementById("agv_map");
+	if (agv_map.getContext) {
+		agv_map_ctx = agv_map.getContext('2d');
+		agv_map_ctx.strokeStyle="#FF0000";
+		agv_map_ctx.translate(agv_map.width/2, agv_map.height/2);
+		//alapból jobb lent van a pozitív negyed, de jobb fent kell legyen
+		agv_map_ctx.scale(agv_map_scale,-agv_map_scale);
+		//800x500-ból 3200x2000
+		agv_map_scale *= 0.25;
+		agv_map_ctx.scale(agv_map_scale, agv_map_scale);
 	}
 }
 
-function shiftArray(dataArray) {
-	var tmpArray = new Array();
+function drawMap (numX, numY) {
+	if (coords[0]) {
+		if (coords[0]['x'] != numX || coords[0]['y'] != numY) {
+			coords.unshift({x:numX,y:numY})
 
-	for (var i = 0; i <= dataArray.length; i++)
-		if (dataArray[i] != undefined)
-			tmpArray[i+1] = dataArray[i]
+			if (coords.length > coordsHistory) {
+				coords.pop();
+			}
+		}
+	} else {
+		coords.push({x:numX,y:numY});
+	}
+	//TODO: draw map
+	agv_map_ctx.beginPath();
+	agv_map_ctx.moveTo(0,0);
+	agv_map_ctx.lineTo(coords[0].x, coords[0].y);
+	agv_map_ctx.stroke();
 
-
-	return tmpArray;
+	console.log(coords);
 }

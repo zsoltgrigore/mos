@@ -59,16 +59,18 @@
 .firstInput {
 	margin-top: 35px;
 }
+.clear {
+	clear:both;
+}
 .stop {
 	margin: 420px 0 0 89px;
 	width: 98px;
 	height: 43px;
 	cursor: pointer;
 }
-.avg_map {
+#agv_map {
 	float: left;
-	width: 100%;
-	height: 500px;
+	margin-left: 256px; /*image width*/
 	margin-bottom: 22px; /*image height 522px*/
 	background-color: #222;
 }
