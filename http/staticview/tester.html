@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   	<head>
 		<title>AGV controller</title>
 
@@ -7,9 +7,11 @@
     	<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
     	Remove this if you use the .htaccess -->
     	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
     	<meta name="description" content="" />
     	<meta name="author" content="Grigore András Zsolt, Jacsek Gergely" />
-    	<meta name="viewport" content="width=device-width; initial-scale=1.0" />
+
+    	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     	<!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references 
     	<link rel="shortcut icon" href="/favicon.ico" />
     	<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -25,6 +27,9 @@
 		<script language="javascript" type="text/javascript" src="/js/avg_controller.js"></script>
 	</head>
 	<body>
+		<div class="title">
+			* AGV Online Control *
+		</div>
 		<div class="avg_controller">
 			<div class="absolute"><img src="images/avg_taviranyito_0_1.jpg" alt="AVG control panel" /></div>
 			<div title="Előre" class="absolute up" onmousedown="avgMoveHandler('forward')" onclick="avgMoveHandler('stop')">&nbsp;</div>
@@ -43,16 +48,18 @@
 
 		<canvas id="agv_map" width="800" height="500">Your browser does not support the canvas element.</canvas>
 		
-		<div class="clear"></div>
-		<textarea id="log" readonly="readonly"></textarea>
-		<div class="spacer"></div>
-		<label for="interval" class="buttonLabel">Interval Delay (ms):</label><input type="text" name="interval" value="1000" id="interval" class="firstInput"/><br/>
-		<label for="timeout" class="buttonLabel">Clear Interval After (ms):</label><input type="text" name="timeout" value="60000" id="timeout"/><br/>
-		<input type="button" name="startInterval" value="Start get_xy_req interval" id="startInterval" onclick="startInterval();"/><br/>
-		<input type="button" name="stopInterval" value="Stop get_xy_req interval" id="stopInterval" onclick="stopInterval();"/><br/>
-		<input type="button" name="sendGetXYReq" value="Send One get_xy_req" id="sendGetXYReq" onclick="sendGetXYReq();"/><br/><br/><br/>
-		<label for="custom_msg">Custom JSON Message</label>
-		<textarea name="custom_msg" id="custom_msg" rows="18" cols="50"></textarea><br/>
-		<input type="button" name="sendCustomReq" value="Send Custom REQ" id="sendCustomReq" onclick="sendCustomReq();"/>
+		<div class="agv_tester_area">
+			<div class="clear"></div>
+			<textarea id="log" readonly="readonly"></textarea>
+			<div class="spacer"></div>
+			<label for="interval" class="buttonLabel">Interval Delay (ms):</label><input type="text" name="interval" value="1000" id="interval" class="firstInput"/><br/>
+			<label for="timeout" class="buttonLabel">Clear Interval After (ms):</label><input type="text" name="timeout" value="60000" id="timeout"/><br/>
+			<input type="button" name="startInterval" value="Start get_xy_req interval" id="startInterval" onclick="startInterval();"/><br/>
+			<input type="button" name="stopInterval" value="Stop get_xy_req interval" id="stopInterval" onclick="stopInterval();"/><br/>
+			<input type="button" name="sendGetXYReq" value="Send One get_xy_req" id="sendGetXYReq" onclick="sendGetXYReq();"/><br/><br/><br/>
+			<label for="custom_msg">Custom JSON Message</label>
+			<textarea name="custom_msg" id="custom_msg" rows="18" cols="50"></textarea><br/>
+			<input type="button" name="sendCustomReq" value="Send Custom REQ" id="sendCustomReq" onclick="sendCustomReq();"/>
+		</div>
 	</body>
 </html>

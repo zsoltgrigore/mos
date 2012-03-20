@@ -16,6 +16,19 @@ var agv_map = false;
 var agv_map_ctx = false;
 var agv_map_scale = 1;
 
+
+// random map xy val.
+var isDemo = false;
+
+var tblUrl = document.location.href.split('/');
+
+$(document).ready(function(){
+	if (tblUrl[3] == 'demo') {
+		$(".agv_tester_area").hide();
+		startInterval();
+	}	
+})
+
 //agv_get_xy_req üzenetet reprezentáló osztály
 function agv_get_xy_req() {
 	this.header = {
@@ -92,7 +105,12 @@ socket.on('succesfull login', function (msg) {
 
 socket.on('agv_get_xy_resp', function (agv_get_xy_resp) {
 	writeLog(agv_get_xy_resp);
-	processCoordinates(agv_get_xy_resp.data.x, agv_get_xy_resp.data.y, agv_get_xy_resp.data.phi);
+
+	if (isDemo == true) {
+		processCoordinates(Math.floor(Math.random()*1600)-800, Math.floor(Math.random()*1600)-600, agv_get_xy_resp.data.phi);
+	} else {
+		processCoordinates(agv_get_xy_resp.data.x, agv_get_xy_resp.data.y, agv_get_xy_resp.data.phi);
+	}
 });
 
 socket.on('agv_get_status_resp', function (agv_get_status_resp) {
@@ -219,7 +237,8 @@ function initMap(){
 	agv_map = document.getElementById("agv_map");
 	if (agv_map.getContext) {
 		agv_map_ctx = agv_map.getContext('2d');
-		agv_map_ctx.strokeStyle="#FF0000";
+		agv_map_ctx.strokeStyle="#fff";
+		agv_map_ctx.fillStyle = '#777';
 		agv_map_ctx.translate(agv_map.width/2, agv_map.height/2);
 		agv_map_ctx.scale(agv_map_scale,-agv_map_scale);
 		//800x500-ból 3200x2000
@@ -254,18 +273,25 @@ function setScale(numX, numY){
 		scale = Math.max(scale,(Math.abs(numY)*2)/agv_map.height*agv_map_scale);
 	}
 	
+scale = 4;
+	agv_map_ctx.clearRect(-agv_map.width*agv_map_scale/2, agv_map.height*agv_map_scale/2, agv_map.width*agv_map_scale, -agv_map.height*agv_map_scale);
+
 	if (agv_map_scale < scale) {
 		agv_map_scale = Math.ceil(scale);
 		agv_map_ctx.lineWidth = agv_map_scale;
 		agv_map_ctx.scale(1/agv_map_scale, 1/agv_map_scale);
+	} else {
+		//alert(1)
 	}
+
 	//clearRect
-	agv_map_ctx.clearRect(-agv_map.width*agv_map_scale/2, agv_map.height*agv_map_scale/2, 
-								agv_map.width*agv_map_scale, -agv_map.height*agv_map_scale);
+
+
+//	agv_map_ctx.clearRect(0, 0, agv_map.width, agv_map.height);
 
 	reDrawPath();
 	drawArrow();
-	console.log(agv_map_scale);
+	//console.log(agv_map_scale);
 }
 
 function reDrawPath(){
@@ -274,7 +300,27 @@ function reDrawPath(){
 		if (coordIndex == 0){
 			agv_map_ctx.moveTo(coords[coordIndex].x,coords[coordIndex].y);
 		} else {
+			agv_map_ctx.save();
+			agv_map_ctx.beginPath();
+			agv_map_ctx.moveTo(coords[coordIndex-1].x,coords[coordIndex-1].y);
 			agv_map_ctx.lineTo(coords[coordIndex].x,coords[coordIndex].y);
+			agv_map_ctx.globalAlpha = coordIndex/10;
+			agv_map_ctx.stroke();
+			agv_map_ctx.restore();
+
+
+			agv_map_ctx.save();
+			agv_map_ctx.beginPath();
+
+			agv_map_ctx.globalAlpha = 1;
+
+			agv_map_ctx.translate(coords[coordIndex].x+10,coords[coordIndex].y-5);
+			agv_map_ctx.rotate(Math.PI*2/(6));
+			agv_map_ctx.arc(0,12.5,10,0,Math.PI*2,true);
+			agv_map_ctx.fill();
+			agv_map_ctx.restore();
+
+//			agv_map_ctx.lineTo(coords[coordIndex].x,coords[coordIndex].y);
 		}
 	}			
 	agv_map_ctx.stroke();
@@ -283,6 +329,7 @@ function reDrawPath(){
 function drawArrow(){
 	var arrowHalfSide = 7*agv_map_scale;
 	var arrowHeight = 15*agv_map_scale;
+
 	agv_map_ctx.save();
 	agv_map_ctx.translate(coords[coords.length-1].x,coords[coords.length-1].y);
 	agv_map_ctx.rotate(-arrowPhi*Math.PI/180);
@@ -291,6 +338,9 @@ function drawArrow(){
 	agv_map_ctx.lineTo(arrowHalfSide,-arrowHeight);
 	agv_map_ctx.moveTo(0,0);
 	agv_map_ctx.lineTo(-arrowHalfSide,-arrowHeight);
+
+	agv_map_ctx.lineTo(arrowHalfSide,-arrowHeight);
+	agv_map_ctx.fill();
 	agv_map_ctx.stroke();
 	agv_map_ctx.restore();
 }

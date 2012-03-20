@@ -6,7 +6,8 @@ function rootReqHandler(req, res) {
 	var toc = "" +
   			"<a href='login'>Login</a><br/>" +
   			"<a href='tester'>Tester</a>";
-  		
+  	// DEMO redirect
+    res.redirect('/demo');
   	res.end(toc);
 }
 

@@ -20,6 +20,7 @@
     			"express.errorHandler({ dumpExceptions: true, showStack: true })"
 			],
 			"routes" : [
+				{ "path" : "/demo" , "method" : "get", "middlewares" : ["accessLogger", "testerReqHandler"]},
 				{ "path" : "/tester" , "method" : "get", "middlewares" : ["accessLogger", "testerReqHandler"]},
 				{ "path" : "/app" , "method" : "get", "middlewares" : ["accessLogger", "appReqHandler"]}
 			]
