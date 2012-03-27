@@ -4,7 +4,19 @@
   <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>Mesh Data Systems Kft - Robot Kontroller és Monitorozó alkalmazás</title>
+	<script src="js/require.js"></script>
+	<script>
+	    require({
+	        baseUrl: 'js',
+	        paths: {
+            	jquery: 'libs/jquery',
+				socketio: '../socket.io/socket.io',
+        	},
+        	priority: ['jquery', 'socketio']
+	    }, ['app']);
+    </script>
 	<script type="text/javascript" charset="utf-8">
+		
 		var coords = new Array();
 		var coordsHistory = 10;
 		var arrowPhi = 0;
@@ -28,14 +40,15 @@
 			}
 		}
 
-		var intervalId = setInterval(function() {
+		/*var intervalId = setInterval(function() {
 			processCoordinates(Math.floor(Math.random()*1600)-800, Math.floor(Math.random()*1200)-600, Math.floor(Math.random()*360));
 		}, 100);
 		
 		setTimeout(function(){
 			//alert("vege");
+			console.log($("#agv_map"));
 			clearInterval(intervalId);
-		}, 10000)
+		}, 10000)*/
 
 		function processCoordinates (numX, numY, phi) {
 			arrowPhi = phi;
@@ -144,7 +157,7 @@
 		}*/
 	</script>
   </head>
-  <body onload="initMap();">
+  <body>
     <canvas id="agv_map" width="800px" height="600px" style="height:600px; width:800px; border: 1px dashed brown;"></canvas>
 
   </body>

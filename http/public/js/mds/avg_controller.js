@@ -254,7 +254,7 @@ function processCoordinates (numX, numY, phi) {
 		coords.push({x:numX,y:numY});
 		setScale(numX, numY, phi);
 	} else {
-		if (coords[lastCoordPos]['x'] != numX || coords[lastCoordPos]['y'] != numY) {
+		if (coords[lastCoordPos]['x'] != numX||coords[lastCoordPos]['y'] != numY) {
 			coords.push({x:numX,y:numY});
 			setScale(numX, numY, phi);
 			if (coords.length > coordsHistory) {

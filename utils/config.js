@@ -7,7 +7,7 @@ var isArray = require('../utils/general').isArray;
 
 var global = {};
 var configObj;
-var logger = new Logger({target : "utils/config"})
+var logger = new Logger({target: "utils/config", level: 3, enabled: true})
 var env = process.env.NODE_ENV || 'development';
 
 exports.createGlobalConfig = function(configjson) {

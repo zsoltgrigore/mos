@@ -72,8 +72,8 @@ var Logger = module.exports = function (opts) {
   opts = opts || {}
   var logger = logger || {};
   this.colors = false !== tty.isatty(process.stdout.fd);
-  this.level =  logger.level || opts.level || 3;
-  this.enabled = opts.enabled || true;
+  this.level = opts.level || logger.level || 3;
+  this.enabled = opts.enabled || logger.enaled || true;
   this.target = opts.target || "N/A";
 };
 
