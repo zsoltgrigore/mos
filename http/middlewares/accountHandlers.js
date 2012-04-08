@@ -2,19 +2,28 @@
  * @author Grigore András Zsolt
  */
 
+var EsbSocket = require("esbSocket!!!");
+
 function authenticate(name, pass, fn) {
-  console.log("   %s próbál kapcsolódni", name);
-  var user = global.users[name];
-  // a kapott usernévvel megkérdezni system socketen hogy van-e ilyen user
-  // ha van akkor tovább ha nincs akkor Error
-  if (!user) return fn(new Error('cannot find user'));
-  // a talált userre hash(pass,salt) és ha ugyanaz a hash akkor megvan a user és error = null
-  console.log("   %s létezik, vajon jó a jelszava?", name);
-  if (user.pass == global.hash(pass, user.salt)) return fn(null, user);
-  console.log("   %s hibás jelszót adott meg");
-  // Minden egyébb esetben hibás a pass
-  fn(new Error('invalid password'));
+  	//itt valami olyasmi hogy, ellenőrizni hogy van-e már ehhez a user-hez esbSocket
+	//ha van akkor minden onnan érkező üzenetet megkap, sőt valahogyan ugyanazt is kéne lássa mindkét böngészőben,
+	//ha nézetet vált egyikben akkor változzon a másik is, de egyenlőre csak szóljunk hogy már be van lépve és rakjuk ki
+  	var tempEsbSocket = new EsbSocket(configuration.esb);
+	tempEsbSocket.esbSocketClient.source = name;
+	tempEsbSocket.esbSocketClient.password = pass;
+	tempEsbSocket.esbSocketClient.connect();
+  	tempEsbSocket.on("succesfull login", function (resp){
+		fn(null, this);
+	}.bind(tempEsbSocket));
+  	tempEsbSocket.on("access denied", function (resp){
+		fn(new Error('Hibás felhasználói adatok!'));
+		this.end();
+	}.bind(tempEsbSocket));
+	tempEsbSocket.on("end", function (){
+		fn(new Error('Szolgáltatás nem elérhető'));
+		this.end();
+	}.bind(tempEsbSocket));
+	
 }
 
 exports.authenticate = authenticate;
-exports.one = require("./test/one").one;

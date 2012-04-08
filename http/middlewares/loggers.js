@@ -11,8 +11,10 @@ function accessLogger(req, res, next) {
 	} catch (e) {
 		mosHttp.logger.debug("Nincs session cookie");
 	}
-
-	mosHttp.logger.info("'%s'-t megnézte %s.", req.url, user);
+	
+	mosHttp.logger.info("%s útvonalra %s kérést küldött %s", req.url, req.method, user);
+	//Ha POST akkor log-ba hogy mit postolt
+	//if (req.method == "POST") {mosHttp.logger.info(form adatai!)}
   	next();
 }
 

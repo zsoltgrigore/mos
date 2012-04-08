@@ -3,8 +3,8 @@
  */
 
 var express = require("express");
-var	util = require("util");
 var Logger = require('../utils/Logger');
+var secUtils = require('../utils/security');
 var middlewares= require('./middlewares/');
 
 var	MemoryStore = express.session.MemoryStore;
@@ -24,9 +24,18 @@ var MosHttp = function (mosHttpConfig) {
 	this.address = false;
 	this.httpPath = __dirname;
 	this.server = express.createServer();
-	this.sessionStore = new MemoryStore();
 	this.logger = new Logger({target : "MosHttp<Server>"});
-	
+	//memorystore helyett esb!!
+	this.sessionStore = new MemoryStore();
+	//próbáljunk kapcsolódni esb-hez, ha success akkor engedjük bé
+	this.users = {
+		test: {
+			name: 'test',
+    		salt: 'essé-mán-le-a-fárúl',
+    		pass: secUtils.hash('test2', 'essé-mán-le-a-fárúl')
+  		}
+	};
+
 	//Init
 	this.addExpressMiddleWares();
 	this.applyMosMiddlewares();
@@ -88,40 +97,3 @@ MosHttp.prototype.listen = function () {
 };
 
 module.exports = MosHttp;
-/*
-//TODO: van olyan hogy singleton és hogyan lehet elérni? Ha van akkor ezt arra kell cserélni
-var _core = false;
-
-var listen = function() {
-	server.listen(_core.config.http[_core.runEnv].port, _core.config.http[_core.runEnv].host, function () {
-  		var addr = server.address();
-  		console.log('   M-O-S http listening on http://' + addr.address + ':' + addr.port);
-	});
-}
-
-var init = function(core, addRoutes) {
-	_core = core;
-	var generalMiddleWares = _core.config.http.general.use;
-	var envMiddleWares = _core.config.http[_core.runEnv].use;
-	var generalRoutes = _core.config.http.general.routes;
-	var envRoutes = _core.config.http[_core.runEnv].routes;
-	
-	server.sessionStore = sessionStore;
-	
-	addExpressMiddleWares(generalMiddleWares.concat(envMiddleWares));
-	addRoutes(server, generalRoutes.concat(envRoutes));
-}
-
-/******************Public variables*********/
-//exports.server = server;
-/******************Public functions*********/
-//exports.init = init;
-//exports.listen = listen;
-/*******************************************/
-/*
-var addExpressMiddleWares = function(middleWares) {
-	for (var index in middleWares) {
-    		server.use(eval(middleWares[index]));
-    }
-}
-*/

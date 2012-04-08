@@ -49,9 +49,38 @@ MosWebSockets.prototype.listen = function (mosHttp) {
 		this.ioServer = sio.listen(mosHttp.server);
 	else
 		this.ioServer = sio.listen(port, host);
+
+	this.ioServer.set('log level', this.logger.level);
 	
+	this.ioServer.set('authorization', this.globalAuthorizationHandler.bind(this));
 	this.ioServer.sockets.on('connection', this.connectionHandler.bind(this));
 };
+
+MosWebSockets.prototype.globalAuthorizationHandler = function (data, accept) {
+	//this bindolva van a server objektumhoz
+	//data olyasmi mint egy http req header websocket specifikus adatokkal
+	/*
+    if (data.headers.cookie) {
+        data.cookie = parseCookie(data.headers.cookie);
+        data.sessionID = data.cookie['express.sid']; 			//ezt express példányból is ki lehet szedni (express.session!)
+        // (literally) get the session data from the session store
+        io.server.sessionStore.get(data.sessionID, function (err, session) {
+            if (err || !session) {
+            	console.log("---------");
+                // if we cannot grab a session, turn down the connection
+                accept('Error', false);
+            } else {
+                // save the session data and accept the connection
+                data.session = session;
+                accept(null, true);
+            }
+        });
+    } else {
+       return accept('No cookie transmitted.', false);
+    }*/
+	console.log(data);
+	accept(null, true);
+}
 
 /**
  * Kliens kapcsolódáskor hívódik meg, egyenlőre még képlékeny
@@ -65,6 +94,9 @@ MosWebSockets.prototype.connectionHandler = function(webSocketClient) {
 	//console.log(webSocketClient.handshake.session);
 	//this.loggedInUsers['gui1@dev.meshnetwork.hu'] = new User('gui1@dev.meshnetwork.hu', 'test2', )
 	
+	
+	
+	/*
 	webSocketClient.esbSocketClient = new EsbSocket(configuration.esb);
 	webSocketClient.esbSocketClient.source = "gui1@dev.meshnetwork.hu";
 	webSocketClient.esbSocketClient.password = "test2";
@@ -91,7 +123,7 @@ MosWebSockets.prototype.connectionHandler = function(webSocketClient) {
 	webSocketClient.on('disconnect', function () {
 		webSocketClient.esbSocketClient.end();
     	delete webSocketClient.esbSocketClient;
-  	});
+  	});*/
 }
 
 module.exports = MosWebSockets;

@@ -12,10 +12,7 @@ function rootReqHandler(req, res) {
 }
 
 function loginReqHandler(req, res) {
-	var loginsrc = "" +
-  			"<h1>login lesz</h1>";
-  		
-  	res.end(loginsrc);
+	res.sendfile(this.httpPath + '/staticview/login.html');
 }
 
 function testerReqHandler(req, res) {

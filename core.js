@@ -32,12 +32,4 @@ var users = {
 };
 //exports.users = users;
 //global.hash = hash;					//mehet ki mos.commons.utils-ba
-//global.users = users;				//ehelyett egy system socket amin keresztül db-től lehet lekérdezni
-
-/*
- * Init & Listen
- */
-//mosHttp.init(this, mosRoutes);
-//mosHttp.listen();
-//mosWebSockets.listen(mosHttp.server);
-
+//global.users = users;				//ehelyett egy system socket amin keresztül db-től lehet lekérdezni*/

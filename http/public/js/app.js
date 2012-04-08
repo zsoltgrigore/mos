@@ -4,6 +4,6 @@
 
 require(["mds/EsbWebClient"], function(EsbWebClient) {
    
-   var esbWebClient = new EsbWebClient("asdfg");
+   var esbWebClient = new EsbWebClient();
    console.log(esbWebClient.getConnection());
 });

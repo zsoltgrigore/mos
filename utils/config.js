@@ -11,6 +11,11 @@ var logger = new Logger({target: "utils/config", level: 3, enabled: true})
 var env = process.env.NODE_ENV || 'development';
 
 exports.createGlobalConfig = function(configjson) {
+	logger.info("Aktuális futtatókörnyzet (NODE_ENV): %s", env);
+	if (env == "production") {
+		logger.warn("Session store memóriafolyása miatt production átmenetileg tiltva!");
+		process.exit(1);
+	}
 	configObj = parseConfig(configjson);
 	if (configObj) {
 		for (var modul in configObj) {

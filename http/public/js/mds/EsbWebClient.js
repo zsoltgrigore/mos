@@ -3,21 +3,37 @@
  */
 
 define(function(require, exports, module) {
-	var esbapi = require("mds/esbapi");
 	
 	var EsbWebClient = function(clientConfig) {
+		clientConfig = clientConfig || {};
+		
 		this.connection = false;
-		this.getxyreq = new esbapi.agv_get_xy_req();
+		this.protocols = this.attachProtocol(clientConfig.protocols);
 	};
 	
-	EsbWebClient.prototype.connect = function() {
+	EsbWebClient.prototype.attachProtocol = function(protocol) {
+		if (typeof protocol === "object") {
+			console.log(protocol.length);
+		} else {
+			return false;
+		}
+	};
+	
+	EsbWebClient.prototype.connect = function(namespace) {
 		this.connection = io.connect();
+		console.log("isNamespace: " + namespace);
+		
+		this.connection.socket.on('error', this.errorHandler.bind(this));
+		this.connection.on('connect', this.connectHandler.bind(this));
 	};
 	
-	EsbWebClient.prototype.getConnection = function() {
-		console.log(this.getxyreq.header.name);
-		return this.connection;
+	EsbWebClient.prototype.errorHandler = function (reason){
+  		console.error('Unable to connect Socket.IO', reason);
 	};
+
+	EsbWebClient.prototype.connectHandler = function (){
+  		console.info('successfully established a working connection \o/');
+	};	
 	
 	module.exports = EsbWebClient;
 });
