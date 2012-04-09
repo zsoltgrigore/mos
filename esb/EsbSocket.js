@@ -1,6 +1,7 @@
 /**
  * @author Grigore András Zsolt
  */
+
 var EventEmitter = require('events').EventEmitter
 var net = require("net");
 var util = require("util");
@@ -20,7 +21,7 @@ var json_parse = require("../utils/json_parse_rec.js");
  * 		"close"				@see net.Socket
  * 		"end"				@see net.Socket
  * 
- * 		"succesfull login"	Sikeres bejelentkezést tartalmazó esb_login_resp üzenet után dobódik
+ * 		"successfull login"	Sikeres bejelentkezést tartalmazó esb_login_resp üzenet után dobódik
  * 				data : teljes esb_login_resp üzenet //User felé csak login_success értéke mehet
  * 		"access denied"		Sikertelen bejelentkezést tartalmazó esb_login_resp üzenet után dobódik
  * 				data : teljes esb_login_resp üzenet //User felé csak login_success értéke mehet
@@ -39,6 +40,7 @@ var json_parse = require("../utils/json_parse_rec.js");
  * 			destination : {String} //ide küldjük az üzenetet
  * 			helloInterval : {Number} //a szívdobbanások közti szünet
  * 			reconnectDelay : {Number} //újrakapcsolódások közti idő
+ * 			reconnectAllowed : {Boolean} //újrakapcsolódhat?
  * 		}
  */
 var EsbSocket = function (esbSocketConfig) {
@@ -54,6 +56,7 @@ var EsbSocket = function (esbSocketConfig) {
 	this.destination = esbSocketConfig.destination || "ANY";
 	this.helloInterval = esbSocketConfig.helloInterval || 1000;
 	this.reconnectDelay = esbSocketConfig.reconnectDelay || 3000;
+	this.reconnectAllowed = esbSocketConfig.reconnectAllowed || true;
 	
 	//Nem annyira publikus változók
 	//-----------------------------
@@ -78,8 +81,7 @@ var EsbSocket = function (esbSocketConfig) {
 	this._reconnecting = false;
 	
 	//EsbSocket authentikációs események
-	//nem succesfull hanem successfull !!!
-	this.on("succesfull login", this.startHeartBeat);
+	this.on("successfull login", this.startHeartBeat);
 	this.on("access denied", this.accessDenied);
 	//esb api események
 	this.on("esb_login_resp", this.loginRespHandler);
@@ -123,7 +125,7 @@ EsbSocket.prototype.end = function () {
 	}
 	this.removeAllListeners();
 	this.connection.end();
-	this.logger.info("%s:%d kapcsolat (%s) lezárva.",
+	this.logger.info("%s:%d esb kapcsolat (source:%s) lezárva.",
 			this.connection.remoteAddress, this.connection.remotePort, this.source);
 };
 
@@ -262,7 +264,7 @@ EsbSocket.prototype.loginRespHandler = function(esb_login_resp) {
 		this.logger.info("Sikeres bejelentkezés.");
 		this.esb_login_resp = esb_login_resp;
 		this.securityId = esb_login_resp.header.security_id;
-		this.emit("succesfull login", esb_login_resp);
+		this.emit("successfull login", esb_login_resp);
 	} else {
 		this.logger.info("Sikertelen bejelentkezés.");
 		this.emit("access denied", esb_login_resp);
@@ -370,7 +372,7 @@ EsbSocket.prototype.endHandler = function() {
  * 		és megpróbálunk ismét kapcsolódni, egészen addig amíg nem sikerül..
  */
 EsbSocket.prototype.reconnect = function() {
-	if (!this._reconnecting) {
+	if (!this._reconnecting && this.reconnectAllowed) {
 		this._reconnecting = true;
 		this.emit("reconnecting", this.reconnectDelay);
 		this.logger.warn("Újrakapcsolódás %d.", this.reconnectTimes);
@@ -393,6 +395,11 @@ EsbSocket.prototype.reconnect = function() {
 			this.logger.debug("Újrakapcsolódás most.");
 			this.connect();
 		}.bind(this), this.reconnectDelay);
+	}
+	//Ha nem lehet újrakapcsolódni akkor szoljunk hogy vége és takarítsunk fel magunk után
+	if (!this.reconnectAllowed) {
+		this.emit("end");
+		this.end();
 	}
 }
 

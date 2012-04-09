@@ -7,8 +7,8 @@ function processLoginData(req, res) {
 	var mosHttp = this;
 	accountHandlers.authenticate(req.body.username, req.body.password, function(err, esbSocket){
 		if (esbSocket) {
-			var channel = esbSocket.source;
-			moshttp.emit("new channel", esbSocket);
+			var chan = esbSocket.source;
+			mosHttp.emit("new auth chan req", esbSocket.socket);
 			// Regenerate session when signing in
 			// to prevent fixation
 			req.session.regenerate(function(){
@@ -19,13 +19,11 @@ function processLoginData(req, res) {
 	        	req.session.esbSocket = esbSocket;
 	        	//location.search.substring(1).split("=")--> így a kliensnek megmondjuk hogy hova kell csatlakozzon
 				//aztán el is takarítjuk ha megvan :) location.search = "";
-				res.redirect('app?channel=user00012');
+				res.redirect('/app?chan='+chan);
 	      	});
 	    } else {
-	      req.session.error = 'Authentication failed, please check your '
-	        + ' username and password.'
-	        + ' (use "tj" and "foobar")';
-	      res.redirect('login');
+	      console.log(err);
+	      res.redirect('/login');
 	    }
 	});
 }

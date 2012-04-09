@@ -3,14 +3,19 @@
  */
 
 var express = require("express");
+var util = require("util");
 var Logger = require('../utils/Logger');
 var secUtils = require('../utils/security');
 var middlewares= require('./middlewares/');
-
 var	MemoryStore = express.session.MemoryStore;
+var EventEmitter = require('events').EventEmitter;
 
+/*
+ * moshttp.emit("new auth chan req", esbSocket);
+ */
 var MosHttp = function (mosHttpConfig) {
 	mosHttpConfig = mosHttpConfig || {};
+	EventEmitter.call(this);
 	
 	//Publikus változók
 	//-----------------
@@ -27,19 +32,12 @@ var MosHttp = function (mosHttpConfig) {
 	this.logger = new Logger({target : "MosHttp<Server>"});
 	//memorystore helyett esb!!
 	this.sessionStore = new MemoryStore();
-	//próbáljunk kapcsolódni esb-hez, ha success akkor engedjük bé
-	this.users = {
-		test: {
-			name: 'test',
-    		salt: 'essé-mán-le-a-fárúl',
-    		pass: secUtils.hash('test2', 'essé-mán-le-a-fárúl')
-  		}
-	};
 
 	//Init
 	this.addExpressMiddleWares();
 	this.applyMosMiddlewares();
 }
+util.inherits(MosHttp, EventEmitter);
 
 MosHttp.prototype.addExpressMiddleWares = function () {
 	for (var index in this.expressMiddlewares) {

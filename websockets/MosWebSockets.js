@@ -27,6 +27,7 @@ var MosWebSockets = function (mosWebSocketsConfig) {
 	//-----------------
 	this.host = mosWebSocketsConfig.host || "localhost";
 	this.port = mosWebSocketsConfig.port || 8080;
+	this.http = false;
 	this.loggedInUsers = {};
 	
 	//Nem annyira publikus változók
@@ -45,10 +46,19 @@ var MosWebSockets = function (mosWebSocketsConfig) {
  *
  */
 MosWebSockets.prototype.listen = function (mosHttp) {
-	if (mosHttp)
+	if (mosHttp) {
+		this.http = mosHttp;
 		this.ioServer = sio.listen(mosHttp.server);
-	else
+		this.http.on("new auth chan req", function(channelName){
+			//channel req handler-be mehet kifelé
+			//a user csatornájához itt namespace authentikációt és eseménykezelőket rendelünk
+			//ha x másodpercen belül nem érkezik kapcsolódási request akkor valami nem okés (elnavigált a user vagy bezárta a böngészőt)
+			//		ezért x másodperc után eltakarítunk mindent és érvénytelenítjük a session-t
+			console.log(channelName);
+		});
+	} else {
 		this.ioServer = sio.listen(port, host);
+	}
 
 	this.ioServer.set('log level', this.logger.level);
 	

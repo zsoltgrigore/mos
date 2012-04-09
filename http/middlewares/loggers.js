@@ -9,6 +9,8 @@ function accessLogger(req, res, next) {
 	try {
 		user = req.session.user.name;
 	} catch (e) {
+		console.log("Session ha van:");
+		console.log(req.sessionID);
 		mosHttp.logger.debug("Nincs session cookie");
 	}
 	
