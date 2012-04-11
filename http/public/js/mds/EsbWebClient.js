@@ -8,6 +8,7 @@ define(function(require, exports, module) {
 		clientConfig = clientConfig || {};
 		
 		this.connection = false;
+		this.channel = clientConfig.channel || "";
 		this.protocols = this.attachProtocol(clientConfig.protocols);
 	};
 	

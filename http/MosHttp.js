@@ -28,6 +28,7 @@ var MosHttp = function (mosHttpConfig) {
 	//-----------------------------
 	this.address = false;
 	this.httpPath = __dirname;
+	this.socketMap = {};
 	this.server = express.createServer();
 	this.logger = new Logger({target : "MosHttp<Server>"});
 	//memorystore helyett esb!!

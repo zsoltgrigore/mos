@@ -54,7 +54,7 @@ MosWebSockets.prototype.listen = function (mosHttp) {
 			//a user csatornájához itt namespace authentikációt és eseménykezelőket rendelünk
 			//ha x másodpercen belül nem érkezik kapcsolódási request akkor valami nem okés (elnavigált a user vagy bezárta a böngészőt)
 			//		ezért x másodperc után eltakarítunk mindent és érvénytelenítjük a session-t
-			console.log(channelName);
+			console.log("The channel name is %s", channelName);
 		});
 	} else {
 		this.ioServer = sio.listen(port, host);
@@ -63,7 +63,7 @@ MosWebSockets.prototype.listen = function (mosHttp) {
 	this.ioServer.set('log level', this.logger.level);
 	
 	this.ioServer.set('authorization', this.globalAuthorizationHandler.bind(this));
-	this.ioServer.sockets.on('connection', this.connectionHandler.bind(this));
+	//this.ioServer.sockets.on('connection', this.connectionHandler.bind(this));
 };
 
 MosWebSockets.prototype.globalAuthorizationHandler = function (data, accept) {
@@ -88,8 +88,11 @@ MosWebSockets.prototype.globalAuthorizationHandler = function (data, accept) {
     } else {
        return accept('No cookie transmitted.', false);
     }*/
-	console.log(data);
-	accept(null, true);
+	//console.log(data);
+	//ne is lehessen csak csatornára kapcsolódni ehhez security anyag itt:
+	//http://stackoverflow.com/questions/7450445/socket-io-security-issues
+	accept('Unauthenticated connection request!', false);
+	
 }
 
 /**
