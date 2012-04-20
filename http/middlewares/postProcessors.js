@@ -1,14 +1,14 @@
 /**
  * @author Grigore András Zsolt
  */
-var accountHandlers = require("./accountHandlers")
+var accountHandlers = require("./accountHandlers");
 
 function processLoginData(req, res) {
 	var mosHttp = this;
 	accountHandlers.authenticate(req.body.username, req.body.password, function(err, esbSocket){
 		if (esbSocket) {
-			var chan = esbSocket.source;
-			mosHttp.emit("new auth chan req", esbSocket.source);
+			var chan = esbSocket.user.source;
+			mosHttp.emit("new auth chan req", esbSocket.user.source);
 			// Regenerate session when signing in
 			// to prevent fixation
 			req.session.regenerate(function(){
@@ -16,9 +16,12 @@ function processLoginData(req, res) {
 	        	// in the session store to be retrieved,
 	        	// or in this case the entire user object
 				// mosHttp vagy sessionstore, valahol a user-t össze kell mappelni az esbsockettel
-	        	req.session.user = esbSocket.source;
-				mosHttp.socketMap[esbSocket.source] = {
-					user: esbSocket.source,
+	        	req.session.user = {
+					source: esbSocket.user.source,
+					hash: esbSocket.user.hash,
+				};
+				mosHttp.socketMap[esbSocket.user.source] = {
+					user: esbSocket.user,
 					esbSocket: esbSocket
 				};
 	

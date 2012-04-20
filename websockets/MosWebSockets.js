@@ -6,7 +6,6 @@ var parseCookie = require('connect').utils.parseCookie;
 var Session = require('connect').middleware.session.Session;
 var Logger = require('../utils/Logger');
 var EsbSocket = require('../esb/').EsbSocket;
-var User = require('./User');
 
 /**
  * @classDescription 
@@ -48,51 +47,89 @@ var MosWebSockets = function (mosWebSocketsConfig) {
 MosWebSockets.prototype.listen = function (mosHttp) {
 	if (mosHttp) {
 		this.http = mosHttp;
+		this.http.on("new auth chan req", this.createChannel.bind(this));
 		this.ioServer = sio.listen(mosHttp.server);
-		this.http.on("new auth chan req", function(channelName){
-			//channel req handler-be mehet kifelé
-			//a user csatornájához itt namespace authentikációt és eseménykezelőket rendelünk
-			//ha x másodpercen belül nem érkezik kapcsolódási request akkor valami nem okés (elnavigált a user vagy bezárta a böngészőt)
-			//		ezért x másodperc után eltakarítunk mindent és érvénytelenítjük a session-t
-			console.log("The channel name is %s", channelName);
-		});
 	} else {
 		this.ioServer = sio.listen(port, host);
 	}
 
 	this.ioServer.set('log level', this.logger.level);
+//	this.ioServer.enable('browser client minification');  // send minified client
+	this.ioServer.enable('browser client etag');          // apply etag caching logic based on version number
+//	io.enable('browser client gzip');          // gzip the file
 	
 	this.ioServer.set('authorization', this.globalAuthorizationHandler.bind(this));
-	//this.ioServer.sockets.on('connection', this.connectionHandler.bind(this));
 };
 
-MosWebSockets.prototype.globalAuthorizationHandler = function (data, accept) {
+
+/**
+ * A globalis kapcsolódásokat eldobjuk.
+ * TODO: el kéne rejteni a route-t is ha lehet és akkor nem kell.
+ * 	//ne is lehessen csak csatornára kapcsolódni ehhez security anyag itt:
+ *  //http://stackoverflow.com/questions/7450445/socket-io-security-issues
+ *
+ * @param {Object} handshakeData
+ * @param {fn} callback(error,isAccept)
+ * 		error {String} milyen hiba
+ *		isAccept {Boolean} elfogadjuk-e a kapcsolódást?
+ *
+ */
+MosWebSockets.prototype.globalAuthorizationHandler = function (handshakeData, callback) {
+	callback(null, true);
+}
+
+
+MosWebSockets.prototype.createChannel = function(channelName) {
+	this.ioServer.set('authorization', this.globalAuthorizationHandler.bind(this));
+	this.ioServer.of('/private/'+channelName).authorization(this.channelAuth.bind(this));
+	//channel req handler-be mehet kifelé
+	//a user csatornájához itt namespace authentikációt és eseménykezelőket rendelünk
+	//ha x másodpercen belül nem érkezik kapcsolódási request akkor valami nem okés (elnavigált a user vagy bezárta a böngészőt)
+	//		ezért x másodperc után eltakarítunk mindent és érvénytelenítjük a session-t
+	console.log("The channel name is %s", channelName);
+}
+
+/*
+function (handshakeData, callback) {
+	  console.dir(handshakeData);
+	  handshakeData.foo = 'baz';
+	  callback(null, true);
+	}).on('connection', function (socket) {
+	  console.dir(socket.handshake.foo);
+	}
+*/
+
+/**
+ * @see this.globalAuthorizationHandler
+ */
+MosWebSockets.prototype.channelAuth = function (handshakeData, callback) {
 	//this bindolva van a server objektumhoz
 	//data olyasmi mint egy http req header websocket specifikus adatokkal
-	/*
-    if (data.headers.cookie) {
-        data.cookie = parseCookie(data.headers.cookie);
-        data.sessionID = data.cookie['express.sid']; 			//ezt express példányból is ki lehet szedni (express.session!)
+	
+    if (handshakeData.headers.cookie) {
+		console.log(handshakeData);
+		console.log("asdfg");
+		console.log(handshakeData.cookie);
+        handshakeData.cookie = parseCookie(handshakeData.headers.cookie);
+        handshakeData.sessionID = handshakeData.cookie['express.sid']; 			//ezt express példányból is ki lehet szedni (express.session!)
         // (literally) get the session data from the session store
-        io.server.sessionStore.get(data.sessionID, function (err, session) {
+		//console.log(this.ioServer.server);
+        this.http.sessionStore.get(handshakeData.sessionID, function (err, session) {
             if (err || !session) {
             	console.log("---------");
                 // if we cannot grab a session, turn down the connection
-                accept('Error', false);
+                callback('Error', false);
             } else {
                 // save the session data and accept the connection
-                data.session = session;
-                accept(null, true);
+                handshakeData.session = session;
+                callback(null, true);
             }
         });
     } else {
-       return accept('No cookie transmitted.', false);
-    }*/
-	//console.log(data);
-	//ne is lehessen csak csatornára kapcsolódni ehhez security anyag itt:
-	//http://stackoverflow.com/questions/7450445/socket-io-security-issues
-	accept('Unauthenticated connection request!', false);
-	
+       return callback('No cookie transmitted.', false);
+    }
+	console.log(handshakeData);
+
 }
 
 /**

@@ -19,13 +19,18 @@ define(function(require, exports, module) {
 			return false;
 		}
 	};
-	
-	EsbWebClient.prototype.connect = function(namespace) {
-		this.connection = io.connect();
-		console.log("isNamespace: " + namespace);
-		
-		this.connection.socket.on('error', this.errorHandler.bind(this));
-		this.connection.on('connect', this.connectHandler.bind(this));
+
+	EsbWebClient.prototype.connect = function() {
+		this.connection = io.connect("http://localhost:8080/" + this.channel);
+		console.log("isNamespace: " + this.channel);
+		alert(this.channel);
+		if (this.channel) {
+			this.connection.socket.of('/private/'+this.channel)
+				.on('error', this.errorHandler.bind(this))
+				.on('connect', this.connectHandler.bind(this));
+		} else {
+			console.log("Ide global kapcsolat kezelés!"); //TODO
+		}
 	};
 	
 	EsbWebClient.prototype.errorHandler = function (reason){

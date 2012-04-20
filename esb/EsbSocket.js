@@ -5,6 +5,7 @@
 var EventEmitter = require('events').EventEmitter
 var net = require("net");
 var util = require("util");
+
 var Logger = require('../utils/Logger');
 var esb = require("./");
 var json_parse = require("../utils/json_parse_rec.js");
@@ -35,8 +36,7 @@ var json_parse = require("../utils/json_parse_rec.js");
  * 		esbSocketConfig = {
  * 			host : {String} //host amihez kapcsolódunk
  * 			port : {Number} //port amihez kapcsolódunk
- * 			source : {String} //username
- * 			password : {String} //password
+ * 			user : {Object} //user objektum
  * 			destination : {String} //ide küldjük az üzenetet
  * 			helloInterval : {Number} //a szívdobbanások közti szünet
  * 			reconnectDelay : {Number} //újrakapcsolódások közti idő
@@ -51,8 +51,8 @@ var EsbSocket = function (esbSocketConfig) {
 	//-----------------
 	this.host = esbSocketConfig.host || "localhost";
 	this.port = esbSocketConfig.port || 5521;
-	this.source = esbSocketConfig.source || "test";
-	this.password = esbSocketConfig.password || "test2";
+	this.user = esbSocketConfig.user || {};
+	this.salt = esbSocketConfig.salt || "";
 	this.destination = esbSocketConfig.destination || "ANY";
 	this.helloInterval = esbSocketConfig.helloInterval || 1000;
 	this.reconnectDelay = esbSocketConfig.reconnectDelay || 3000;
@@ -158,10 +158,10 @@ EsbSocket.prototype.sendLoginRequest = function() {
 	this.logger.info("Kapocsolódott: %s:%d", this.connection.remoteAddress, this.connection.remotePort);
 	if (this.esb_login_req === undefined) {
 		this.esb_login_req = new esb.api.esb_login_req();
-		this.esb_login_req.header.source = this.source;
+		this.esb_login_req.header.source = this.user.source;
 		this.esb_login_req.header.destination = this.destination;
 		this.esb_login_req.header.session_id = this.sessionId;
-		this.esb_login_req.data.password = this.password;
+		this.esb_login_req.data.password = this.user.pass;
 	}
 	
 	this.writeObject(this.esb_login_req);

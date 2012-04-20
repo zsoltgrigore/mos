@@ -24,7 +24,7 @@
 			"routes" : [
 				{ "path" : "/demo" , "method" : "get", "middlewares" : ["accessLogger", "testerReqHandler"]},
 				{ "path" : "/tester" , "method" : "get", "middlewares" : ["accessLogger", "testerReqHandler"]},
-				{ "path" : "/app" , "method" : "get", "middlewares" : ["accessLogger", "appReqHandler"]}
+				{ "path" : "/app" , "method" : "get", "middlewares" : ["accessLogger", "restrict", "appReqHandler"]}
 			]
 		},
 		"production" : {
@@ -58,6 +58,7 @@
 		"general" : {
 		},
 		"development" : {
+			"salt" : "essé-mán-le-a-fárúl",
 			"host" : "meshnetwork.hu",
 			"port" : 5521,
 			"helloInterval" : 1000,

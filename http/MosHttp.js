@@ -21,6 +21,7 @@ var MosHttp = function (mosHttpConfig) {
 	//-----------------
 	this.host = mosHttpConfig.host || "localhost";
 	this.port = mosHttpConfig.port || 8080;
+	this.salt = mosHttpConfig.salt || "";
 	this.routes = mosHttpConfig.routes || [{ path: "/", method: "get", middlewares: []}];
 	this.expressMiddlewares = mosHttpConfig.use || {};
 	

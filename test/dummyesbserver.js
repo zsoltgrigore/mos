@@ -55,9 +55,9 @@ var server = net.createServer(function (socket) {
 			agvGetXYResp.header.destination = obj.header.source;
 			agvGetXYResp.header.session_id = obj.header.session_id;
 			agvGetXYResp.header.security_id = obj.header.security_id;
-			agvGetXYResp.data.x = ++xyRespData;
-			agvGetXYResp.data.y = 10000 + xyRespData;
-			agvGetXYResp.data.phi = 50000 + xyRespData;
+			agvGetXYResp.data.x = Math.floor(Math.random()*1600)-800;
+			agvGetXYResp.data.y = Math.floor(Math.random()*1200)-600;
+			agvGetXYResp.data.phi = Math.floor(Math.random()*360);
 			socket.write(JSON.stringify(agvGetXYResp));
 			console.log("#getXPResp: %d", ++xyRespSent)
 			break;
