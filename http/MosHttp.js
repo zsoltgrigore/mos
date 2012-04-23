@@ -68,8 +68,6 @@ MosHttp.prototype.applyMosMiddlewares = function () {
 			this.logger.warn("'%s' útvonalhoz tartozó '%s' method kérés lekezeléséhez nincs háttér logika. Eldobva!",
 					this.routes[routeIt].path, this.routes[routeIt].method);
 		}
-		//console.log(availableMW.shift());
-		//console.log(availableMW.length);
 	}
 	//console.log(middlewares); elérhető middleware implementációk akár tesztelni is lehetne őket a jövőben
 	//és csak működő implementációt használni az egyes útvonalakon

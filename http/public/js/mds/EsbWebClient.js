@@ -8,7 +8,8 @@ define(function(require, exports, module) {
 		clientConfig = clientConfig || {};
 		
 		this.connection = false;
-		this.channel = clientConfig.channel || "";
+		this.privateConn = false;
+		this.channel = clientConfig.channel || false;
 		this.protocols = this.attachProtocol(clientConfig.protocols);
 	};
 	
@@ -21,20 +22,23 @@ define(function(require, exports, module) {
 	};
 
 	EsbWebClient.prototype.connect = function() {
-		this.connection = io.connect("http://localhost:8080/" + this.channel);
-		console.log("isNamespace: " + this.channel);
-		alert(this.channel);
 		if (this.channel) {
-			this.connection.socket.of('/private/'+this.channel)
-				.on('error', this.errorHandler.bind(this))
-				.on('connect', this.connectHandler.bind(this));
+			alert("Nem támogatott még!");
+			//this.privateConn = io.connect("http://localhost:8080/" + this.channel);
 		} else {
-			console.log("Ide global kapcsolat kezelés!"); //TODO
+			this.connection = io.connect();
+			this.connection.on("connect", this.connectHandler);
+			this.connection.on("error", this.errorHandler);
+			this.connection.on("successfull login", this.loginHandler);
 		}
 	};
-	
+
 	EsbWebClient.prototype.errorHandler = function (reason){
-  		console.error('Unable to connect Socket.IO', reason);
+  		console.error('Unable to connect Socket.IO' + reason);
+	};
+
+	EsbWebClient.prototype.loginHandler = function (msg){
+		$('body').append('<div>').attr('id', 'login').append("Kapcsolódott");
 	};
 
 	EsbWebClient.prototype.connectHandler = function (){

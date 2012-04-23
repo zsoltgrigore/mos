@@ -69,7 +69,7 @@ var EsbSocket = function (esbSocketConfig) {
 	this.isConnected = false;
 	this.helloIntervalId = false;
 	this.reconnectTimeoutId = false;
-	this.logger = new Logger({target : "EsbSocket<"+this.source+">"});
+	this.logger = new Logger({target : "EsbSocket<"+this.user.source+">"});
 	//this.msgproc = new esb.EsbMsgProcessor(); parent dolog???
 		
 	//Statisztika info
@@ -126,7 +126,7 @@ EsbSocket.prototype.end = function () {
 	this.removeAllListeners();
 	this.connection.end();
 	this.logger.info("%s:%d esb kapcsolat (source:%s) lezárva.",
-			this.connection.remoteAddress, this.connection.remotePort, this.source);
+			this.connection.remoteAddress, this.connection.remotePort, this.user.source);
 };
 
 /**
@@ -301,7 +301,7 @@ EsbSocket.prototype.startHeartBeat = function(esb_login_resp) {
 EsbSocket.prototype.accessDenied = function(esb_login_resp) {
 	this.connection.end();
 	this.connection.destroy();
-	this.logger.warn("Hibás authentikációs adatok %s/%s", this.source, this.password);
+	this.logger.warn("Hibás authentikációs adatok %s/%s", this.user.source, this.user.pass);
 }
 
 /**

@@ -7,8 +7,8 @@ function processLoginData(req, res) {
 	var mosHttp = this;
 	accountHandlers.authenticate(req.body.username, req.body.password, function(err, esbSocket){
 		if (esbSocket) {
-			var chan = esbSocket.user.source;
-			mosHttp.emit("new auth chan req", esbSocket.user.source);
+			//var chan = esbSocket.user.source;
+			//mosHttp.emit("new auth chan req", esbSocket.user.source);
 			// Regenerate session when signing in
 			// to prevent fixation
 			req.session.regenerate(function(){
@@ -24,8 +24,8 @@ function processLoginData(req, res) {
 					user: esbSocket.user,
 					esbSocket: esbSocket
 				};
-	
-				res.redirect('/app?chan='+chan);
+				res.redirect('/app');
+				//res.redirect('/app?chan='+chan);
 	      	});
 	    } else {
 	      console.log(err);

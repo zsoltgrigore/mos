@@ -1,7 +1,7 @@
 /**
  * Express route-ok kezeléséhez használt middleware függvények.
- * Egyenlőre ezt a 4 nagy csoportot határoztam meg, idővel könnyedén bővíthatő, 
- * illetve további alcsoportok is megadhatóak lásd a acc/one.js
+ * Egyenlőre ezt a 5 nagy csoportot határoztam meg, idővel könnyedén bővíthető, 
+ * illetve további alcsoportok is megadhatóak
  * 
  * @author Grigore András Zsolt
  */

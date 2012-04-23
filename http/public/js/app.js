@@ -3,6 +3,6 @@
  */
 
 require(["mds/EsbWebClient"], function(EsbWebClient) {
-	var esbWebClient = new EsbWebClient({channel: channel});
+	var esbWebClient = new EsbWebClient();
 	esbWebClient.connect();
 });

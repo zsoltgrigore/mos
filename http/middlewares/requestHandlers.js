@@ -20,8 +20,6 @@ function testerReqHandler(req, res) {
 }
 
 function appReqHandler(req, res) {
-	//csak teszt restriction-t be kell még izzítani mert addig nem biztos hogy van req.session.user
-	this.socketMap[req.session.user.source].esbSocket.end();
 	res.sendfile(this.httpPath + '/staticview/app.html');
 }
 

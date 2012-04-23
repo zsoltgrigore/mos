@@ -45,6 +45,16 @@ exports.objectGetKeyValue = function(obj, key) {
 	return false;
 }
 
+exports.cloneConfig = function(obj) {
+    if (null == obj || "object" != typeof obj) return obj;
+    var copy = obj.constructor();
+    for (var attr in obj) {
+        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+    }
+    return copy;
+}
+
+
 exports.rndbtw = function() {
 	var min = 0;
 	var max = 1;

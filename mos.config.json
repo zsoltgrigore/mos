@@ -2,6 +2,7 @@
 	"http" : {
 		"general" : {
 			"use" : [
+				"express.logger('short')",
 				"express.bodyParser()",
 				"express.cookieParser()",
 				"express.methodOverride()"
@@ -22,8 +23,8 @@
     			"express.errorHandler({ dumpExceptions: true, showStack: true })"
 			],
 			"routes" : [
-				{ "path" : "/demo" , "method" : "get", "middlewares" : ["accessLogger", "testerReqHandler"]},
-				{ "path" : "/tester" , "method" : "get", "middlewares" : ["accessLogger", "testerReqHandler"]},
+				{ "path" : "/demo" , "method" : "get", "middlewares" : ["accessLogger", "restrict", "testerReqHandler"]},
+				{ "path" : "/tester" , "method" : "get", "middlewares" : ["accessLogger", "restrict", "testerReqHandler"]},
 				{ "path" : "/app" , "method" : "get", "middlewares" : ["accessLogger", "restrict", "appReqHandler"]}
 			]
 		},
