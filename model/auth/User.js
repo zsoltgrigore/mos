@@ -15,7 +15,7 @@ User.prototype.createHash = function (){
 }
 
 User.prototype.isValidHash = function (hashToCheck){
-  	console.log("---------------ObjectEquals - " + hashToCheck === this.hash + " :: ValueEquals - " + hashToCheck == this.hash);
+  	//console.log("---------------ObjectEquals - %d :: ValueEquals - %d", hashToCheck === this.hash, hashToCheck == this.hash);
 	if (hashToCheck == this.hash) return true;
 	return false;
 }

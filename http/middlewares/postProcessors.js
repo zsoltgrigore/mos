@@ -5,7 +5,8 @@ var accountHandlers = require("./accountHandlers");
 
 function processLoginData(req, res) {
 	var mosHttp = this;
-	accountHandlers.authenticate(req.body.username, req.body.password, function(err, esbSocket){
+	
+	accountHandlers.authenticate.call(mosHttp, req.body.username, req.body.password, function(err, esbSocket){
 		if (esbSocket) {
 			//var chan = esbSocket.user.source;
 			//mosHttp.emit("new auth chan req", esbSocket.user.source);
@@ -22,14 +23,18 @@ function processLoginData(req, res) {
 				};
 				mosHttp.socketMap[esbSocket.user.source] = {
 					user: esbSocket.user,
+					restrictConnections: false,
 					esbSocket: esbSocket
 				};
-				res.redirect('/app');
+				
+				var redirectAfterLogin = req.flash.redirectAfterLogin || '/demo';
+				console.log(redirectAfterLogin)
+				return res.redirect(redirectAfterLogin);
 				//res.redirect('/app?chan='+chan);
 	      	});
 	    } else {
 	      console.log(err);
-	      res.redirect('/login');
+	      return res.redirect('/login');
 	    }
 	});
 }

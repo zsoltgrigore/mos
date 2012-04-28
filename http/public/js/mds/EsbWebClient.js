@@ -23,7 +23,7 @@ define(function(require, exports, module) {
 
 	EsbWebClient.prototype.connect = function() {
 		if (this.channel) {
-			alert("Nem támogatott még!");
+			alert("Nem támogatott még a csatorna nyitás!");
 			//this.privateConn = io.connect("http://localhost:8080/" + this.channel);
 		} else {
 			this.connection = io.connect();

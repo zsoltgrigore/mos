@@ -8,6 +8,9 @@ var sendmsgEnabled = false;
 
 var setIntervalId = false;
 var setTimeoutId = false;
+var esbHeartBeat = 1000;
+var esbHeartBeatStart = false;
+var speed = 0;
 
 var coords = new Array();
 var coordsHistory = 10;
@@ -27,7 +30,7 @@ $(document).ready(function(){
 		$(".agv_tester_area").hide();
 		startInterval();
 	}	
-})
+});
 
 //agv_get_xy_req üzenetet reprezentáló osztály
 function agv_get_xy_req() {
@@ -94,13 +97,25 @@ function agv_set_tape_dir_req (numTape, strDirection) {
 	};
 }
 
-socket.on('connect', function () {});
+socket.on('connect', function () {
+	socket.emit("ready", init);
+});
 
-socket.on('succesfull login', function (msg) {
-	source = msg.header.destination;
+function init(esbName, heartbeat) {
+	source = esbName;
 	sendmsgEnabled = true;
-	$('#log').append("Kapcsolódott!<br/>");
+	esbHeartBeat = heartbeat || 1000;
+	$('#log').append("Kapcsolódott!\n");
 	initMap();
+}
+
+socket.on('live', function (msg) {
+	if (!esbHeartBeatStart) {
+		esbHeartBeatStart = (new Date).getTime();
+	} else {
+		speed = (new Date).getTime() - esbHeartBeatStart - esbHeartBeat;
+		esbHeartBeatStart = (new Date).getTime();	
+	}
 });
 
 socket.on('agv_get_xy_resp', function (agv_get_xy_resp) {

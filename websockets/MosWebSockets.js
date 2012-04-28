@@ -5,6 +5,7 @@ var sio = require("socket.io");
 var parseCookie = require('connect').utils.parseCookie;
 var Session = require('connect').middleware.session.Session;
 var Logger = require('../utils/Logger');
+var	cloneConfig = require("../utils/general").cloneConfig;
 var EsbSocket = require('../esb/').EsbSocket;
 
 /**
@@ -38,7 +39,8 @@ var MosWebSockets = function (mosWebSocketsConfig) {
 /**
  * Hallgatózás: ha van parméterben egy futó http vagy https szerver akkor azt használjuk
  *				ha nincs akkor konstruktorban megadott host és port értékeket
- * Itt csatolunk a szerver egyetlen eseményéhez, kezelő függvényt (connectionHandler)
+ * Minden kapcsolódás előtt megköveteljük a kliens azonosítását. (globalAuthorizationHandler)
+ * Itt csatolunk a szerver egyetlen eseményéhez, kezelő függvényt. (globalConnectionHandler)
  *
  * @param {MosHttp} mosHttp
  *		egy MosHttp osztály példány
@@ -47,7 +49,6 @@ var MosWebSockets = function (mosWebSocketsConfig) {
 MosWebSockets.prototype.listen = function (mosHttp) {
 	if (mosHttp) {
 		this.http = mosHttp;
-		this.http.on("new auth chan req", this.createChannel.bind(this));
 		this.ioServer = sio.listen(mosHttp.server);
 	} else {
 		this.ioServer = sio.listen(port, host);
@@ -64,7 +65,9 @@ MosWebSockets.prototype.listen = function (mosHttp) {
 
 
 /**
- * A globalis kapcsolódásokat eldobjuk.
+ * Minden socketIO kliens csatalkozásakor lefut. Ha a böngésző által küldött cookie-ban tárolt sessionID-hoz tartozik eltárolt session,
+ * akkor ellenőrizzük az érvényességét és ha minden rendben van akkor megengedjük, hogy csatlakozzon.
+ * TODO: Session érvényes-e?
  *
  * @param {Object} handshakeData
  * @param {fn} callback(error,isAccept)
@@ -84,12 +87,11 @@ MosWebSockets.prototype.globalAuthorizationHandler = function (handshakeData, ca
 				try {
 					if (http.socketMap[session.user.source].user.isValidHash(session.user.hash)) {
 						handshakeData.session = session;
-						http.socketMap[session.user.source].esbSocket.end();
                 		return callback(null, true);
 					}
 				} catch (e) {
 					console.log(e);
-					callback("Hibás user információ a cookie-ban.", false);
+					return callback("Hibás user információ a cookie-ban.", false);
 				}
 
             }
@@ -105,15 +107,21 @@ MosWebSockets.prototype.globalAuthorizationHandler = function (handshakeData, ca
  *		A kapcsolódott klienst reprezentáló objektum
  */
 MosWebSockets.prototype.globalConnectionHandler = function(webSocket) {
-	console.log(webSocket.handshake);
-	var esbSocket = this.http.socketMap[webSocket.handshake.session.user.source].esbSocket;
-
-	webSocket.emit("successfull login", "true");
+	var mosWebSockets = this;
+	var esbSocket = mosWebSockets.http.socketMap[webSocket.handshake.session.user.source].esbSocket;
+	var sessionid = webSocket.handshake.sessionID;
 	
-	esbSocket.on("esb_hello_resp", function(message){
+	mosWebSockets.logger.info("Kliens kapcsolódott. HTTP SessionId: " + webSocket.handshake.sessionID);
+	mosWebSockets.logger.info("Felhasználó: " + webSocket.handshake.session.user.source);
+	
+	webSocket.on("ready", function(init){
+		init(esbSocket.esb_login_resp.header.destination, esbSocket.helloInterval);
+	});
+		
+	/*esbSocket.on("esb_hello_resp", function(message){
 		message.header.security_id = "ChangeMe!:)";
 		webSocket.emit("live", message);
-	});
+	});*/
 	
 	esbSocket.on("web message", function(eventType, payload){
 		console.log("%s emitted", eventType);
@@ -128,9 +136,11 @@ MosWebSockets.prototype.globalConnectionHandler = function(webSocket) {
 	});
 	
 	webSocket.on('disconnect', function () {
+		delete mosWebSockets.http.socketMap[webSocket.handshake.session.user.source];
 		esbSocket.end();
-		//delete from socketMap
-    	//delete webSocket.esbSocketClient;
+		mosWebSockets.http.sessionStore.destroy(webSocket.handshake.sessionID, function () {
+            mosWebSockets.logger.info("Kliens végpont leszakadt. Felhasználó azonosító és a hozzá tartozó session törölve." + sessionid);
+        });
   	});
 }
 
@@ -141,10 +151,6 @@ MosWebSockets.prototype.globalConnectionHandler = function(webSocket) {
  * 		a global üzeneteken kívül ezen a csatornán és hallgatózunk
  */
 MosWebSockets.prototype.createChannel = function(channelName) {
-	//setTimeout(function(){
-		//ha 3 másodpercen belül nem érkezik kapcsolódási request akkor valami nem okés (elnavigált a user vagy bezárta a böngészőt)
-		//3 másodperc után eltakarítjuk az csatornát
-	//}.bind(this),3000);
 	this.ioServer.of('/private/'+channelName).authorization(this.channelAuth.bind(this));
 	this.ioServer.of('/private/'+channelName).on("connection", this.channelConnectionHandler.bind(this));
 	
@@ -152,14 +158,18 @@ MosWebSockets.prototype.createChannel = function(channelName) {
 }
 
 /**
+ * Ha szükséges tematikus csatorna pl.: esb üzeneteknek, html komponenseknek stb akkor a csatornához
+ * 		tartozó azonosítást itt lehet implementálni.
+ * 
  * @see this.globalAuthorizationHandler
  */
 MosWebSockets.prototype.channelAuth = function (handshakeData, callback) {
-	//global is elég de ha mégis kellene channel akkor az ide jön
-	callback(null, true);
+	callback("Nincs támogatott csatorna", false);
 }
 
 /**
+ * Tematikus csatornához történő csatlakozáskor használható eseménykezelő.
+ * Itt kell definiálni a különböző üzenettípusokat
  *
  * @see this.globalConnectionHandler
  */

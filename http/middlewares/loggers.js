@@ -6,15 +6,14 @@ function accessLogger(req, res, next) {
 	var mosHttp = this;
 	var user = 'anonymus';
 	
+	mosHttp.logger.info("[accessLogger]: %s útvonalra %s kérés", req.url, req.method);
+	
 	try {
-		user = req.session.user.name;
+		user = req.session.user.source;
 	} catch (e) {
-		console.log("Session ha van:");
-		console.log(req.sessionID);
-		mosHttp.logger.debug("Nincs session cookie");
+		mosHttp.logger.debug("[accessLogger]: Nincs user információ a headerben.");
 	}
 	
-	mosHttp.logger.info("%s útvonalra %s kérést küldött %s", req.url, req.method, user);
 	//Ha POST akkor log-ba hogy mit postolt
 	//if (req.method == "POST") {mosHttp.logger.info(form adatai!)}
   	next();
