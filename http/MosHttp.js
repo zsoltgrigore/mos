@@ -43,9 +43,9 @@ util.inherits(MosHttp, EventEmitter);
 
 MosHttp.prototype.addExpressMiddleWares = function () {
 	for (var index in this.expressMiddlewares) {
-			this.logger.info("M-O-S use: %s", this.expressMiddlewares[index]);
-    		this.server.use(eval(this.expressMiddlewares[index]));
-    }
+		this.logger.info("M-O-S use: %s", this.expressMiddlewares[index]);
+		this.server.use(eval(this.expressMiddlewares[index]));
+	}
 };
 
 MosHttp.prototype.applyMosMiddlewares = function () {

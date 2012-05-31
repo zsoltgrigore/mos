@@ -125,14 +125,13 @@ MosWebSockets.prototype.globalConnectionHandler = function(webSocket) {
 	
 	esbSocket.on("web message", function(eventType, payload){
 		console.log("%s emitted", eventType);
-		console.log(payload);
 		webSocket.emit(eventType, payload);
 	});
 	
 	webSocket.on('esb message', function(message) {
 		message.header.security_id = esbSocket.securityId;
-		console.log(message);
-		esbSocket.writeObject(message);
+		if (!esbSocket.reconnecting)
+			esbSocket.writeObject(message);
 	});
 	
 	webSocket.on('disconnect', function () {

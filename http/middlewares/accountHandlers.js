@@ -29,13 +29,14 @@ function authenticate(name, pass, callback) {
 	});
 	
   	tempEsbSocket.on("access denied", function (resp){
+		tempEsbSocket.end();
 		return callback(new Error('Hibás felhasználói adatok!'));
 	});
 	
 	tempEsbSocket.on("end", function (){
+		tempEsbSocket.end();
 		return callback(new Error('Szolgáltatás nem elérhető'));
 	});
-	
 }
 
 exports.authenticate = authenticate;

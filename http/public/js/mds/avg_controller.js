@@ -8,6 +8,11 @@ var sendmsgEnabled = false;
 
 var setIntervalId = false;
 var setTimeoutId = false;
+
+var measureStart = false;
+var measureSumLatency = false;
+var measureCount = 0;
+
 var esbHeartBeat = 1000;
 var esbHeartBeatStart = false;
 var speed = 0;
@@ -106,6 +111,7 @@ function init(esbName, heartbeat) {
 	sendmsgEnabled = true;
 	esbHeartBeat = heartbeat || 1000;
 	$('#log').append("Kapcsolódott!\n");
+	autoScroll('log');
 	initMap();
 }
 
@@ -119,7 +125,16 @@ socket.on('live', function (msg) {
 });
 
 socket.on('agv_get_xy_resp', function (agv_get_xy_resp) {
-	writeLog(agv_get_xy_resp);
+	var responseLatency = false;
+	
+	if (measureStart) { //&& measureStart.session_id == agv_get_xy_resp.header.session_id) { -- nem minden csomag ér vissza :(
+		responseLatency = (new Date).getTime() - measureStart.start;
+		measureStart = false;
+		measureCount++;
+		measureSumLatency += responseLatency;
+	}
+	msgreceived++;
+	//writeLog(agv_get_xy_resp, responseLatency);
 
 	if (isDemo == true) {
 		processCoordinates(Math.floor(Math.random()*1600)-800, Math.floor(Math.random()*1600)-600, agv_get_xy_resp.data.phi);
@@ -136,9 +151,11 @@ socket.on('agv_set_dir_resp', function (agv_set_dir_resp) {
 	writeLog(agv_set_dir_resp);
 });
 
-function writeLog(msg_obj){
+function writeLog(msg_obj, latency){
 	$('#log').append("\n"+ ++msgreceived + ". recieved: " + msg_obj.header.name + ".header.session_id: " + msg_obj.header.session_id + " \n");
+	if (latency) $('#log').append("Latency: " + latency + " -- Átlag " + measureCount + " csomag után: " + measureSumLatency/measureCount +"\n");
 	$('#log').append(JSON.stringify(msg_obj) + "\n");
+	autoScroll('log');
 }
 
 function startInterval() {
@@ -150,14 +167,15 @@ function startInterval() {
 
 	setIntervalId = setInterval(sendGetXYReq, interval);
 
-	setTimeoutId = setTimeout(function(){
-		stopInterval;
-	}, timeout)
+	setTimeoutId = setTimeout(stopInterval, timeout);
 }
 
 function stopInterval() {
 	if (setIntervalId) {
 		$('#log').append("TIMER OFF<br/>");
+		$('#log').append("\n"+ msgreceived + " recieved/ " + msgsent + " sent" + " \n");
+		$('#log').append("Átlag válaszidő: " + measureCount + " csomag után: " + measureSumLatency/measureCount +"\n");
+		autoScroll('log');
 		clearInterval(setIntervalId);
 		setIntervalId = false;
 	}
@@ -168,6 +186,12 @@ function sendGetXYReq() {
 	agvGetXYReq.header.source = source;
 	agvGetXYReq.header.destination = destination;
 	agvGetXYReq.header.session_id = "" + Math.floor(Math.random()*65535);
+	if (!measureStart) {
+		measureStart = {
+			session_id: agvGetXYReq.header.session_id,
+			start: (new Date).getTime()
+		};
+	}
 	sendReq(agvGetXYReq);
 }
 
@@ -200,6 +224,7 @@ function registerEventHandler(eventName){
 	if (!socket.$events.hasOwnProperty(eventName)) {
 		socket.on(eventName, function(data){
 			$('#log').append(++msgreceived + " Custom üzenet <br/> " +JSON.stringify(data) + "</br>");
+			autoScroll('log');
 		});
 	}
 }
@@ -207,14 +232,17 @@ function registerEventHandler(eventName){
 function sendReq(msg_obj) {
 	if (sendmsgEnabled){
 		socket.emit('esb message', msg_obj);
-		$('#log').append("\n"+ ++msgsent + ". sent: " + msg_obj.header.name + ".header.session_id: " + msg_obj.header.session_id + "\n");
-		$('#log').append(JSON.stringify(msg_obj) + "\n");
+		msgsent++;
+		//$('#log').append("\n"+ ++msgsent + ". sent: " + msg_obj.header.name + ".header.session_id: " + msg_obj.header.session_id + "\n");
+		//$('#log').append(JSON.stringify(msg_obj) + "\n");
 	} else {
 		$('#log').append("Küldeném az " + msg_obj.header.name + "csomagot, de esb még nem kapcsolódott! <br/>");
 	}
+	//autoScroll('log');
+}
 
-	// auto scoll log
-	var logObj = document.getElementById('log');  
+function autoScroll(idToScroll) {
+	var logObj = document.getElementById(idToScroll);  
 	logObj.scrollTop = logObj.scrollHeight; 
 }
 
