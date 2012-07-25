@@ -138,7 +138,9 @@ EsbSocket.prototype.end = function () {
  */
 EsbSocket.prototype.writeObject = function (obj) {
 	if (!this._reconnecting && this.connection) {
-		this.connection.write(JSON.stringify(obj), "utf8", function(){
+		var msg = JSON.stringify(obj);
+		this.connection.write(msg, "utf8", function(){
+			this.logger.debug("Kiküldött Üzenet: %s", msg);
 			this.flushed++;
 			this.logger.info("--> Üzenet küldés. Típusa: %s; Cél: %s, SeddionID: %d, Eddig kiküldve: %d", 
 					obj.header.name, obj.header.destination, obj.header.session_id, this.wrote);
@@ -263,7 +265,7 @@ EsbSocket.prototype.loginRespHandler = function(esb_login_resp) {
 	if (esb_login_resp.data.login_success == "1") {
 		this.logger.info("Sikeres bejelentkezés.");
 		this.esb_login_resp = esb_login_resp;
-		this.securityId = esb_login_resp.header.security_id;
+		this.securityId = esb_login_resp.data.security_id;
 		this.emit("successfull login", esb_login_resp);
 	} else {
 		this.logger.info("Sikertelen bejelentkezés.");

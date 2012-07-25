@@ -70,7 +70,11 @@ function nowStr () {
 
 var Logger = module.exports = function (opts) {
   opts = opts || {}
-  var logger = logger || {};
+  var logger = {};
+  try {
+  	logger = configuration.logger;
+  } catch (e) {
+  }
   this.colors = false !== tty.isatty(process.stdout.fd);
   this.level = opts.level || logger.level || 3;
   this.enabled = opts.enabled || logger.enaled || true;

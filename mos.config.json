@@ -1,8 +1,8 @@
 {
 	"http" : {
 		"general" : {
+			"defaultLanding" : "/",
 			"use" : [
-				"express.logger('short')",
 				"express.bodyParser()",
 				"express.cookieParser()",
 				"express.methodOverride()"
@@ -25,7 +25,9 @@
 			"routes" : [
 				{ "path" : "/demo" , "method" : "get", "middlewares" : ["accessLogger", "restrict", "testerReqHandler"]},
 				{ "path" : "/tester" , "method" : "get", "middlewares" : ["accessLogger", "restrict", "testerReqHandler"]},
-				{ "path" : "/app" , "method" : "get", "middlewares" : ["accessLogger", "restrict", "appReqHandler"]}
+				{ "path" : "/app" , "method" : "get", "middlewares" : ["accessLogger", "restrict", "appReqHandler"]},
+				{ "path" : "/500" , "method" : "get", "middlewares" : ["accessLogger", "internalServerError"]},
+				{ "path" : "/*" , "method" : "get", "middlewares" : ["accessLogger", "notFound"]}
 			]
 		},
 		"production" : {

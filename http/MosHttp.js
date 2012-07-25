@@ -22,6 +22,7 @@ var MosHttp = function (mosHttpConfig) {
 	this.host = mosHttpConfig.host || "localhost";
 	this.port = mosHttpConfig.port || 8080;
 	this.salt = mosHttpConfig.salt || "";
+	this.defualtLanding = mosHttpConfig.defaultLanding || "/";
 	this.routes = mosHttpConfig.routes || [{ path: "/", method: "get", middlewares: []}];
 	this.expressMiddlewares = mosHttpConfig.use || {};
 	
@@ -35,6 +36,11 @@ var MosHttp = function (mosHttpConfig) {
 	//memorystore helyett esb!!
 	this.sessionStore = new MemoryStore();
 
+	//set -- mehet ki confba
+	this.server.set('view engine', 'jade');
+	//this.server.set("view options", { layout: false });
+	this.server.set('views', __dirname + '/views');
+
 	//Init
 	this.addExpressMiddleWares();
 	this.applyMosMiddlewares();
@@ -44,6 +50,7 @@ util.inherits(MosHttp, EventEmitter);
 MosHttp.prototype.addExpressMiddleWares = function () {
 	for (var index in this.expressMiddlewares) {
 		this.logger.info("M-O-S use: %s", this.expressMiddlewares[index]);
+		//access log: "express.logger('short')"
 		this.server.use(eval(this.expressMiddlewares[index]));
 	}
 };

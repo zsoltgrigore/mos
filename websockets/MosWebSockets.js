@@ -115,7 +115,7 @@ MosWebSockets.prototype.globalConnectionHandler = function(webSocket) {
 	mosWebSockets.logger.info("Felhasználó: " + webSocket.handshake.session.user.source);
 	
 	webSocket.on("ready", function(init){
-		init(esbSocket.esb_login_resp.header.destination, esbSocket.helloInterval);
+		init(esbSocket.esb_login_resp.header.source, esbSocket.user.nick, esbSocket.helloInterval);
 	});
 		
 	/*esbSocket.on("esb_hello_resp", function(message){
@@ -124,11 +124,12 @@ MosWebSockets.prototype.globalConnectionHandler = function(webSocket) {
 	});*/
 	
 	esbSocket.on("web message", function(eventType, payload){
-		console.log("%s emitted", eventType);
-		webSocket.emit(eventType, payload);
+		mosWebSockets.logger.info("web felé továbbítva: %s", payload.header.name);
+		webSocket.emit("web message", payload);
 	});
 	
 	webSocket.on('esb message', function(message) {
+		mosWebSockets.logger.info("esb felé továbbítva: %s", message.header.name);
 		message.header.security_id = esbSocket.securityId;
 		if (!esbSocket.reconnecting)
 			esbSocket.writeObject(message);

@@ -7,13 +7,13 @@ var isArray = require('../utils/general').isArray;
 
 var global = {};
 var configObj;
-var logger = new Logger({target: "utils/config", level: 3, enabled: true})
+var log = new Logger({target: "utils/config", level: 3, enabled: true})
 var env = process.env.NODE_ENV || 'development';
 
 exports.createGlobalConfig = function(configjson) {
-	logger.info("Aktuális futtatókörnyzet (NODE_ENV): %s", env);
+	log.info("Aktuális futtatókörnyzet (NODE_ENV): %s", env);
 	if (env == "production") {
-		logger.warn("Session store memóriafolyása miatt production átmenetileg tiltva!");
+		log.warn("Session store memóriafolyása miatt production átmenetileg tiltva!");
 		process.exit(1);
 	}
 	configObj = parseConfig(configjson);
@@ -31,7 +31,7 @@ var parseConfig = function(configjson) {
 	try {
 		return configjson = JSON.parse(configjson);
 	} catch (e) {
-		logger.error("Hiba a konfigurációban!");
+		log.error("Hiba a konfigurációban!");
 		//console.log(configjson);
 		return false;
 	}
@@ -44,6 +44,7 @@ var mergeGeneralWithEnv = function(modul) {
 			if(isArray(configObj[modul][env][option])){
 				global[modul][option] = configObj[modul].general[option].concat(configObj[modul][env][option]);
 			} else {
+				global[modul][option] = configObj[modul].general[option];
 				global[modul][option] = configObj[modul][env][option];
 			}
 		} else {

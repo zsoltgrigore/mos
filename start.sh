@@ -4,6 +4,8 @@
 #https://github.com/cliftonc/calipso/blob/master/bin/install.sh
 #ellenőrizni hogy production gép vagy development
 
+NOHUP="/usr/bin/nohup"
+
 node=$(node --version)
 npm=$(npm --version)
 
@@ -19,12 +21,20 @@ echo -en "\033[1mUsing NPM  version:\033[0m"
 tput sgr0
 echo " v$npm"
 
-if [ "$(pidof node)" ] 
-then
-  killall node
-  echo ""
-else
-  echo ""
+#Fut-e már?
+SRV_PID=`cat "srv.pid" 2> /dev/null`
+if [ -n "$SRV_PID" ]; then
+    if ps -p $SRV_PID > /dev/null; then
+        echo "process $SRV_PID már fut. kérlek állítsd le (stop.sh) és próbáld újra."
+        exit 4
+    else
+        echo "pid file srv.pid létezik, de process nem fut. "\
+            "talán nem megfelelően lett leállítva ?"
+        rm -f "srv.pid"
+        SRV_PID=
+    fi
 fi
 
-node core.js
+#indítás a háttérben
+$NOHUP node core.js </dev/null >> "console.log" 2>&1 &
+echo $! > "srv.pid"

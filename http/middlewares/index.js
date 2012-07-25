@@ -7,10 +7,10 @@
  */
 
 //postProcessors
-exports.postProcessors = require("./postProcessors");
+exports.postHandlers = require("./postHandlers");
 
 //requestHandlers
-exports.requestHandlers = require("./requestHandlers");
+exports.getHandlers = require("./getHandlers");
 
 //accountHandlers
 exports.accountHandlers = require("./accountHandlers");

@@ -27,14 +27,15 @@ function processLoginData(req, res) {
 					esbSocket: esbSocket
 				};
 				
-				var redirectAfterLogin = req.flash.redirectAfterLogin || '/demo';
+				var redirectAfterLogin = req.flash.redirectAfterLogin || mosHttp.defualtLanding || '/';
 				console.log(redirectAfterLogin)
-				return res.redirect(redirectAfterLogin);
+				res.redirect(redirectAfterLogin);
 				//res.redirect('/app?chan='+chan);
 	      	});
 	    } else {
 	      console.log(err);
-	      return res.redirect('/login');
+		  req.flash('error', err);
+	      res.redirect('/login');
 	    }
 	});
 }

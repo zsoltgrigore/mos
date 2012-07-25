@@ -1,4 +1,4 @@
 exec:	resolv
-	./start.sh
+		./start.sh
 resolv:
 	npm install
