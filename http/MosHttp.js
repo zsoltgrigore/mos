@@ -38,7 +38,7 @@ var MosHttp = function (mosHttpConfig) {
 
 	//set -- mehet ki confba
 	this.server.set('view engine', 'jade');
-	//this.server.set("view options", { layout: false });
+	this.server.set("view options", { layout: false });
 	this.server.set('views', __dirname + '/views');
 
 	//Init
