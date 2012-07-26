@@ -8,9 +8,9 @@
 				"express.methodOverride()"
 			],
 			"routes" : [
-				{ "path" : "/login" , "method" : "get", "middlewares" : ["accessLogger", "loginReqHandler"]},
+				{ "path" : "/login" , "method" : "get", "middlewares" : ["accessLogger", "login"]},
 				{ "path" : "/login" , "method" : "post", "middlewares" : ["accessLogger", "processLoginData"]},
-				{ "path" : "/", "method" : "get", "middlewares" : ["accessLogger", "rootReqHandler"]}
+				{ "path" : "/", "method" : "get", "middlewares" : ["accessLogger", "root"]}
 			]
 		},
 		"development" : {
@@ -20,12 +20,10 @@
 				"express.session({store: this.sessionStore, secret: 'secret', key: 'express.sid'})",
 				"this.server.router",
 				"express.static(__dirname + '/public')",
-    			"express.errorHandler({ dumpExceptions: true, showStack: true })"
+				"express.errorHandler({ dumpExceptions: true, showStack: true })"
 			],
 			"routes" : [
-				{ "path" : "/demo" , "method" : "get", "middlewares" : ["accessLogger", "restrict", "testerReqHandler"]},
-				{ "path" : "/tester" , "method" : "get", "middlewares" : ["accessLogger", "restrict", "testerReqHandler"]},
-				{ "path" : "/app" , "method" : "get", "middlewares" : ["accessLogger", "restrict", "appReqHandler"]},
+				{ "path" : "/tester" , "method" : "get", "middlewares" : ["accessLogger", "restrict", "tester"]},
 				{ "path" : "/500" , "method" : "get", "middlewares" : ["accessLogger", "internalServerError"]},
 				{ "path" : "/*" , "method" : "get", "middlewares" : ["accessLogger", "notFound"]}
 			]
