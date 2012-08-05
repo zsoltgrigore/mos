@@ -3,7 +3,7 @@
  */
 
 
-var User = function (nick, pass, hash){
+var User = module.exports = function (nick, pass, hash){
   	this.nick = nick || "";
 	this.source = nick || "@meshdev"; //+postfix
 	this.pass = pass || "";
@@ -19,5 +19,3 @@ User.prototype.isValidHash = function (hashToCheck){
 	if (hashToCheck == this.hash) return true;
 	return false;
 }
-
-module.exports = User;

@@ -7,7 +7,7 @@ var	User = require("../../model/auth/User");
 var	hash = require("../../utils/security").hash;
 var	cloneConfig = require("../../utils/general").cloneConfig;
 
-function authenticate(name, pass, callback) {
+exports.authenticate = function(name, pass, callback) {
   	//itt valami olyasmi hogy, ellenőrizni hogy van-e már ehhez a user-hez esbSocket
 	//ha van akkor minden onnan érkező üzenetet megkap, sőt valahogyan ugyanazt is kéne lássa mindkét böngészőben,
 	//ha nézetet vált egyikben akkor változzon a másik is
@@ -15,7 +15,7 @@ function authenticate(name, pass, callback) {
 	
 	if (this.socketMap[name]) return callback('Már be van jelentkezve!');
 	
-	var userSocketConfig = cloneConfig(configuration.esb);
+	var userSocketConfig = cloneConfig(global.configuration.esb);
 	userSocketConfig.user = new User(name, pass);
 	userSocketConfig.reconnectAllowed = false;
 	
@@ -38,5 +38,3 @@ function authenticate(name, pass, callback) {
 		return callback('Szolgáltatás nem elérhető');
 	});
 }
-
-exports.authenticate = authenticate;

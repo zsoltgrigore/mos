@@ -3,7 +3,7 @@
  */
 var accountHandlers = require("./accountHandlers");
 
-function processLoginData(req, res) {
+exports.processLoginData = function(req, res) {
 	var mosHttp = this;
 	
 	accountHandlers.authenticate.call(mosHttp, req.body.username, req.body.password, function(err, esbSocket){
@@ -50,5 +50,3 @@ function processLoginData(req, res) {
     res.redirect('/');
   }
  */
-
-exports.processLoginData = processLoginData;

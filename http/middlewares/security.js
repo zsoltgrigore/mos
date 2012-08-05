@@ -2,7 +2,7 @@
  * @author Grigore András Zsolt
  */
 
-function restrict(req, res, next) {
+exports.restrict = function(req, res, next) {
   try {
   	if (this.socketMap[req.session.user.source].user.isValidHash(req.session.user.hash)) {
 		this.logger.debug("[restrict]: Érvényes cookie: %s", req.session.user.source);
@@ -24,5 +24,3 @@ function restrict(req, res, next) {
   }
   res.redirect('/login');
 }
-
-exports.restrict = restrict;

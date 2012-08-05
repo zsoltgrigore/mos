@@ -9,10 +9,10 @@ var	MosHttp = require('./http/MosHttp');
 var	MosWebSockets = require('./websockets/MosWebSockets');
 
 /* Parse config to memory */
-configuration = config.createGlobalConfig(fs.readFileSync('mos.config.json', 'utf-8'));
+global.configuration = config.createGlobalConfig(fs.readFileSync('mos.config.json', 'utf-8'));
 
-var mosHttp = new MosHttp(configuration.http);
-var mosWebSockets = new MosWebSockets(configuration.websockets)
+var mosHttp = new MosHttp(global.configuration.http);
+var mosWebSockets = new MosWebSockets(global.configuration.websockets)
 mosHttp.listen();
 mosWebSockets.listen(mosHttp);
 

@@ -2,7 +2,7 @@
  * @author Grigore András Zsolt
  */
 
-function accessLogger(req, res, next) {
+exports.accessLogger = function(req, res, next) {
 	var mosHttp = this;
 	var user = 'anonymus';
 	
@@ -18,5 +18,3 @@ function accessLogger(req, res, next) {
 	//if (req.method == "POST") {mosHttp.logger.info(form adatai!)}
   	next();
 }
-
-exports.accessLogger = accessLogger;

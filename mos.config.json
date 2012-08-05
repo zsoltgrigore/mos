@@ -1,63 +1,61 @@
 {
 	"http" : {
-		"general" : {
+		"development" : {
+			"host" : "localhost",
+			"port" : 8080,
 			"defaultLanding" : "/",
+			"viewEngine" : "jade",
+			"showErrorStack" : true,
 			"use" : [
 				"express.bodyParser()",
 				"express.cookieParser()",
-				"express.methodOverride()"
+				"express.methodOverride()",
+				"express.session({store: this.sessionStore, secret: 'secret', key: 'express.sid'})",
+				"this.server.router",
+				"express.static(__dirname + '/public')"
 			],
 			"routes" : [
 				{ "path" : "/login" , "method" : "get", "middlewares" : ["accessLogger", "login"]},
 				{ "path" : "/login" , "method" : "post", "middlewares" : ["accessLogger", "processLoginData"]},
-				{ "path" : "/", "method" : "get", "middlewares" : ["accessLogger", "root"]}
-			]
-		},
-		"development" : {
-			"host" : "localhost",
-			"port" : 8080,
-			"use" : [
-				"express.session({store: this.sessionStore, secret: 'secret', key: 'express.sid'})",
-				"this.server.router",
-				"express.static(__dirname + '/public')",
-				"express.errorHandler({ dumpExceptions: true, showStack: true })"
-			],
-			"routes" : [
-				{ "path" : "/tester" , "method" : "get", "middlewares" : ["accessLogger", "restrict", "tester"]},
-				{ "path" : "/500" , "method" : "get", "middlewares" : ["accessLogger", "internalServerError"]},
-				{ "path" : "/*" , "method" : "get", "middlewares" : ["accessLogger", "notFound"]}
+				{ "path" : "/", "method" : "get", "middlewares" : ["accessLogger", "root"]},
+				{ "path" : "/tester" , "method" : "get", "middlewares" : ["accessLogger", "restrict", "tester"]}
 			]
 		},
 		"production" : {
 			"host" : "meshnetwork.hu",
 			"port" : 8080,
+			"defaultLanding" : "/",
+			"viewEngine" : "jade",
+			"showErrorStack" : false,
 			"use" : [
+				"express.bodyParser()",
+				"express.cookieParser()",
+				"express.methodOverride()",
 				"express.session({ store: new RedisStore, secret: 'keyboard cat', key: 'express.sid' })",
 				"this.server.router",
 				"express.static(__dirname + '/public')",
 				"express.errorHandler()"
 			],
 			"routes" : [
-				
+				{ "path" : "/login" , "method" : "get", "middlewares" : ["accessLogger", "login"]},
+				{ "path" : "/login" , "method" : "post", "middlewares" : ["accessLogger", "processLoginData"]},
+				{ "path" : "/", "method" : "get", "middlewares" : ["accessLogger", "root"]}
 			]
 		}
 	},
 	"websockets" : {
-		"general" : {
-
-		},
 		"development" : {
+			"enabled" :  true,
 			"host" : "localhost",
 			"port" : 8081
 		},
 		"production" : {
+			"enabled" : true,
 			"host" : "localhost",
 			"port" : 8081
 		}
 	},
 	"esb" : {
-		"general" : {
-		},
 		"development" : {
 			"salt" : "essé-mán-le-a-fárúl",
 			"host" : "meshnetwork.hu",

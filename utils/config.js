@@ -41,12 +41,7 @@ var mergeGeneralWithEnv = function(modul) {
 	if (modul != "global") global[modul] = {};
 	for(var option in configObj[modul][env]) {
 		if (modul != "global"){
-			if(isArray(configObj[modul][env][option])){
-				global[modul][option] = configObj[modul].general[option].concat(configObj[modul][env][option]);
-			} else {
-				global[modul][option] = configObj[modul].general[option];
-				global[modul][option] = configObj[modul][env][option];
-			}
+			global[modul][option] = configObj[modul][env][option];
 		} else {
 			global[option] = configObj[modul][env][option];
 		}

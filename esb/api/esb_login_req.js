@@ -2,7 +2,7 @@
  * @author Grigore András Zsolt
  */
 
-var esb_login_req = function () {
+module.exports = function () {
 	this.header = {
 		protocol : "mcp5",
 		name : "esb_login_req",
@@ -15,5 +15,3 @@ var esb_login_req = function () {
 		password : ""
   	}
 }
-
-module.exports = esb_login_req;

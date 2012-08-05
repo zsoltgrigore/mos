@@ -6,11 +6,11 @@
  * @author Grigore András Zsolt
  */
 
-//postProcessors
-exports.postHandlers = require("./postHandlers");
-
 //requestHandlers
 exports.getHandlers = require("./getHandlers");
+
+//postProcessors
+exports.postHandlers = require("./postHandlers");
 
 //accountHandlers
 exports.accountHandlers = require("./accountHandlers");
@@ -20,3 +20,6 @@ exports.security = require("./security");
 
 //loggers
 exports.loggers = require("./loggers");
+
+//errorHandlers
+exports.errorHandlers = require("./errorHandlers");

@@ -72,7 +72,7 @@ var Logger = module.exports = function (opts) {
   opts = opts || {}
   var logger = {};
   try {
-  	logger = configuration.logger;
+  	logger = global.configuration.logger;
   } catch (e) {
   }
   this.colors = false !== tty.isatty(process.stdout.fd);

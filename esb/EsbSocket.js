@@ -43,7 +43,7 @@ var json_parse = require("../utils/json_parse_rec.js");
  * 			reconnectAllowed : {Boolean} //újrakapcsolódhat?
  * 		}
  */
-var EsbSocket = function (esbSocketConfig) {
+var EsbSocket = module.exports = function (esbSocketConfig) {
 	esbSocketConfig = esbSocketConfig || {};
 	EventEmitter.call(this);
 	
@@ -404,5 +404,3 @@ EsbSocket.prototype.reconnect = function() {
 		this.end();
 	}
 }
-
-module.exports = EsbSocket;

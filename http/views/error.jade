@@ -1,0 +1,13 @@
+!!!
+html
+	head
+		meta(http-equiv="Content-Type", content="text/html; charset=UTF-8")
+		title #{title}
+	body
+		h1 #{status}
+		.error #{errorMsg}
+		
+		//- az errorStack többsoros Stringet tartalmaz ezért pre, production-be nincs errorStack kiírás
+		if (errorStack) 
+			pre #{errorStack}
+		hr

@@ -13,7 +13,7 @@ var EventEmitter = require('events').EventEmitter;
 /*
  * moshttp.emit("new auth chan req", esbSocket);
  */
-var MosHttp = function (mosHttpConfig) {
+var MosHttp = module.exports = function (mosHttpConfig) {
 	mosHttpConfig = mosHttpConfig || {};
 	EventEmitter.call(this);
 	
@@ -23,6 +23,7 @@ var MosHttp = function (mosHttpConfig) {
 	this.port = mosHttpConfig.port || 8080;
 	this.salt = mosHttpConfig.salt || "";
 	this.defualtLanding = mosHttpConfig.defaultLanding || "/";
+	this.showErrorStack = mosHttpConfig.showErrorStack || false;
 	this.routes = mosHttpConfig.routes || [{ path: "/", method: "get", middlewares: []}];
 	this.expressMiddlewares = mosHttpConfig.use || {};
 	
@@ -36,14 +37,15 @@ var MosHttp = function (mosHttpConfig) {
 	//memorystore helyett esb!!
 	this.sessionStore = new MemoryStore();
 
-	//set -- mehet ki confba
-	this.server.set('view engine', 'jade');
+	//set
+	this.server.set('view engine', mosHttpConfig.viewEngine);
 	this.server.set("view options", { layout: false });
 	this.server.set('views', __dirname + '/views');
 
 	//Init
 	this.addExpressMiddleWares();
 	this.applyMosMiddlewares();
+	this.applyErrorHandling();
 }
 util.inherits(MosHttp, EventEmitter);
 
@@ -80,6 +82,15 @@ MosHttp.prototype.applyMosMiddlewares = function () {
 	//és csak működő implementációt használni az egyes útvonalakon
 };
 
+MosHttp.prototype.applyErrorHandling = function () {
+	if (getMiddlewareValue('notFound')) {
+		this.server.use(getMiddlewareValue('notFound').bind(this));
+	};
+	if (getMiddlewareValue('error')) {
+		this.server.use(getMiddlewareValue('error').bind(this));
+	};
+}
+
 //áthidalás, ki kell majd dobni és
 //TODO: kicserélni util/general.objectGetKeyValue
 function getMiddlewareValue(middlewareName) {
@@ -100,5 +111,3 @@ MosHttp.prototype.listen = function () {
   		mosHttp.logger.info("M-O-S HTTP szerver indult @ http://%s:%s", mosHttp.address.address, mosHttp.address.port);
 	});
 };
-
-module.exports = MosHttp;

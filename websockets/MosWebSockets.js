@@ -20,7 +20,7 @@ var EsbSocket = require('../esb/').EsbSocket;
  * 			port : {Number} //port amihez kapcsolódunk
  * 		}
  */
-var MosWebSockets = function (mosWebSocketsConfig) {
+var MosWebSockets = module.exports = function (mosWebSocketsConfig) {
 	mosWebSocketsConfig = mosWebSocketsConfig || {};
 	
 	//Publikus változók
@@ -175,8 +175,6 @@ MosWebSockets.prototype.channelAuth = function (handshakeData, callback) {
  */
 MosWebSockets.prototype.channelConnectionHandler = function(webSocketClient) {
 }
-
-module.exports = MosWebSockets;
 
 /*
 var esb = require("../esb/");

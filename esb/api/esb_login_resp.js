@@ -4,7 +4,7 @@
  * @author Grigore András Zsolt
  */
 
-var esb_login_resp = function() {
+module.exports = function() {
 	this.header = {
 		protocol : "mcp5",
 		name : "esb_login_resp",
@@ -17,5 +17,3 @@ var esb_login_resp = function() {
 		login_success : "",				//1 ha success 0 ha failure
   	}
 };
-
-module.exports = esb_login_resp;

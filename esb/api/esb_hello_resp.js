@@ -2,7 +2,7 @@
  * @author Grigore András Zsolt
  */
 
-var esb_hello_resp = function () {
+module.exports = function () {
   	this.header = {
     	protocol : "mcp5",
     	name : "esb_hello_resp",
@@ -13,5 +13,3 @@ var esb_hello_resp = function () {
   	};
   	this.data = {};
 }
-
-module.exports = esb_hello_resp;
