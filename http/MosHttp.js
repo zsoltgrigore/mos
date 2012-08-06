@@ -39,7 +39,7 @@ var MosHttp = module.exports = function (mosHttpConfig) {
 
 	//set
 	this.server.set('view engine', mosHttpConfig.viewEngine);
-	this.server.set("view options", { layout: false });
+	this.server.set('view options', {layout: false});
 	this.server.set('views', __dirname + '/views');
 
 	//Init
@@ -107,7 +107,8 @@ function getMiddlewareValue(middlewareName) {
 MosHttp.prototype.listen = function () {
 	var mosHttp = this;
 	mosHttp.server.listen(mosHttp.port, mosHttp.host, function () {
-  		mosHttp.address = mosHttp.server.address();
-  		mosHttp.logger.info("M-O-S HTTP szerver indult @ http://%s:%s", mosHttp.address.address, mosHttp.address.port);
+  		//mosHttp.address = mosHttp.server.address();
+  		//mosHttp.logger.info("M-O-S HTTP szerver indult @ http://%s:%s", mosHttp.address.address, mosHttp.address.port)
+		mosHttp.logger.info("M-O-S HTTP szerver indult @ http://%s:%s", mosHttp.host, mosHttp.port);
 	});
 };

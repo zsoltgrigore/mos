@@ -9,7 +9,9 @@ exports.root = function(req, res) {
 }
 
 exports.login = function(req, res) {
-	res.render('login');
+	res.render('login', {
+		title: 'Mesh Data Systems Kft. - Bejelentkezés'
+	});
 }
 
 exports.tester = function(req, res) {
