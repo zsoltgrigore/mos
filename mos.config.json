@@ -1,6 +1,7 @@
 {
 	"http" : {
 		"development" : {
+			"enabled" : true,
 			"host" : "localhost",
 			"port" : 8080,
 			"defaultLanding" : "/",
@@ -22,6 +23,7 @@
 			]
 		},
 		"production" : {
+			"enabled" : true,
 			"host" : "meshnetwork.hu",
 			"port" : 8080,
 			"defaultLanding" : "/",
