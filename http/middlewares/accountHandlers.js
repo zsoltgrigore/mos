@@ -23,13 +23,14 @@ exports.authenticate = function(name, pass, callback) {
 	tempEsbSocket.connect();
 		
   	tempEsbSocket.on("successfull login", function (resp){
-		tempEsbSocket.reconnectAllowed = true;
+		tempEsbSocket.reconnectAllowed = global.configuration.esb.reconnectAllowed;
 		tempEsbSocket.user.hash = hash(pass, tempEsbSocket.salt);
 		return callback(null, tempEsbSocket);
 	});
 	
   	tempEsbSocket.on("access denied", function (resp){
 		tempEsbSocket.end();
+		//lehet dobni a megfelelő errort
 		return callback('Hibás felhasználói adatok!');
 	});
 	

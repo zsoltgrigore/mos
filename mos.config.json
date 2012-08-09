@@ -63,12 +63,14 @@
 			"host" : "meshnetwork.hu",
 			"port" : 5521,
 			"helloInterval" : 1000,
+			"reconnectAllowed" : true,
 			"reconnectDelay" : 1000
 		},
 		"production" : {
 			"host" : "meshnetwork.hu",
 			"port" : 5521,
 			"helloInterval" : 2000,
+			"reconnectAllowed": true,
 			"reconnectDelay" : 3000
 		}
 	},

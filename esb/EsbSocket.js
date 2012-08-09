@@ -56,7 +56,8 @@ var EsbSocket = module.exports = function (esbSocketConfig) {
 	this.destination = esbSocketConfig.destination || "ANY";
 	this.helloInterval = esbSocketConfig.helloInterval || 1000;
 	this.reconnectDelay = esbSocketConfig.reconnectDelay || 3000;
-	this.reconnectAllowed = esbSocketConfig.reconnectAllowed || true;
+	// bug: this.reconnectAllowed = esbSocketConfig.reconnectAllowed || true; <--ez mindíg true!! Boolean-nál (doh)
+	this.reconnectAllowed = esbSocketConfig.reconnectAllowed == undefined ? true : esbSocketConfig.reconnectAllowed;
 	
 	//Nem annyira publikus változók
 	//-----------------------------
@@ -342,7 +343,7 @@ EsbSocket.prototype.helloRespHandler = function(esb_hello_resp) {
 EsbSocket.prototype.errorHandler = function(exception) {
 	if(!this.connection) this._reconnecting = false;
 	this.logger.error("Hiba történt!");
-	this.logger.error(exception.toString);
+	this.logger.error(exception.toString());
 	this.reconnect();
 }
 
