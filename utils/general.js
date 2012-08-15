@@ -19,31 +19,27 @@ exports.isArray = function(obj) {
 };
 
 /*
- * Megkeresi hogy van-e bármilyen szinten ilyen kulcs az objektumban.
+ * Megkeresi hogy van-e bármilyen szinten ilyen kulcs az objektumban és visszaadja az étékét.
+ * Használat: 
+ * 		general.objectGetKeyValue(require("../../http/middlewares/"))['middlewareName'];
  *
- * @param {Object} obj
- * 		bármilyen objektum
- * @param {String} key
- * 		kulcs
+ * @param {Object} tree
+ * 		bármilyen összetett objektum
+ * @param {Objetc} ret
+ * 		rekurzióban használt egydimenziós ojjektum a fában található levelek key-vel
  *
- * @return {value | function}
- * 		kulcshoz tartozó érték, lehet függvény is!
+ * @return {Object}
+ * 		a fából összegyűjtött levelek asszociatív tömbben
  */
-//TODO: fabejárás
-exports.objectGetKeyValue = function(obj, key) {
-	var keyfound = false;
-	while (!keyfound) {
-		for (var realKey in obj) {
-			if (realKey == key) {
-				return obj[key];
-				break;
-			}
-		}
-		
+exports.objectGetKeyValue = function(tree, ret) {
+	var ret = ret || {};
+	for (var node in tree ) {
+		typeof tree[node] === 'object'
+			? exports.objectGetKeyValue(tree[node], ret) 
+			: ret[node] = tree[node];
 	}
-	
-	return false;
-}
+	return ret;
+};
 
 exports.cloneConfig = function(obj) {
     if (null == obj || "object" != typeof obj) return obj;

@@ -20,6 +20,3 @@ exports.security = require("./security");
 
 //loggers
 exports.loggers = require("./loggers");
-
-//errorHandlers
-exports.errorHandlers = require("./errorHandlers");

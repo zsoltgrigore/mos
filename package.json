@@ -8,9 +8,9 @@
 	{ "name": "Jacsek Gergely", "email": "jager@meshnetwork.hu" }
   ],
   "dependencies": {
-    "express": "2.x.x",
+    "express": "3.x.x",
     "socket.io": "0.9.x",
-    "connect": "2.2.x",
+    "connect": "2.x.x",
     "jade": "*" 
   },
   "devDependencies": {

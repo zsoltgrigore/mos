@@ -3,12 +3,14 @@
  */
 
 var express = require("express");
+var http = require("http");
 var util = require("util");
 var Logger = require('../utils/Logger');
-var secUtils = require('../utils/security');
-var middlewares= require('./middlewares/');
+var routeMiddlewares = require('./routeMiddlewares/');
+var appMiddlewares = require('./appMiddlewares/');
 var	MemoryStore = express.session.MemoryStore;
 var EventEmitter = require('events').EventEmitter;
+var objectGetKeyValue = require('../utils/general').objectGetKeyValue;
 
 /*
  * moshttp.emit("new auth chan req", esbSocket);
@@ -32,28 +34,45 @@ var MosHttp = module.exports = function (mosHttpConfig) {
 	this.address = false;
 	this.httpPath = __dirname;
 	this.socketMap = {};
-	this.server = express.createServer();
+	this.app = express();
+	this.server = http.createServer(this.app);
 	this.logger = new Logger({target : "MosHttp<Server>"});
 	//memorystore helyett esb!!
 	this.sessionStore = new MemoryStore();
 
 	//set
-	this.server.set('view engine', mosHttpConfig.viewEngine);
-	this.server.set('view options', {layout: false});
-	this.server.set('views', __dirname + '/views');
+	this.app.set('view engine', mosHttpConfig.viewEngine);
+	this.app.set('view options', {layout: false});
+	this.app.set('views', __dirname + '/views');
 
 	//Init
 	this.addExpressMiddleWares();
 	this.applyMosMiddlewares();
-	this.applyErrorHandling();
 }
 util.inherits(MosHttp, EventEmitter);
 
 MosHttp.prototype.addExpressMiddleWares = function () {
+	//access log: "express.logger('short')"
 	for (var index in this.expressMiddlewares) {
-		this.logger.info("M-O-S use: %s", this.expressMiddlewares[index]);
-		//access log: "express.logger('short')"
-		this.server.use(eval(this.expressMiddlewares[index]));
+		var middlewareName = this.expressMiddlewares[index];
+		try {
+			var middlewareScript;
+			if (typeof this.expressMiddlewares[index] === 'object') {
+				var customMiddleware = this.expressMiddlewares[index];
+				// a custom middleware-ek (key-value pár) objektumok a konfigban; key - a tároló neve
+				var middlewareContainer = Object.keys(customMiddleware)[0];
+				//                                                              ; value a middleware neve
+				middlewareScript = objectGetKeyValue(eval(middlewareContainer))[customMiddleware[middlewareContainer]].bind(this);
+				middlewareName = middlewareContainer+"."+customMiddleware[middlewareContainer];
+			} else {
+				middlewareScript = eval(this.expressMiddlewares[index])
+			}
+			this.app.use(middlewareScript);
+			this.logger.info("M-O-S use: %s", middlewareName);
+		} catch (e) {
+			this.logger.warn("A %s application middleware hozzáadása nem sikerült: %s", 
+								middlewareName, e.message);
+		}
 	}
 };
 
@@ -62,7 +81,7 @@ MosHttp.prototype.applyMosMiddlewares = function () {
 		var numOfAvailableMW = 0;
 		var availableMW = [];
 		for (var middlewareIt in this.routes[routeIt].middlewares) {
-			var middlewareImpl = getMiddlewareValue(this.routes[routeIt].middlewares[middlewareIt]);
+			var middlewareImpl = objectGetKeyValue(routeMiddlewares)[this.routes[routeIt].middlewares[middlewareIt]];
 			if (middlewareImpl){
 				availableMW.push(middlewareImpl.bind(this)); //minden routeHandler-nek a mosHttp a kontextusa
 				numOfAvailableMW++;
@@ -72,7 +91,7 @@ MosHttp.prototype.applyMosMiddlewares = function () {
 			this.logger.info("'%s' útvonalhoz tartozó '%s' method kérés lekezelhető. Hozzáadva!",
 					this.routes[routeIt].path, this.routes[routeIt].method);
 			//hozzáad a szerverhez egy "method" típusú és "path" elérésű útvonalat a megtalált kezelő fügvényekkel
-			this.server[this.routes[routeIt].method](this.routes[routeIt].path , availableMW);
+			this.app[this.routes[routeIt].method](this.routes[routeIt].path , availableMW);
 		} else {
 			this.logger.warn("'%s' útvonalhoz tartozó '%s' method kérés lekezeléséhez nincs háttér logika. Eldobva!",
 					this.routes[routeIt].path, this.routes[routeIt].method);
@@ -82,33 +101,10 @@ MosHttp.prototype.applyMosMiddlewares = function () {
 	//és csak működő implementációt használni az egyes útvonalakon
 };
 
-MosHttp.prototype.applyErrorHandling = function () {
-	if (getMiddlewareValue('notFound')) {
-		this.server.use(getMiddlewareValue('notFound').bind(this));
-	};
-	if (getMiddlewareValue('error')) {
-		this.server.use(getMiddlewareValue('error').bind(this));
-	};
-}
-
-//áthidalás, ki kell majd dobni és
-//TODO: kicserélni util/general.objectGetKeyValue
-function getMiddlewareValue(middlewareName) {
-	for (var category in middlewares) {
-		for (var middlewareDefName in middlewares[category]) {
-			if (middlewareName == middlewareDefName)
-				return middlewares[category][middlewareDefName];
-		}
-	}
-	return false;
-}
-
-
 MosHttp.prototype.listen = function () {
 	var mosHttp = this;
-	mosHttp.server.listen(mosHttp.port, mosHttp.host, function () {
-  		//mosHttp.address = mosHttp.server.address();
-  		//mosHttp.logger.info("M-O-S HTTP szerver indult @ http://%s:%s", mosHttp.address.address, mosHttp.address.port)
-		mosHttp.logger.info("M-O-S HTTP szerver indult @ http://%s:%s", mosHttp.host, mosHttp.port);
+	mosHttp.server.listen(mosHttp.port, mosHttp.host, function (data) {
+  		mosHttp.address = mosHttp.server.address();
+  		mosHttp.logger.info("M-O-S HTTP szerver indult @ http://%s:%s", mosHttp.address.address, mosHttp.address.port)
 	});
 };

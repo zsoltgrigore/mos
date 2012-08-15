@@ -1,11 +1,12 @@
 /**
  * @author Grigore András Zsolt
  */
-var sio = require("socket.io");
+var sio = require('socket.io');
+var http = require('http');
 var parseCookie = require('connect').utils.parseCookie;
 var Session = require('connect').middleware.session.Session;
 var Logger = require('../utils/Logger');
-var	cloneConfig = require("../utils/general").cloneConfig;
+var	cloneConfig = require('../utils/general').cloneConfig;
 var EsbSocket = require('../esb/').EsbSocket;
 
 /**
@@ -49,7 +50,7 @@ var MosWebSockets = module.exports = function (mosWebSocketsConfig) {
 MosWebSockets.prototype.listen = function (mosHttp) {
 	if (mosHttp) {
 		this.http = mosHttp;
-		this.ioServer = sio.listen(mosHttp.server);
+		this.ioServer = sio.listen(this.http);
 	} else {
 		this.ioServer = sio.listen(port, host);
 	}
@@ -77,6 +78,8 @@ MosWebSockets.prototype.listen = function (mosHttp) {
  */
 MosWebSockets.prototype.globalAuthorizationHandler = function (handshakeData, callback) {
 	var http = this.http;
+	require('util').inspect(http);
+	require('util').inspect(handshake);
     if (handshakeData.headers.cookie) {
         handshakeData.cookie = parseCookie(handshakeData.headers.cookie);
         handshakeData.sessionID = handshakeData.cookie['express.sid']; 			//magic string!!: ezt express példányból is ki lehet szedni (express.session!)

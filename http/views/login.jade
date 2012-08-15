@@ -5,3 +5,5 @@ block content
 		input(type="text", name="username")
 		input(type="password", name="password")
 		input(type="submit", value="Login")
+	if (message.type)
+		<p class="#{message.type}">#{message.text}</p>

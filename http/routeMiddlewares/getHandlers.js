@@ -10,10 +10,13 @@ exports.root = function(req, res) {
 
 exports.login = function(req, res) {
 	res.render('login', {
-		title: 'Mesh Data Systems Kft. - Bejelentkezés'
+		title: 'Mesh Data Systems Kft. - Bejelentkezés',
+		message: res.locals.message
 	});
 }
 
 exports.tester = function(req, res) {
 	res.render('tester');
 }
+
+exports.test = require("./test/");

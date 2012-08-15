@@ -27,14 +27,18 @@ exports.processLoginData = function(req, res) {
 					esbSocket: esbSocket
 				};
 				
-				var redirectAfterLogin = req.flash.redirectAfterLogin || mosHttp.defualtLanding || '/';
-				console.log(redirectAfterLogin)
+				var redirectAfterLogin = '/';
+				try {
+					redirectAfterLogin = res.locals.redirect || mosHttp.defualtLanding;
+				} catch (e) {
+					mosHttp.logger.warn("No redirection path found! %s", e.message);
+				}
 				res.redirect(redirectAfterLogin);
 				//res.redirect('/app?chan='+chan);
 	      	});
 	    } else {
-	      console.log(err);
-		  req.flash('error', err);
+	      mosHttp.logger.info(err.message);
+		  req.session.error = err.message;
 	      res.redirect('/login');
 	    }
 	});

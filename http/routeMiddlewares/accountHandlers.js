@@ -13,7 +13,7 @@ exports.authenticate = function(name, pass, callback) {
 	//ha nézetet vált egyikben akkor változzon a másik is
 	// TODO: console.log(typeof this); <------ ennek MosHttp-t kellene visszaadnia nem pedig object-et
 	
-	if (this.socketMap[name]) return callback('Már be van jelentkezve!');
+	if (this.socketMap[name]) return callback(new Error('Már be van jelentkezve!'));
 	
 	var userSocketConfig = cloneConfig(global.configuration.esb);
 	userSocketConfig.user = new User(name, pass);
@@ -21,7 +21,9 @@ exports.authenticate = function(name, pass, callback) {
 	
   	var tempEsbSocket = new EsbSocket(userSocketConfig);
 	tempEsbSocket.connect();
-		
+	
+	//az eseménykezelő rajta marad miután sikeresen kapcsolódtunk ezért
+	//ha megszakad az esb és reconnect jön akkor siker esetén megint meghívodik pedig nem kéne!
   	tempEsbSocket.on("successfull login", function (resp){
 		tempEsbSocket.reconnectAllowed = global.configuration.esb.reconnectAllowed;
 		tempEsbSocket.user.hash = hash(pass, tempEsbSocket.salt);
@@ -31,11 +33,11 @@ exports.authenticate = function(name, pass, callback) {
   	tempEsbSocket.on("access denied", function (resp){
 		tempEsbSocket.end();
 		//lehet dobni a megfelelő errort
-		return callback('Hibás felhasználói adatok!');
+		return callback(new Error('Hibás felhasználói adatok!'));
 	});
 	
 	tempEsbSocket.on("end", function (){
 		tempEsbSocket.end();
-		return callback('Szolgáltatás nem elérhető');
+		return callback(new Error('Szolgáltatás nem elérhető'));
 	});
 }

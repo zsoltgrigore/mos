@@ -16,10 +16,11 @@ if (global.configuration.http.enabled) {
 	mosHttp.listen();
 }
 
-if (global.configuration.websockets) {
+if (global.configuration.websockets.enabled) {
 	var mosWebSockets = new MosWebSockets(global.configuration.websockets)
 	mosWebSockets.listen(mosHttp);
 }
+
 //Tennivalók:
 //
 //Express 3-ra migrálás

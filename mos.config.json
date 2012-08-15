@@ -4,16 +4,20 @@
 			"enabled" : true,
 			"host" : "localhost",
 			"port" : 8080,
-			"defaultLanding" : "/",
+			"defaultLanding" : "/test",
 			"viewEngine" : "jade",
 			"showErrorStack" : true,
 			"use" : [
+				"express.static(__dirname + '/public')",
 				"express.bodyParser()",
 				"express.cookieParser()",
 				"express.methodOverride()",
 				"express.session({store: this.sessionStore, secret: 'secret', key: 'express.sid'})",
-				"this.server.router",
-				"express.static(__dirname + '/public')"
+				{"appMiddlewares" : "sessionMessages"},
+				{"appMiddlewares" : "i18n"},
+				"this.app.router",
+				{"appMiddlewares" : "notFound"},
+				{"appMiddlewares" : "error"}
 			],
 			"routes" : [
 				{ "path" : "/login" , "method" : "get", "middlewares" : ["accessLogger", "login"]},
@@ -26,7 +30,7 @@
 			"enabled" : true,
 			"host" : "meshnetwork.hu",
 			"port" : 8080,
-			"defaultLanding" : "/",
+			"defaultLanding" : "/test",
 			"viewEngine" : "jade",
 			"showErrorStack" : false,
 			"use" : [
@@ -34,7 +38,7 @@
 				"express.cookieParser()",
 				"express.methodOverride()",
 				"express.session({ store: new RedisStore, secret: 'keyboard cat', key: 'express.sid' })",
-				"this.server.router",
+				"this.app.router",
 				"express.static(__dirname + '/public')",
 				"express.errorHandler()"
 			],
