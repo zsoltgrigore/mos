@@ -44,10 +44,11 @@ var MosHttp = module.exports = function (mosHttpConfig) {
 	this.app.set('view engine', mosHttpConfig.viewEngine);
 	this.app.set('view options', {layout: false});
 	this.app.set('views', __dirname + '/views');
-
+	
 	//Init
 	this.addExpressMiddleWares();
 	this.applyMosMiddlewares();
+
 }
 util.inherits(MosHttp, EventEmitter);
 
@@ -103,6 +104,7 @@ MosHttp.prototype.applyMosMiddlewares = function () {
 
 MosHttp.prototype.listen = function () {
 	var mosHttp = this;
+	
 	mosHttp.server.listen(mosHttp.port, mosHttp.host, function (data) {
   		mosHttp.address = mosHttp.server.address();
   		mosHttp.logger.info("M-O-S HTTP szerver indult @ http://%s:%s", mosHttp.address.address, mosHttp.address.port)

@@ -11,31 +11,22 @@ html(xmlns="http://www.w3.org/1999/xhtml")
 
 		link(rel="stylesheet", type="text/css", href="css/avg_controller.css")
 
+		script(language="javascript", type="text/javascript", src="js/libs/require.js")
 		script(language="javascript", type="text/javascript", src="js/libs/jquery.js")
-		script(language="javascript", type="text/javascript", src="js/libs/json_parse.js")
 		script(language="javascript", type="text/javascript", src="/socket.io/socket.io.js")
-		script(language="javascript", type="text/javascript", src="js/mds/avg_controller.js")
+		script
+			require({
+				baseUrl: 'js',
+				paths: {
+					jquery: 'libs/jquery',
+					socketio: '../socket.io/socket.io',
+				},
+				priority: ['jquery', 'socketio']
+			}, ['app']);
 	body
 		.title AGV Online Control
-
-		.avg_controller
-			.absolute
-				img(src="images/avg_taviranyito_0_1.jpg", alt="AVG control panel")
-			.absolute.up(title="Előre", onmousedown="avgMoveHandler('forward')", onclick="avgMoveHandler('stop')") &nbsp;
-			.absolute.down(title="Hátra", onmousedown="avgMoveHandler('backward')", onclick="avgMoveHandler('stop')") &nbsp;
-			.absolute.left(title="Jobbra", onmousedown="avgMoveHandler('left')", onclick="avgMoveHandler('stop')") &nbsp;
-			.absolute.right(title="Balra", onmousedown="avgMoveHandler('right')", onclick="avgMoveHandler('stop')") &nbsp;
-
-			.absolute.tape_1.tape_left(title="Hátra", onmousedown="avgTapeMoveHandler(1,'-1')", onclick="avgTapeMoveHandler(1,'0')") &nbsp;
-			.absolute.tape_1.tape_right(title="Előre", onmousedown="avgTapeMoveHandler(1,'1')", onclick="avgTapeMoveHandler(1,'0')") &nbsp;
-			.absolute.tape_2.tape_left(title="Hátra", onmousedown="avgTapeMoveHandler(2,'-1')", onclick="avgTapeMoveHandler(2,'0')") &nbsp;
-			.absolute.tape_2.tape_right(title="Előre", onmousedown="avgTapeMoveHandler(2,'1')", onclick="avgTapeMoveHandler(2,'0')") &nbsp;
-
-			.absolute.stop(onclick="avgMoveHandler('stop'); avgTapeMoveHandler(1,'0'); avgTapeMoveHandler(2,'0');") &nbsp;
-
-		canvas#agv_map(width="800", height="500") Your browser does not support the canvas element.
 		
-		.agv_tester_area
+		.tester_area
 			.clear
 			textarea#log(readonly="readonly")
 			.spacer

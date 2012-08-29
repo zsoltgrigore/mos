@@ -3,7 +3,8 @@
  */
 var sio = require('socket.io');
 var http = require('http');
-var parseCookie = require('connect').utils.parseCookie;
+var cookie = require('cookie');
+var parseSignedCookies = require('connect').utils.parseSignedCookies;
 var Session = require('connect').middleware.session.Session;
 var Logger = require('../utils/Logger');
 var	cloneConfig = require('../utils/general').cloneConfig;
@@ -50,7 +51,7 @@ var MosWebSockets = module.exports = function (mosWebSocketsConfig) {
 MosWebSockets.prototype.listen = function (mosHttp) {
 	if (mosHttp) {
 		this.http = mosHttp;
-		this.ioServer = sio.listen(this.http);
+		this.ioServer = sio.listen(this.http.server);
 	} else {
 		this.ioServer = sio.listen(port, host);
 	}
@@ -78,17 +79,20 @@ MosWebSockets.prototype.listen = function (mosHttp) {
  */
 MosWebSockets.prototype.globalAuthorizationHandler = function (handshakeData, callback) {
 	var http = this.http;
-	require('util').inspect(http);
-	require('util').inspect(handshake);
+	
     if (handshakeData.headers.cookie) {
-        handshakeData.cookie = parseCookie(handshakeData.headers.cookie);
-        handshakeData.sessionID = handshakeData.cookie['express.sid']; 			//magic string!!: ezt express példányból is ki lehet szedni (express.session!)
+    	handshakeData.cookie = cookie.parse(handshakeData.headers.cookie);
+		//ezt a kettőt http modul configba: publicSessionKey (mossecret); publicSessionKey (express.sid); 
+    	handshakeData.cookie = parseSignedCookies(handshakeData.cookie, "essé-mán-le-a-fárúl");
+        handshakeData.sessionID = handshakeData.cookie['publicSessionKey'];
+		handshakeData.sessionStore = http.sessionStore;
         http.sessionStore.get(handshakeData.sessionID, function (err, session) {
             if (err || !session) {
             	callback('Error: nem található tárolt session ehhez az ID-hoz:' + handshakeData.sessionID, false);
             } else {
 				try {
 					if (http.socketMap[session.user.source].user.isValidHash(session.user.hash)) {
+						//handshakeData.session = new Session(handshakeData, session);
 						handshakeData.session = session;
                 		return callback(null, true);
 					}
@@ -112,10 +116,23 @@ MosWebSockets.prototype.globalAuthorizationHandler = function (handshakeData, ca
 MosWebSockets.prototype.globalConnectionHandler = function(webSocket) {
 	var mosWebSockets = this;
 	var esbSocket = mosWebSockets.http.socketMap[webSocket.handshake.session.user.source].esbSocket;
-	var sessionid = webSocket.handshake.sessionID;
+	var handshake = webSocket.handshake;
+	var sessionid = handshake.sessionID;
 	
 	mosWebSockets.logger.info("Kliens kapcsolódott. HTTP SessionId: " + webSocket.handshake.sessionID);
 	mosWebSockets.logger.info("Felhasználó: " + webSocket.handshake.session.user.source);
+	/*
+	var intervalID = setInterval(function () {
+        // reload the session (just in case something changed,
+        // we don't want to override anything, but the age)
+        // reloading will also ensure we keep an up2date copy
+        // of the session with our connection.
+        handshake.session.reload( function () { 
+            // "touch" it (resetting maxAge and lastAccess)
+            // and save it back again.
+            handshake.session.touch().save();
+        });
+    }, 60 * 1000);*/
 	
 	webSocket.on("ready", function(init){
 		init(esbSocket.esb_login_resp.header.source, esbSocket.user.nick, esbSocket.helloInterval);
@@ -141,6 +158,7 @@ MosWebSockets.prototype.globalConnectionHandler = function(webSocket) {
 	webSocket.on('disconnect', function () {
 		delete mosWebSockets.http.socketMap[webSocket.handshake.session.user.source];
 		esbSocket.end();
+		//clearInterval(intervalID);
 		mosWebSockets.http.sessionStore.destroy(webSocket.handshake.sessionID, function () {
             mosWebSockets.logger.info("Kliens végpont leszakadt. Felhasználó azonosító és a hozzá tartozó session törölve." + sessionid);
         });

@@ -12,7 +12,7 @@
 				"express.bodyParser()",
 				"express.cookieParser()",
 				"express.methodOverride()",
-				"express.session({store: this.sessionStore, secret: 'secret', key: 'express.sid'})",
+				"express.session({store: this.sessionStore, secret: 'essé-mán-le-a-fárúl', key: 'publicSessionKey'})",
 				{"appMiddlewares" : "sessionMessages"},
 				{"appMiddlewares" : "i18n"},
 				"this.app.router",
@@ -37,7 +37,7 @@
 				"express.bodyParser()",
 				"express.cookieParser()",
 				"express.methodOverride()",
-				"express.session({ store: new RedisStore, secret: 'keyboard cat', key: 'express.sid' })",
+				"express.session({ store: new RedisStore, secret: 'essé-mán-le-a-fárúl', key: 'publicSessionKey'})",
 				"this.app.router",
 				"express.static(__dirname + '/public')",
 				"express.errorHandler()"

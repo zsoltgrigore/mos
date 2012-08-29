@@ -22,22 +22,26 @@ exports.authenticate = function(name, pass, callback) {
   	var tempEsbSocket = new EsbSocket(userSocketConfig);
 	tempEsbSocket.connect();
 	
-	//az eseménykezelő rajta marad miután sikeresen kapcsolódtunk ezért
-	//ha megszakad az esb és reconnect jön akkor siker esetén megint meghívodik pedig nem kéne!
-  	tempEsbSocket.on("successfull login", function (resp){
+  	var successfullLoginHandler = function (resp){
 		tempEsbSocket.reconnectAllowed = global.configuration.esb.reconnectAllowed;
 		tempEsbSocket.user.hash = hash(pass, tempEsbSocket.salt);
+		tempEsbSocket.removeListener("successfull login", successfullLoginHandler);
 		return callback(null, tempEsbSocket);
-	});
+	}
+	tempEsbSocket.on("successfull login", successfullLoginHandler);
 	
-  	tempEsbSocket.on("access denied", function (resp){
+	var accessDeniedHandler = function (resp){
 		tempEsbSocket.end();
+		tempEsbSocket.removeListener("access denied", accessDeniedHandler);
 		//lehet dobni a megfelelő errort
 		return callback(new Error('Hibás felhasználói adatok!'));
-	});
+	}
+  	tempEsbSocket.on("access denied", accessDeniedHandler);
 	
-	tempEsbSocket.on("end", function (){
+	var endHandler = function (){
 		tempEsbSocket.end();
+		tempEsbSocket.removeListener("access denied", endHandler);
 		return callback(new Error('Szolgáltatás nem elérhető'));
-	});
+	}
+	tempEsbSocket.on("end", endHandler);
 }

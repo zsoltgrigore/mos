@@ -3,22 +3,29 @@
   "description": "Mesh tulajdonosok honlapja",
   "version": "0.0.1",
   "author": "Grigore Zsolt <grigo@meshnetwork.hu>",
-  "contributors" : [
-	{ "name": "Grigore Zsolt", "email": "grigo@meshnetwork.hu" },
-	{ "name": "Jacsek Gergely", "email": "jager@meshnetwork.hu" }
+  "contributors": [
+    {
+      "name": "Grigore Zsolt",
+      "email": "grigo@meshnetwork.hu"
+    },
+    {
+      "name": "Jacsek Gergely",
+      "email": "jager@meshnetwork.hu"
+    }
   ],
   "dependencies": {
     "express": "3.x.x",
     "socket.io": "0.9.x",
     "connect": "2.x.x",
-    "jade": "*" 
+    "jade": "*",
+    "redis": "~0.7.2",
+    "hiredis": "~0.1.14",
+    "cookie": "0.0.4"
   },
-  "devDependencies": {
-    
-  },
+  "devDependencies": {},
   "main": "core",
-  "scripts": {
-    
-  },
-  "engines": { "node": ">= 0.4.1 < 0.7.0" }
+  "scripts": {},
+  "engines": {
+    "node": ">= 0.4.1 < 0.7.0"
+  }
 }
