@@ -4,7 +4,7 @@
 			"enabled" : true,
 			"host" : "localhost",
 			"port" : 8080,
-			"defaultLanding" : "/test",
+			"defaultLanding" : "/tester",
 			"viewEngine" : "jade",
 			"showErrorStack" : true,
 			"use" : [
@@ -30,7 +30,7 @@
 			"enabled" : true,
 			"host" : "meshnetwork.hu",
 			"port" : 8080,
-			"defaultLanding" : "/test",
+			"defaultLanding" : "/tester",
 			"viewEngine" : "jade",
 			"showErrorStack" : false,
 			"use" : [
@@ -64,7 +64,7 @@
 	"esb" : {
 		"development" : {
 			"salt" : "essé-mán-le-a-fárúl",
-			"host" : "meshnetwork.hu",
+			"host" : "localhost",
 			"port" : 5521,
 			"helloInterval" : 1000,
 			"reconnectAllowed" : true,

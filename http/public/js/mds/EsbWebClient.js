@@ -4,6 +4,8 @@
 
 define(function(require, exports, module) {
 	
+	var utils = require("mds/utils");
+	
 	var EsbWebClient = function(clientConfig) {
 		clientConfig = clientConfig || {};
 		
@@ -27,18 +29,26 @@ define(function(require, exports, module) {
 			//this.privateConn = io.connect("http://localhost:8080/" + this.channel);
 		} else {
 			this.connection = io.connect();
+			//ha kapcsolesb-hez akkor az azt is jelenzi hogy van esb kapcsolat ezért a loginhandler is lefut connect-re
 			this.connection.on("connect", this.connectHandler);
+			this.connection.on("connect", this.loginHandler);
 			this.connection.on("error", this.errorHandler);
-			this.connection.on("successfull login", this.loginHandler);
+			//a succesfull login esemény sokkal korábban eltüzelődik, mióta ezt használjuk az authentikáció során
+			//this.connection.on("successfull login", this.loginHandler);
 		}
 	};
 
 	EsbWebClient.prototype.errorHandler = function (reason){
   		console.error('Unable to connect Socket.IO' + reason);
+  		utils.redirectTo(null, '/login');
 	};
 
 	EsbWebClient.prototype.loginHandler = function (msg){
-		$('body').append('<div>').attr('id', 'login').append("Kapcsolódott");
+		$('#login').append("Kapcsolódott");
+		$('#login').click(function (e) {
+			utils.redirectTo(e,'/login');
+			}
+		);
 	};
 
 	EsbWebClient.prototype.connectHandler = function (){

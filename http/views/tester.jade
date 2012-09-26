@@ -11,20 +11,10 @@ html(xmlns="http://www.w3.org/1999/xhtml")
 
 		link(rel="stylesheet", type="text/css", href="css/avg_controller.css")
 
-		script(language="javascript", type="text/javascript", src="js/libs/require.js")
-		script(language="javascript", type="text/javascript", src="js/libs/jquery.js")
-		script(language="javascript", type="text/javascript", src="/socket.io/socket.io.js")
-		script
-			require({
-				baseUrl: 'js',
-				paths: {
-					jquery: 'libs/jquery',
-					socketio: '../socket.io/socket.io',
-				},
-				priority: ['jquery', 'socketio']
-			}, ['app']);
+		script(language="javascript", type="text/javascript", data-main="js/app.js", src="js/libs/require.js")
 	body
-		.title AGV Online Control
+		.title Mesh Data Systems - Tester
+		a#login(href="#")
 		
 		.tester_area
 			.clear
