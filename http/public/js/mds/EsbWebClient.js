@@ -6,8 +6,9 @@ define(function(require, exports, module) {
 	
 	var utils = require("mds/utils");
 	var $ = require("jquery");
-	var io = require("socketio");	
-	var EsbWebClient = function(clientConfig) {
+	var io = require("socketio");
+	
+	var EsbWebClient = module.exports = function(clientConfig) {
 		clientConfig = clientConfig || {};
 		
 		this.connection = false;
@@ -55,6 +56,5 @@ define(function(require, exports, module) {
 	EsbWebClient.prototype.connectHandler = function (){
   		console.info('successfully established a working connection \o/');
 	};
-	
-	module.exports = EsbWebClient;
+
 });

@@ -50,9 +50,19 @@
 #log {
 	margin-top: 35px;
 	width: 800px;
-	height: 500px;
+	height: 300px;
 	float: left;
 }
+
+#displays {
+	border: 1px solid;
+	margin-top: 5px;
+	padding: 2px;
+	width: 800px;
+	height: 200px;
+	float: left;
+}
+
 .buttonLabel {
 	margin-left: 5px;
 }

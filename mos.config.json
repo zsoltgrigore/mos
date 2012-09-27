@@ -23,6 +23,7 @@
 				{ "path" : "/login" , "method" : "get", "middlewares" : ["accessLogger", "login"]},
 				{ "path" : "/login" , "method" : "post", "middlewares" : ["accessLogger", "processLoginData"]},
 				{ "path" : "/", "method" : "get", "middlewares" : ["accessLogger", "root"]},
+				{ "path" : "/tester" , "method" : "get", "middlewares" : ["accessLogger", "tester"]},
 				{ "path" : "/tester" , "method" : "get", "middlewares" : ["accessLogger", "restrict", "tester"]}
 			]
 		},

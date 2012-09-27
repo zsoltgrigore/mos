@@ -22,12 +22,17 @@ requirejs.config({
     }
 });
 
-require(["mds/EsbWebClient", "plugins/domReady"], function(EsbWebClient, domReady) {
-	var esbWebClient = new EsbWebClient();
-	esbWebClient.connect();
-	
-	domReady(function(){
+require(["mds/EsbWebClient", "mds/display/Fridge", "plugins/domReady", "jquery"],
+	function(EsbWebClient, Fridge, domReady, $) {
+		/*var esbWebClient = new EsbWebClient();
+		esbWebClient.connect();*/
 		
-	});
-});
+		domReady(function(){
+			var canvasCtx = $('#displays')[0].getContext('2d');
+			var fridge = new Fridge({ctx: canvasCtx, x: 10, y:10});
+			fridge.drawFrame();
+			
+		});
+	}
+);
 
