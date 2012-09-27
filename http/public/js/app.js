@@ -14,11 +14,20 @@ requirejs.config({
         mds: '../mds',
         socketio: '../../socket.io/socket.io'
     },
-    priority: ['jquery', 'socketio']
+    shim: {
+        socketio: {
+            /*if has dependencies deps: ['jquery', 'underscore'],*/
+            exports: 'io'
+        }
+    }
 });
 
-require(["mds/EsbWebClient"], function(EsbWebClient) {
+require(["mds/EsbWebClient", "plugins/domReady"], function(EsbWebClient, domReady) {
 	var esbWebClient = new EsbWebClient();
 	esbWebClient.connect();
+	
+	domReady(function(){
+		
+	});
 });
 

@@ -5,7 +5,8 @@
 define(function(require, exports, module) {
 	
 	var utils = require("mds/utils");
-	
+	var $ = require("jquery");
+	var io = require("socketio");	
 	var EsbWebClient = function(clientConfig) {
 		clientConfig = clientConfig || {};
 		
