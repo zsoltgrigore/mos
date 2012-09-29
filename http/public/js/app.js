@@ -18,20 +18,30 @@ requirejs.config({
         socketio: {
             /*if has dependencies deps: ['jquery', 'underscore'],*/
             exports: 'io'
+        },
+        paper: {
+            exports: 'paper'
         }
     }
 });
 
-require(["mds/EsbWebClient", "mds/display/Fridge", "plugins/domReady", "jquery"],
-	function(EsbWebClient, Fridge, domReady, $) {
+require(["mds/EsbWebClient", "mds/display/Fridge", "plugins/domReady", "paper", "jquery"],
+	function(EsbWebClient, Fridge, domReady, paper, $) {
 		/*var esbWebClient = new EsbWebClient();
 		esbWebClient.connect();*/
 		
+		//paper.install(window);
+		
 		domReady(function(){
-			var canvasCtx = $('#displays')[0].getContext('2d');
-			var fridge = new Fridge({ctx: canvasCtx, x: 10, y:10});
-			fridge.drawFrame();
-			
+			paper.setup('displays');
+
+			with (paper) {
+				var fridge = new Fridge({controlPoint: new Point(10, 10)});
+				fridge.drawFrame();
+				fridge.rotate();
+				
+				view.draw();
+			}
 		});
 	}
 );
