@@ -17,6 +17,17 @@ define(function(require, exports, module) {
 			var cornerSize = new Size(5, 5);
 			this.frame = new Path.RoundRectangle(frameRect, cornerSize);
 			this.frame.strokeColor = 'blue';
+			
+			//this.frame.position = [300, 75];
+			
+			var destination = new Point([300, 75]);
+			var self = this;
+			view.onFrame = function(event) {
+				var vector = destination.subtract(self.frame.position);
+				if (vector.length > 5) {
+					self.frame.position = self.frame.position.add(vector.divide(30));
+				}
+			}
 		}
 	};
 	
@@ -25,7 +36,6 @@ define(function(require, exports, module) {
 		with (paper) {
 			var copy = this.frame.clone();
 			copy.strokeColor = 'red';
-			console.log(this.frame.topLeft);
 			view.onFrame = function(event) {
 				// Each frame, rotate the copy by 1 degree:
 				
