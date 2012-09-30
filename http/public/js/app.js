@@ -40,7 +40,7 @@ require(["mds/EsbWebClient", "mds/display/Fridge", "plugins/domReady", "paper", 
 				fridge.drawFrame();
 				fridge.rotate();
 				
-				view.draw();
+				//view.draw();
 			}
 		});
 	}

@@ -25,8 +25,10 @@ define(function(require, exports, module) {
 		with (paper) {
 			var copy = this.frame.clone();
 			copy.strokeColor = 'red';
-			function onFrame(event) {
+			console.log(this.frame.topLeft);
+			view.onFrame = function(event) {
 				// Each frame, rotate the copy by 1 degree:
+				
 				copy.rotate(1);
 			}
 		}
