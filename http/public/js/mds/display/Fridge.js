@@ -18,30 +18,33 @@ define(function(require, exports, module) {
 			this.frame = new Path.RoundRectangle(frameRect, cornerSize);
 			this.frame.strokeColor = 'blue';
 			
-			//this.frame.position = [300, 75];
-			
-			var destination = new Point([300, 75]);
-			var self = this;
-			view.onFrame = function(event) {
-				var vector = destination.subtract(self.frame.position);
-				if (vector.length > 5) {
-					self.frame.position = self.frame.position.add(vector.divide(30));
-				}
-			}
 		}
 	};
 	
+	Fridge.prototype.drawBar = function() {
+		with (paper) {
+			var barPath = new Path();
+			barPath.add(new Point(10, 0));
+			barPath.add(new Point(0, 10));
+			barPath.add(new Point(0, 90));
+			barPath.add(new Point(10, 100));
+			barPath.add(new Point(20, 90));
+			barPath.add(new Point(20, 10));
+			barPath.closed = true;
+			//barPath.strokeColor = 'black';
+			barPath.fillColor = 'orange'
+			barPath.position = view.center;
+			
+			view.onFrame = function() {
+				barPath.rotate(2);
+			};
+			
+			
+		}
+	}
+	
 	Fridge.prototype.rotate = function() {
 
-		with (paper) {
-			var copy = this.frame.clone();
-			copy.strokeColor = 'red';
-			view.onFrame = function(event) {
-				// Each frame, rotate the copy by 1 degree:
-				
-				copy.rotate(1);
-			}
-		}
 	};
 
 });
