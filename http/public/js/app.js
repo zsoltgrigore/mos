@@ -37,11 +37,9 @@ require(["mds/EsbWebClient", "mds/display/Fridge", "plugins/domReady", "paper", 
 
 			with (paper) {
 				var fridge = new Fridge({controlPoint: new Point(0, 0)});
-				fridge.drawBar();
-				//fridge.drawFrame();
-				//fridge.rotate();
+				fridge.drawFrame();
 				
-				//view.draw();
+				view.draw();
 			}
 		});
 	}

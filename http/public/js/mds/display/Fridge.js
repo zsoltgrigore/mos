@@ -4,6 +4,7 @@
 
 define(function(require, exports, module) {
 	var paper = require('paper');
+	var DigitNumber = require('mds/display/model/DigitNumber');
 	
 	var Fridge = module.exports = function(config) {
 		this.controlPoint = config.controlPoint;
@@ -18,33 +19,11 @@ define(function(require, exports, module) {
 			this.frame = new Path.RoundRectangle(frameRect, cornerSize);
 			this.frame.strokeColor = 'blue';
 			
+			var firstLetter = new DigitNumber(7, { position: [100, 75] });
+			firstLetter.fillColor = '#eb3d00';
+			firstLetter.scale(0.5);
+			firstLetter.shear( -0.1, 0)
 		}
-	};
-	
-	Fridge.prototype.drawBar = function() {
-		with (paper) {
-			var barPath = new Path();
-			barPath.add(new Point(10, 0));
-			barPath.add(new Point(0, 10));
-			barPath.add(new Point(0, 90));
-			barPath.add(new Point(10, 100));
-			barPath.add(new Point(20, 90));
-			barPath.add(new Point(20, 10));
-			barPath.closed = true;
-			//barPath.strokeColor = 'black';
-			barPath.fillColor = 'orange'
-			barPath.position = view.center;
-			
-			view.onFrame = function() {
-				barPath.rotate(2);
-			};
-			
-			
-		}
-	}
-	
-	Fridge.prototype.rotate = function() {
-
 	};
 
 });
