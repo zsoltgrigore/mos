@@ -19,10 +19,11 @@ define(function(require, exports, module) {
 			this.frame = new Path.RoundRectangle(frameRect, cornerSize);
 			this.frame.strokeColor = 'blue';
 			
-			var firstLetter = new DigitNumber(7, { position: [100, 75] });
+			var firstLetter = new DigitNumber(7, { position: [100, 75], size: [150, 100], dilatation: 4 });
 			firstLetter.fillColor = '#eb3d00';
+			console.log(firstLetter.position);
 			firstLetter.scale(0.5);
-			firstLetter.shear( -0.1, 0)
+			firstLetter.shear( -0.1, 0);
 		}
 	};
 

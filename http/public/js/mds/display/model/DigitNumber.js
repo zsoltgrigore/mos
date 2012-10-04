@@ -17,45 +17,105 @@ define(function(require, exports, module) {
 		
 		this.number = number;
 		this.position = config.position || [0, 0];
+		//Util-ba scaleToSize()
+		this.size = config.size || [0, 0];
+		this.dilatation = config.dilatation || 2;
 		
+		/* Number Descriptors*/
+		this.zero	= ["TOP", "TOPRIGHT", "BOTTOMRIGHT", "BOTTOM", "BOTTOMLEFT", "TOPLEFT"];
+		this.one	= ["TOPRIGHT", "BOTTOMRIGHT"];
+		this.two	= ["MIDDLE", "TOP", "TOPRIGHT", "BOTTOM", "BOTTOMLEFT"];
+		this.three	= ["MIDDLE", "TOP", "TOPRIGHT", "BOTTOMRIGHT", "BOTTOM"];
+		this.four	= ["MIDDLE", "TOPRIGHT", "BOTTOMRIGHT", "TOPLEFT"];
+		this.five	= ["MIDDLE", "TOP", "BOTTOMRIGHT", "BOTTOM", "TOPLEFT"];
+		this.six	= ["MIDDLE", "TOP", "BOTTOMRIGHT", "BOTTOM", "BOTTOMLEFT", "TOPLEFT"];
+		this.seven	= ["TOP", "TOPRIGHT", "BOTTOMRIGHT"];
+		this.eight	= ["MIDDLE", "TOP", "TOPRIGHT", "BOTTOMRIGHT", "BOTTOM", "BOTTOMLEFT", "TOPLEFT"];
+		this.nine	= ["MIDDLE", "TOP", "TOPRIGHT", "BOTTOMRIGHT", "BOTTOM", "TOPLEFT"];
+		/*********************/
+		
+		
+		/* init - paperize */
+		this.position = new paper.Point(this.position);
 		
 		return this.create();
 	};
 	
 	DigitNumber.prototype.create = function() {
+		switch(this.number) {
+			case 0:
+				return this.buildNumber(this.zero);
+			case 1:
+				return this.buildNumber(this.one);
+			case 2:
+				return this.buildNumber(this.two);
+			case 3:
+				return this.buildNumber(this.three);
+			case 4:
+				return this.buildNumber(this.four);
+			case 5:
+				return this.buildNumber(this.five);
+			case 6:
+				return this.buildNumber(this.six);
+			case 7:
+				return this.buildNumber(this.seven);
+			case 8:
+				return this.buildNumber(this.eight);
+			case 9:
+				return this.buildNumber(this.nine);
+		}
+	}
+	
+	DigitNumber.prototype.buildNumber = function(description) {
 		with (paper) {
 			var group = new Group();
-			this.position = new Point(this.position);
-			
-			switch(this.number) {
-				case 7:
-					var s1 = new Bar(this.position);
-					s1.translate(new Point(52, -52));
-					var s2 = new Bar(this.position);
-					s2.translate(new Point(52, 52));
-					var s3 = new Bar(this.position);
-					s3.rotate(90);
-					var s4 = new Bar(this.position);
-					s4.rotate(90);
-					s4.translate(new Point(0, -102));
-					var s5 = new Bar(this.position);
-					s5.rotate(90);
-					s5.translate(new Point(0, 102));
-					
-					group.addChild(s1);
-					group.addChild(s2);
-					group.addChild(s3);
-					group.addChild(s4);
-					group.addChild(s5);
-					break;
-				case 2:
-					group.addChild(new Bar(this.position));
-					break;
-				default:
-					group.addChild(new Bar(this.position));
-				}
+			for (var i = 0, len = description.length; i < len; i++) {
+				group.addChild(this.transformBar(description[i], new Bar(this.position)));
+			}
 			return group;
 		}
+	}
+	
+	DigitNumber.prototype.transformBar = function(orientation, bar) {
+		var width = bar.bounds.width > bar.bounds.height ? bar.bounds.width : bar.bounds.height;
+		var height = bar.bounds.height > bar.bounds.width ? bar.bounds.width : bar.bounds.height;
+		var leftRightDistance = new paper.Point(width/2, width/2);
+		var topBottomDistance = new paper.Point(0, width);
+		leftRightDistance.length = leftRightDistance.length * (1 + (this.dilatation/100));
+		topBottomDistance.length = topBottomDistance.length * (1 + (this.dilatation/100));
+
+		console.log("topBottom: " + topBottomDistance.x + "x" + topBottomDistance.y + " length: " + topBottomDistance.length
+					+ " leftRight: " + leftRightDistance.x + "x" + leftRightDistance.y + " length: " + leftRightDistance.length);
+		console.log(orientation + " before: " + bar.position)
+
+		switch(orientation) {
+			case "BOTTOM":
+				bar.rotate(90);
+				bar.translate(topBottomDistance);
+				break;
+			case "MIDDLE":
+				bar.rotate(90);
+				break;
+			case "TOP":
+				bar.rotate(90);
+				bar.translate(topBottomDistance.multiply([1, -1]));
+				break;
+			case "TOPLEFT":
+				bar.translate(leftRightDistance.multiply([-1, -1]));
+				break;
+			case "TOPRIGHT":
+				bar.translate(leftRightDistance.multiply([1, -1]));
+				break;
+			case "BOTTOMLEFT":
+				bar.translate(leftRightDistance.multiply([-1, 1]));
+				break;
+			case "BOTTOMRIGHT":
+				bar.translate(leftRightDistance.multiply([1, 1]));
+				break;
+		}
+		
+		console.log("after: " + bar.position)
+		return bar;
 	}
 
 });
