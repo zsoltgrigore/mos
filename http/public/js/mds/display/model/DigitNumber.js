@@ -4,7 +4,8 @@
 
 define(function(require, exports, module) {
 	var paper = require('paper');
-	var Bar = require('mds/display/model/Bar');
+	
+	var Bar = require('mds/display/model/Bar');	
 	
 	/**
 	 * DigitNumber built from Bars
@@ -13,15 +14,17 @@ define(function(require, exports, module) {
 	 * @param config Object
 	 */
 	var DigitNumber = module.exports = function(number, config) {
-		if (0 > number || number > 9) throw "Construct with number between 0 and 9."
+		if (number == "-") number = -1;
+		if (-1 > number || number > 9) throw "Construct with number between -1 and 9.";
 		
 		this.number = number;
 		this.position = config.position || [0, 0];
-		//Util-ba scaleToSize()
+		//into utils as scaleToSize()
 		this.size = config.size || [0, 0];
 		this.dilatation = config.dilatation || 2;
 		
 		/* Number Descriptors*/
+		this.prefix = ["MIDDLE"];
 		this.zero	= ["TOP", "TOPRIGHT", "BOTTOMRIGHT", "BOTTOM", "BOTTOMLEFT", "TOPLEFT"];
 		this.one	= ["TOPRIGHT", "BOTTOMRIGHT"];
 		this.two	= ["MIDDLE", "TOP", "TOPRIGHT", "BOTTOM", "BOTTOMLEFT"];
@@ -37,12 +40,13 @@ define(function(require, exports, module) {
 		
 		/* init - paperize */
 		this.position = new paper.Point(this.position);
-		
 		return this.create();
 	};
 	
 	DigitNumber.prototype.create = function() {
 		switch(this.number) {
+			case -1:
+				return this.buildNumber(this.prefix);
 			case 0:
 				return this.buildNumber(this.zero);
 			case 1:
@@ -63,30 +67,30 @@ define(function(require, exports, module) {
 				return this.buildNumber(this.eight);
 			case 9:
 				return this.buildNumber(this.nine);
+			default:
+				throw "Value is not a number between -1 and 9!";
 		}
-	}
+	};
 	
 	DigitNumber.prototype.buildNumber = function(description) {
-		with (paper) {
-			var group = new Group();
-			for (var i = 0, len = description.length; i < len; i++) {
-				group.addChild(this.transformBar(description[i], new Bar(this.position)));
-			}
-			return group;
+		var group = new paper.Group();
+		for (var i = 0, len = description.length; i < len; i++) {
+			group.addChild(this.transformBar(description[i], new Bar(this.position)));
 		}
-	}
+		return group;
+	};
 	
 	DigitNumber.prototype.transformBar = function(orientation, bar) {
 		var width = bar.bounds.width > bar.bounds.height ? bar.bounds.width : bar.bounds.height;
-		var height = bar.bounds.height > bar.bounds.width ? bar.bounds.width : bar.bounds.height;
+		//var height = bar.bounds.height > bar.bounds.width ? bar.bounds.width : bar.bounds.height;
 		var leftRightDistance = new paper.Point(width/2, width/2);
 		var topBottomDistance = new paper.Point(0, width);
 		leftRightDistance.length = leftRightDistance.length * (1 + (this.dilatation/100));
 		topBottomDistance.length = topBottomDistance.length * (1 + (this.dilatation/100));
 
-		console.log("topBottom: " + topBottomDistance.x + "x" + topBottomDistance.y + " length: " + topBottomDistance.length
+		/*console.log("topBottom: " + topBottomDistance.x + "x" + topBottomDistance.y + " length: " + topBottomDistance.length
 					+ " leftRight: " + leftRightDistance.x + "x" + leftRightDistance.y + " length: " + leftRightDistance.length);
-		console.log(orientation + " before: " + bar.position)
+		console.log(orientation + " before: " + bar.position);*/
 
 		switch(orientation) {
 			case "BOTTOM":
@@ -114,8 +118,8 @@ define(function(require, exports, module) {
 				break;
 		}
 		
-		console.log("after: " + bar.position)
+		//console.log("after: " + bar.position)
 		return bar;
-	}
+	};
 
 });

@@ -3,9 +3,7 @@
  */
 
 exports.root = function(req, res) {
-	res.render('index', { 
-			title : 'Mesh Data Systems Kft.'
-		})
+	res.redirect(this.defualtLanding)
 }
 
 exports.login = function(req, res) {
@@ -15,8 +13,8 @@ exports.login = function(req, res) {
 	});
 }
 
-exports.tester = function(req, res) {
-	res.render('tester');
+exports.refrigeratory = function(req, res) {
+	res.render('refrigeratory', {});
 }
 
 exports.test = require("./test/");

@@ -3,6 +3,7 @@
  */
 
 define(function(require, exports, module) {
+
 	var paper = require('paper');
 	var DigitNumber = require('mds/display/model/DigitNumber');
 	

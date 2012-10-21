@@ -4,7 +4,7 @@
 			"enabled" : true,
 			"host" : "localhost",
 			"port" : 8080,
-			"defaultLanding" : "/tester",
+			"defaultLanding" : "/refrigeratory/",
 			"viewEngine" : "jade",
 			"showErrorStack" : true,
 			"use" : [
@@ -20,11 +20,10 @@
 				{"appMiddlewares" : "error"}
 			],
 			"routes" : [
+				{ "path" : "/" , "method" : "get", "middlewares" : ["accessLogger", "root"]},
 				{ "path" : "/login" , "method" : "get", "middlewares" : ["accessLogger", "login"]},
 				{ "path" : "/login" , "method" : "post", "middlewares" : ["accessLogger", "processLoginData"]},
-				{ "path" : "/", "method" : "get", "middlewares" : ["accessLogger", "root"]},
-				{ "path" : "/tester" , "method" : "get", "middlewares" : ["accessLogger", "tester"]},
-				{ "path" : "/tester" , "method" : "get", "middlewares" : ["accessLogger", "restrict", "tester"]}
+				{ "path" : "/refrigeratory/*" , "method" : "get", "middlewares" : ["accessLogger", "refrigeratory"]}
 			]
 		},
 		"production" : {
