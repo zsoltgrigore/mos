@@ -29,20 +29,13 @@ requirejs.config({
 	}
 });
 
-require([  "mds/controller/statusController",
-			"mds/controller/statusViewLogsController",
+require([  "mds/controller/router",
 			"plugins/domReady",
 			"davis"],
-	function(statusController, domReady, davis) {
+	function(router, domReady, davis) {
 		//paper.install(window);
 		
-		var app = davis(function () {
-			this.state('/refrigeratory/', statusController);
-			
-			this.get('/refrigeratory/status', statusController);
-			
-			this.get('/refrigeratory/status/view-logs', statusViewLogsController);
-		});
+		var app = davis(router);
 		
 		domReady(function(){
 			app.start();
