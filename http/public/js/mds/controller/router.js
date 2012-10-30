@@ -8,16 +8,17 @@ define(function(require, exports, module) {
 	var statusViewLogsController = require("mds/controller/statusViewLogsController");
 	
 	module.exports = function() {
+		var app = this;
 		this.state('/refrigeratory/', function(req) {
 				if (location.pathname != req.fullPath) {
 					location.href = req.fullPath;
 				} else {
-					statusController(req);
+					statusController.call(app, req);
 				}
 			});
-			this.get('/refrigeratory/status', statusController);
+		this.get('/refrigeratory/status', statusController.bind(app));
 			
-			this.get('/refrigeratory/status/view-logs', statusViewLogsController);
+		this.get('/refrigeratory/status/view-logs', statusViewLogsController.bind(app));
 	};
 
 });

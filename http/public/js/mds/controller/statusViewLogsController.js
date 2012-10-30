@@ -5,7 +5,7 @@
 define(function(require, exports, module) {
 	
 	module.exports = function(req) {
-		console.log("statusViewLogs");
+		this.$content.html("<b>Status View Logs	 Controller</b>");
 	};
 
 });

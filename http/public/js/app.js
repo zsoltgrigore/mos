@@ -12,7 +12,8 @@ requirejs.config({
     //the paths config could be for a directory.
     paths: {
         mds: '../mds',
-        socketio: '../../socket.io/socket.io'
+        socketio: '../../socket.io/socket.io',
+        text: "plugins/text"
     },
 	shim: {
 		davis: {
@@ -25,19 +26,23 @@ requirejs.config({
 		},
 		paper: {
 			exports: 'paper'
+		},
+		handlebars: {
+			exports: 'Handlebars'
 		}
 	}
 });
 
 require([  "mds/controller/router",
 			"plugins/domReady",
-			"davis"],
-	function(router, domReady, davis) {
+			"davis", "jquery"],
+	function(router, domReady, davis, jquery) {
 		//paper.install(window);
 		
 		var app = davis(router);
 		
 		domReady(function(){
+			app.$content = $("#content");
 			app.start();
 			app.trans('/refrigeratory/')
 			
