@@ -1,0 +1,9 @@
+<h2 class="single-margin"> Connection </h2>
+<table class="single-margin">
+	<tr>
+		<td>Server: {{ status.server }}</td>
+		<td>Ethernet: {{ status.ethernet }}</td>
+		<td>WiFi: {{ status.wifi }}</td>
+		<td>GSM: {{ status.gsm }}</td>
+	</tr>
+</table>

@@ -1,0 +1,26 @@
+<h2 class="single-margin"> Probes </h2>
+<table>
+	<tr>
+		<td>Name</td>
+		<td>State</td>
+		<td>Device</td>
+		<td>Register</td>
+		<td>Low limit alarm enabled</td>
+		<td>Low alarm value</td>
+		<td>High limit alarm enabled</td>
+		<td>High alarm value</td>
+	</tr>
+	<tr>
+		{{#each probes}}
+			<td>{{ this }}</td>
+			<td>{{ name }}</td>
+			<td>{{ state }}</td>
+			<td>{{ device }}</td>
+			<td>{{ register }}</td>
+			<td>{{ low_limit_alarm_enabled }}</td>
+			<td>{{ low_alarm_value }}</td>
+			<td>{{ high_limit_alarm_enabled }}</td>
+			<td>{{ high_alarm_value }}</td>
+		{{/each}}
+	</tr>
+</table>
