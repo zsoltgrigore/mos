@@ -1,4 +1,4 @@
-<h2 class="single-margin"> Connection </h2>
+<h2 class="single-margin">{{I18n "status.connection"}}</h2>
 <table class="single-margin">
 	<tr>
 		<td>Server: {{ status.server }}</td>

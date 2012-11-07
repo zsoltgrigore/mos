@@ -6,7 +6,7 @@ define(function(require, exports, module) {
 
 	var Handlebars = require("handlebars");
 	
-	exports.tableRowList = function(req) {
+	exports.tableRowList = function() {
 		Handlebars.registerHelper('rowList', function(items, options) {
 			var out = "";
 			for(var i=0, l=items.length; i<l; i++) {
@@ -15,5 +15,12 @@ define(function(require, exports, module) {
 		return out;
 		});
 	};
-
+	
+	exports.i18n = function() {
+		Handlebars.registerHelper('I18n', function(str) {
+			//return str;
+			return (i18n != undefined ? i18n[str] : str);
+		}
+	) 
+	};
 });

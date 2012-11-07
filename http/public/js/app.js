@@ -33,17 +33,32 @@ requirejs.config({
 	}
 });
 
-require([  "mds/controller/router",
-			"plugins/domReady",
+require([  "mds/controller/router", "mds/connection/esbClient",
+			"text!mds/i18n/hu.json", "plugins/domReady",
 			"davis", "jquery"],
-	function(router, domReady, davis, jquery) {
+	function(router, esbclient, intern13n, domReady, davis, jquery) {
 		//paper.install(window);
+		
+		// add imported i18n pack. see require array!
+		try {
+			window.i18n = JSON.parse(intern13n);
+		} catch (e) {
+			if (console) console.error(e);
+			throw e;
+		}
 		
 		var app = davis(router);
 		
 		domReady(function(){
+			esbclient.socket = true;
+			
 			app.$content = $("#content");
+			app.timers = {
+				intervals: {},
+				timeouts: {}
+			};
 			app.start();
+			
 			app.trans('/refrigeratory/')
 			
 			/*

@@ -1,0 +1,4 @@
+<h2 class="single-margin">{{I18n "config.title"}}</h2>
+<textarea id="config">
+	
+</textarea>
