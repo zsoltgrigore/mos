@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 	var helper = require("mds/template/helper");
 	var status = require("text!mds/template/status/status.hbrs");
 	var probes = require("text!mds/template/status/probes.hbrs");
+	var esbclient = require("mds/connection/esbClient");
 	
 	module.exports = function(req) {
 		//this.$content.html("<b>Status Controller</b>");

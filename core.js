@@ -6,10 +6,12 @@
 var fs = require('fs');
 var config = require('./utils/config');
 var	MosHttp = require('./http/MosHttp');
-var	MosWebSockets = require('./websockets/MosWebSockets');
+var	MosWebSockets = require('./websockets/MosWebSocketServer');
 
 /* Parse config to memory */
 global.configuration = config.createGlobalConfig(fs.readFileSync('mos.config.json', 'utf-8'));
+
+process.title = "node - Refrigeratory backend";
 
 var mosHttp = new MosHttp(global.configuration.http);
 mosHttp.listen();

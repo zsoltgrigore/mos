@@ -7,6 +7,7 @@ define(function(require, exports, module) {
 	var statusController = require("mds/controller/statusController");
 	var statusViewLogsController = require("mds/controller/statusViewLogsController");
 	var configController = require("mds/controller/configController");
+	var configPostController = require("mds/controller/configPostController");
 	
 	module.exports = function() {
 		var app = this;
@@ -20,6 +21,11 @@ define(function(require, exports, module) {
 		this.get('/refrigeratory/status', statusController.bind(app));
 		
 		this.get('/refrigeratory/config', configController.bind(app));
+		
+		this.post('/refrigeratory/config', function(req) {
+			configPostController.call(app, req);
+			req.redirect('/refrigeratory/config');
+		});
 		
 		this.get('/refrigeratory/status/view-logs', statusViewLogsController.bind(app));
 		

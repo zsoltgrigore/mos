@@ -50,7 +50,8 @@ require([  "mds/controller/router", "mds/connection/esbClient",
 		var app = davis(router);
 		
 		domReady(function(){
-			esbclient.socket = true;
+			console.log(esbclient);
+			esbclient.connect();
 			
 			app.$content = $("#content");
 			app.timers = {

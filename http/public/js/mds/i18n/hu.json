@@ -1,3 +1,6 @@
 {
-	"status.connection": "Kapcsolatok"
+	"status.connection": "Kapcsolatok",
+	"config.title": "Konfiguráció",
+	"config.eps_address.placeholder": "esp_name@domain.com",
+	"config.eps_config.placeholder": "{'header':..., 'rules':...}"
 }

@@ -1,4 +1,11 @@
-<h2 class="single-margin">{{I18n "config.title"}}</h2>
-<textarea id="config">
+<h2 class="single_margin">{{I18n "config.title"}}</h2>
+<form method="post" action="{{form_action}}" id="usrform">
 	
-</textarea>
+	<input type="text" id="eps_address" name="eps_address" placeholder="{{I18n "config.eps_address.placeholder"}}"/>
+	<br/>
+	
+	<textarea rows="60" cols="50" name="eps_config" placeholder="{{I18n "config.eps_config.placeholder"}}"></textarea>
+	<br/>
+	
+	<input type="submit" />
+</form>

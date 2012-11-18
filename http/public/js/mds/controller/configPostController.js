@@ -11,18 +11,21 @@ define(function(require, exports, module) {
 	var config = require("text!mds/template/config/config.hbrs");
 	
 	module.exports = function(req) {
-		try {
-			if (Handlebars.helpers.i18n == null) {
-				helper.i18n();
-			}
-		} catch (e) {
-			if (console) console.warn(e);
-			helper.i18n();
-		}
+		console.log("Post");
+		console.log(req);
 		
-		var configTemplate = Handlebars.compile(config);
-		var configHtml = configTemplate({form_action: req.path});
-		this.$content.html(configHtml);
+		/*$("#config-submit").click(function(){
+			try {
+				console.log();
+				var message = $("#config").value;
+				parser(message);
+				//destiantion?
+				esbclient.send(message);
+			} catch (e) {
+				if (console) console.error(e);
+			}
+		});*/
+		
 	};
 
 });
