@@ -13,19 +13,6 @@ define(function(require, exports, module) {
 	module.exports = function(req) {
 		console.log("Post");
 		console.log(req);
-		
-		/*$("#config-submit").click(function(){
-			try {
-				console.log();
-				var message = $("#config").value;
-				parser(message);
-				//destiantion?
-				esbclient.send(message);
-			} catch (e) {
-				if (console) console.error(e);
-			}
-		});*/
-		
 	};
 
 });

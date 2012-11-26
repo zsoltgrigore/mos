@@ -22,6 +22,9 @@ define(function(require, exports, module) {
 		
 		this.get('/refrigeratory/config', configController.bind(app));
 		
+		/*This route does not work because a newline character in the 
+		textarea does something weird after form submittion.*/
+		//If you don't write newline character into the textarea than this route works...
 		this.post('/refrigeratory/config', function(req) {
 			configPostController.call(app, req);
 			req.redirect('/refrigeratory/config');

@@ -4,13 +4,14 @@
 			"enabled" : true,
 			"host" : "localhost",
 			"port" : 8080,
+			"salt" : "essé-mán-le-a-fárúl",
 			"defaultLanding" : "/refrigeratory/",
 			"viewEngine" : "jade",
 			"showErrorStack" : true,
 			"use" : [
 				"express.static(__dirname + '/public')",
 				"express.bodyParser()",
-				"express.cookieParser()",
+				"express.cookieParser('essé-mán-le-a-fárúl')",
 				"express.methodOverride()",
 				"express.session({store: this.sessionStore, secret: 'essé-mán-le-a-fárúl', key: 'publicSessionKey'})",
 				{"appMiddlewares" : "sessionMessages"},
@@ -23,13 +24,14 @@
 				{ "path" : "/" , "method" : "get", "middlewares" : ["accessLogger", "root"]},
 				{ "path" : "/login" , "method" : "get", "middlewares" : ["accessLogger", "login"]},
 				{ "path" : "/login" , "method" : "post", "middlewares" : ["accessLogger", "processLoginData"]},
-				{ "path" : "/refrigeratory/*" , "method" : "get", "middlewares" : ["accessLogger", "refrigeratory"]}
+				{ "path" : "/refrigeratory/*" , "method" : "get", "middlewares" : ["accessLogger", "restrict", "refrigeratory"]}
 			]
 		},
 		"production" : {
 			"enabled" : true,
 			"host" : "meshnetwork.hu",
 			"port" : 8080,
+			"salt" : "essé-mán-le-a-fárúl",
 			"defaultLanding" : "/tester",
 			"viewEngine" : "jade",
 			"showErrorStack" : false,

@@ -4,22 +4,34 @@
 
 var EsbSocket = require('../../esb/').EsbSocket;
 var	User = require("../../model/auth/User");
-var	hash = require("../../utils/security").hash;
-var	cloneConfig = require("../../utils/general").cloneConfig;
 
-exports.authenticate = function(name, pass, callback) {
-  	//itt valami olyasmi hogy, ellenőrizni hogy van-e már ehhez a user-hez esbSocket
+exports.authenticate = function(source, pass, callback) {
+	//itt valami olyasmi hogy, ellenőrizni hogy van-e már ehhez a user-hez esbSocket
 	//ha van akkor minden onnan érkező üzenetet megkap, sőt valahogyan ugyanazt is kéne lássa mindkét böngészőben,
 	//ha nézetet vált egyikben akkor változzon a másik is
 	// TODO: console.log(typeof this); <------ ennek MosHttp-t kellene visszaadnia nem pedig object-et
 	
-	if (this.socketMap[name]) return callback(new Error('Már be van jelentkezve!'));
+	if (this.socketMap[source]) return callback(new Error('Már be van jelentkezve!'));
 	
-	var userSocketConfig = cloneConfig(global.configuration.esb);
-	userSocketConfig.user = new User(name, pass);
-	userSocketConfig.reconnectAllowed = false;
+	//var userSocketConfig = cloneConfig(global.configuration.esb);
 	
-  	var tempEsbSocket = new EsbSocket(userSocketConfig);
+	//AFTER working memdb socket implemented the process must be the following
+	//1. on the service connection: get user with "name" from memdb (should be async, consider process.nextTick)
+	//2. until we are waiting for the result create user and it's hash
+	//3. after result will arrive we can check the hash
+	var tempUser = new User(source, pass);
+	tempUser.createHash(this.salt);
+	if (global.users[source] && tempUser.hash == global.users[source].hash) {
+		return callback(null, tempUser);
+	} else {
+		console.log(this.salt);
+		console.log(tempUser);
+		//lehet dobni a megfelelő errort
+		return callback(new Error('Hibás felhasználói adatok!'));
+	}
+
+	/*ezt itt ki kell cserélni valami system socket-re amin adatcsere megy, addig is fájl*/
+	/*var tempEsbSocket = new EsbSocket(userSocketConfig);
 	tempEsbSocket.connect();
 	
   	var successfullLoginHandler = function (resp){
@@ -43,5 +55,5 @@ exports.authenticate = function(name, pass, callback) {
 		tempEsbSocket.removeListener("access denied", endHandler);
 		return callback(new Error('Szolgáltatás nem elérhető'));
 	}
-	tempEsbSocket.on("end", endHandler);
+	tempEsbSocket.on("end", endHandler);*/
 }

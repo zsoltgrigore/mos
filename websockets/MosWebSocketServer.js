@@ -113,8 +113,8 @@ MosWebSocketServer.prototype.globalConnectionHandler = function(webSocket) {
 	//var sessionid = handshake.sessionID;
 	
 	var connection = webSocket.accept("mesh-control-protocol", webSocket.origin);
-	console.log("Request:");
-	console.log(webSocket);
+	//console.log("Request:");
+	//console.log(webSocket);
 	mosWebSockets.logger.info("Kliens kapcsolódott. Request Object: " + webSocket);
 	mosWebSockets.logger.info("Felhasználó: " + webSocket.origin);
 	
@@ -136,7 +136,7 @@ MosWebSocketServer.prototype.globalConnectionHandler = function(webSocket) {
 		//esbSocket.end();
 		//clearInterval(intervalID);
 		mosWebSockets.http.sessionStore.destroy(webSocket.handshake.sessionID, function () {
-            mosWebSockets.logger.info("Kliens végpont leszakadt. Felhasználó azonosító és a hozzá tartozó session törölve." + sessionid);
-        });
-  	});
+			mosWebSockets.logger.info("Kliens végpont leszakadt. Felhasználó azonosító és a hozzá tartozó session törölve." + sessionid);
+		});
+	});
 };
