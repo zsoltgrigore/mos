@@ -24,6 +24,7 @@
 				{ "path" : "/" , "method" : "get", "middlewares" : ["accessLogger", "root"]},
 				{ "path" : "/login" , "method" : "get", "middlewares" : ["accessLogger", "login"]},
 				{ "path" : "/login" , "method" : "post", "middlewares" : ["accessLogger", "processLoginData"]},
+				{ "path" : "/logout" , "method" : "post", "middlewares" : ["accessLogger", "processLogoutData"]},
 				{ "path" : "/refrigeratory/*" , "method" : "get", "middlewares" : ["accessLogger", "restrict", "refrigeratory"]}
 			]
 		},
@@ -65,7 +66,6 @@
 	},
 	"esb" : {
 		"development" : {
-			"salt" : "essé-mán-le-a-fárúl",
 			"host" : "localhost",
 			"port" : 5521,
 			"helloInterval" : 1000,

@@ -3,8 +3,7 @@
  */
 var WSServer = require('websocket').server;
 var http = require('http');
-var cookie = require('cookie');
-var parseSignedCookies = require('connect').utils.parseSignedCookies;
+var parseSignedCookie = require('connect').utils.parseSignedCookie;
 var Session = require('connect').middleware.session.Session;
 var Logger = require('../utils/Logger');
 var	cloneConfig = require('../utils/general').cloneConfig;
@@ -71,6 +70,10 @@ MosWebSocketServer.prototype.listen = function (mosHttp) {
 	//this.ioServer.enable('browser client gzip');          // gzip the file
 	
 	//this.ioServer.set('authorization', this.globalAuthorizationHandler.bind(this));
+	this.ioServer.on('connect', function(ws){
+		//console.log(ws);
+		//console.log("connect");
+	})
 	this.ioServer.on('request', this.globalConnectionHandler.bind(this));
 };
 
@@ -86,11 +89,9 @@ MosWebSocketServer.prototype.listen = function (mosHttp) {
  *		isAccept {Boolean} elfogadjuk-e a kapcsolódást?
  *
  */
-MosWebSocketServer.prototype.globalAuthorizationHandler = function (handshakeData) {
-	var http = this.http;
-	console.log("Origin:");
-	console.log(handshakeData);
-	
+MosWebSocketServer.prototype.globalAuthorizationHandler = function (webSocket) {
+	// Make sure we only accept requests from an allowed origin
+	this.logger.info("Websocket kapcsolódás elfogadva:" + webSocket.origin);
 	return true;
 };
 
@@ -100,43 +101,87 @@ MosWebSocketServer.prototype.globalAuthorizationHandler = function (handshakeDat
  *		A kapcsolódott klienst reprezentáló objektum
  */
 MosWebSocketServer.prototype.globalConnectionHandler = function(webSocket) {
-	var mosWebSockets = this;
-	if (!this.globalAuthorizationHandler(webSocket.origin)) {
-		// Make sure we only accept requests from an allowed origin
+	var self = this;
+	var esbSocket = false;
+
+	if (!self.globalAuthorizationHandler(webSocket)) {
 		webSocket.reject();
-		console.log((new Date()) + ' Connection from origin ' + webSocket.origin + ' rejected.');
+		self.logger.info((new Date()) + ' Kapcsolódás: ' + webSocket.origin + '. Visszautasítva.');
 		return;
 	}
 	
-	//var esbSocket = mosWebSockets.http.socketMap[webSocket.handshake.session.user.source].esbSocket;
-	//var handshake = webSocket.handshake;
-	//var sessionid = handshake.sessionID;
-	
 	var connection = webSocket.accept("mesh-control-protocol", webSocket.origin);
-	//console.log("Request:");
-	//console.log(webSocket);
-	mosWebSockets.logger.info("Kliens kapcsolódott. Request Object: " + webSocket);
-	mosWebSockets.logger.info("Felhasználó: " + webSocket.origin);
 	
-	/*esbSocket.on("web message", function(eventType, payload){
-		mosWebSockets.logger.info("web felé továbbítva: %s", payload.header.name);
-		connection.sendUTF(payload);
-	});*/
+	esbSocket = new EsbSocket(cloneConfig(global.configuration.esb));
+	
+	esbSocket.on("web message", function(eventType, payload) {
+		self.logger.info("web felé továbbítva: %s", payload.header.name);
+		payload.header.security_id = "ChangeMe!:)";
+		connection.sendUTF(JSON.stringify(payload));
+	});
+
+	esbSocket.on("reconnecting", function(reconnectTimes) {
+		if (reconnectTimes == 3) {
+			self.destroyWebSocket(webSocket, "Middleware connection is unstable.");
+		}
+	});
 
 	connection.on('message', function(message) {
-		console.log(message);
-		//mosWebSockets.logger.info("esb felé továbbítva: %s", message.utf8Data.header.name);
-		//message.utf8Data.header.security_id = esbSocket.securityId;
-		/*if (!esbSocket.reconnecting)
-			esbSocket.writeObject(message.utf8Data);*/
+		var messageObj = false;
+		try {
+			messageObj = JSON.parse(message.utf8Data);
+		} catch (e) {
+			self.logger.error("Hibás üzenet érkezett webről!" + e);
+		}
+		
+		if (messageObj) {
+			if (messageObj.header.name == "ws_auth" && !webSocket.source) {
+				var authHash = parseSignedCookie(messageObj.data.cookieValue, self.http.salt);
+				webSocket.source = self.http.getSourceToHash(authHash);
+				webSocket.connection = connection;
+				esbSocket.user = self.http.socketMap[webSocket.source].user;
+				esbSocket.connect();
+				self.http.socketMap[webSocket.source].esbSocket = esbSocket;
+			} else {
+				if (webSocket.source) {
+					console.log(messageObj);
+					self.logger.info("esb felé továbbítva: %s", messageObj.header.name);
+					messageObj.header.security_id = esbSocket.securityId;
+					if (!esbSocket.reconnecting)
+						esbSocket.writeObject(messageObj);
+				} else {
+					self.logger.info("Nem authentikált kapcsolódás. WebSocket lekapcsolása...");
+					self.destroyWebSocket(webSocket, "Not authenticated!")
+				}
+			}
+		}
 	});
 	
 	connection.on('close', function () {
-		delete mosWebSockets.http.socketMap[webSocket.handshake.session.user.source];
-		//esbSocket.end();
-		//clearInterval(intervalID);
-		mosWebSockets.http.sessionStore.destroy(webSocket.handshake.sessionID, function () {
-			mosWebSockets.logger.info("Kliens végpont leszakadt. Felhasználó azonosító és a hozzá tartozó session törölve." + sessionid);
-		});
+		self.destroyWebSocket(webSocket, "Close event has fired on the server.");
 	});
+};
+
+MosWebSocketServer.prototype.destroyWebSocket = function(webSocket, description) {
+	var self = this;
+	
+	if (webSocket.connection.state != "closed") {
+		self.dropWebSocket(webSocket, description);
+		return;
+	}
+	
+	if (webSocket.source) {
+		this.http.sessionStore.destroy(this.http.socketMap[webSocket.source].sessionID, function() {
+			self.logger.info("Kliens végpont leszakadt. Felhasználó azonosító és a hozzá tartozó session törölve."
+				+ webSocket.source);
+			self.http.socketMap[webSocket.source].esbSocket.end();
+			delete self.http.socketMap[webSocket.source];
+			delete webSocket.source;
+		});
+	}
+};
+
+MosWebSocketServer.prototype.dropWebSocket = function(webSocket, description) {
+	if (webSocket.connection.connected) 
+		webSocket.connection.drop(webSocket.connection.CLOSE_REASON_PROTOCOL_ERROR, description);
 };

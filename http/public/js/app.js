@@ -60,8 +60,19 @@ require([  "mds/controller/router", "mds/connection/esbClient",
 			};
 			app.start();
 			
-			app.trans('/refrigeratory/')
+			app.trans('/refrigeratory/');
 			
+			//ha el akarna navigálni szinkron hívással akkor figyelmeztessük
+			window.onbeforeunload = function() {
+				//TODO: rendes i18n szöveget neki! 
+				return "Amennyiben elhagyja az oldalt, később újra be kell jelentkezzen!";
+			};
+			//ha elnavigál akkor kapcsoljuk le a WS-t
+			window.onunload = function() {
+				esbclient.close(1001, "User has navigated away!");
+				console.log("1234");
+			};
+
 			/*
 			paper.setup('display');
 			

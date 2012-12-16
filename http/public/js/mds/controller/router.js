@@ -12,12 +12,17 @@ define(function(require, exports, module) {
 	module.exports = function() {
 		var app = this;
 		this.state('/refrigeratory/', function(req) {
-				if (location.pathname != req.fullPath) {
-					location.href = req.fullPath;
-				} else {
-					statusController.call(app, req);
-				}
-			});
+			//ide jöhentek inicializáló feladatok és aztán factor out!
+			//ha nem jó a path akkor javítsuk!
+			if (location.pathname != req.fullPath) {
+				alert("Hibás elérési út! Újra be kell jelentkeznie!")
+				location.href = req.fullPath;
+			} else {
+				statusController.call(app, req);
+			}
+			alert("mindíg?");
+		});
+		
 		this.get('/refrigeratory/status', statusController.bind(app));
 		
 		this.get('/refrigeratory/config', configController.bind(app));

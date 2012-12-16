@@ -52,7 +52,6 @@ var EsbSocket = module.exports = function (esbSocketConfig) {
 	this.host = esbSocketConfig.host || "localhost";
 	this.port = esbSocketConfig.port || 5521;
 	this.user = esbSocketConfig.user || {};
-	this.salt = esbSocketConfig.salt || "";
 	this.destination = esbSocketConfig.destination || "ANY";
 	this.helloInterval = esbSocketConfig.helloInterval || 1000;
 	this.reconnectDelay = esbSocketConfig.reconnectDelay || 3000;
@@ -118,6 +117,7 @@ EsbSocket.prototype.end = function () {
 	if (this.helloIntervalId) {
 		clearInterval(this.helloIntervalId);
 	}
+	this.reconnectAllowed = false;
 	if (this.reconnectTimeoutId) {
 		clearTimeout(this.reconnectTimeoutId);
 	}
@@ -125,7 +125,8 @@ EsbSocket.prototype.end = function () {
 		this.connection.removeAllListeners();
 	}
 	this.removeAllListeners();
-	this.connection.end();
+	if (this.connection)
+		this.connection.end();
 	this.logger.info("%s:%d esb kapcsolat (source:%s) lezárva.",
 			this.connection.remoteAddress, this.connection.remotePort, this.user.source);
 };
@@ -377,7 +378,7 @@ EsbSocket.prototype.endHandler = function() {
 EsbSocket.prototype.reconnect = function() {
 	if (!this._reconnecting && this.reconnectAllowed) {
 		this._reconnecting = true;
-		this.emit("reconnecting", this.reconnectDelay);
+		this.emit("reconnecting", this.reconnectTimes);
 		this.logger.warn("Újrakapcsolódás %d.", this.reconnectTimes);
 
 		this.reconnectTimes++;

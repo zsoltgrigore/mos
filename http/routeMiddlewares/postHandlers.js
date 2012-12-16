@@ -8,8 +8,6 @@ exports.processLoginData = function(req, res) {
 
 	accountHandlers.authenticate.call(mosHttp, req.body.username, req.body.password, function(err, user){
 		if (user) {
-			//var chan = esbSocket.user.source;
-			//mosHttp.emit("new auth chan req", esbSocket.user.source);
 			//Regenerate session when signing in
 			// to prevent fixation
 			req.session.regenerate(function(){
@@ -21,13 +19,14 @@ exports.processLoginData = function(req, res) {
 					source: user.source,
 					hash: user.hash
 				};
-	
+				
 				mosHttp.socketMap[user.source] = {
 					user: user,
+					sessionID: req.sessionID,
 					restrictConnections: false,
 					esbSocket: false
 				};
-	
+				
 				var redirectAfterLogin = '/';
 				try {
 					redirectAfterLogin = res.locals.redirect || mosHttp.defualtLanding;
@@ -38,17 +37,21 @@ exports.processLoginData = function(req, res) {
 				//generate a name and add passwordhash, on client side get it from the browser (document.cookies)
 				//if client has a cookie with this name and contains valid hash than user is ok
 				//httpOnly: false means that anybody could read this cookie
-				//	so BE CAREFUL even if you sign it, delete form browser after user auth: http://www.quirksmode.org/js/cookies.html
-				//	function eraseCookie(name) {
-				//		createCookie(name,"",-1);
-				//	}
-				res.cookie('hash', user.hash, { signed: true, httpOnly: false });
+				//	so BE CAREFUL even if you sign it
+				//	it would be better to genarate a one time password for this
+				res.cookie('wshash', user.hash, { signed: true, httpOnly: false });
 				res.redirect(redirectAfterLogin);
 			});
+			
 		} else {
 			mosHttp.logger.info(err.message);
 			req.session.error = err.message;
 			res.redirect('/login');	
 		}
 	});
-}
+};
+
+exports.processLogoutData = function(req, res) {
+	req.session = null;
+	res.redirect("/login");
+};

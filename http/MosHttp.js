@@ -102,11 +102,19 @@ MosHttp.prototype.applyMosMiddlewares = function () {
 	//és csak működő implementációt használni az egyes útvonalakon
 };
 
-MosHttp.prototype.listen = function () {
+MosHttp.prototype.listen = function() {
 	var mosHttp = this;
 	
 	mosHttp.server.listen(mosHttp.port, mosHttp.host, function (data) {
-  		mosHttp.address = mosHttp.server.address();
-  		mosHttp.logger.info("M-O-S HTTP szerver indult @ http://%s:%s", mosHttp.address.address, mosHttp.address.port)
+		mosHttp.address = mosHttp.server.address();
+		mosHttp.logger.info("M-O-S HTTP szerver indult @ http://%s:%s", mosHttp.address.address, mosHttp.address.port)
 	});
+};
+
+MosHttp.prototype.getSourceToHash = function(hash) {
+	for (var i in this.socketMap) {
+		if (hash == this.socketMap[i].user.hash)
+			return this.socketMap[i].user.source;
+	}
+	return false;
 };

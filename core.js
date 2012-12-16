@@ -8,11 +8,16 @@ var config = require('./utils/config');
 var	MosHttp = require('./http/MosHttp');
 var	MosWebSockets = require('./websockets/MosWebSocketServer');
 
-/* DELETE if has working memdb */
-global.users = JSON.parse(fs.readFileSync('users.json', 'utf-8'));
-
 /* Parse config to memory */
 global.configuration = config.createGlobalConfig(fs.readFileSync('mos.config.json', 'utf-8'));
+
+/* DELETE if has working memdb */
+var hash = require("./utils/security").hash;
+global.users = JSON.parse(fs.readFileSync('users.json', 'utf-8'));
+for (var user in global.users) {
+	global.users[user] = hash(global.users[user], global.configuration.http.salt);
+}
+/*******************************/
 
 process.title = "node - Refrigeratory backend";
 
