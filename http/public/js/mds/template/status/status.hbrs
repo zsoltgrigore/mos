@@ -1,9 +1,30 @@
-<h2 class="single-margin">{{I18n "status.connection"}}</h2>
-<table class="single-margin">
+<h4 class="subhead">{{I18n "status.probes.subhead"}}</h4>
+
+<table class="responsive twelve">
 	<tr>
-		<td>Server: {{ status.server }}</td>
-		<td>Ethernet: {{ status.ethernet }}</td>
-		<td>WiFi: {{ status.wifi }}</td>
-		<td>GSM: {{ status.gsm }}</td>
+		<th>#</th>
+		<th>EPS name</th>
+		<th>Sensor name</th>
+		<th>Value</th>
+		<th>Limit (H)</th>
+		<th>Limit (L)</th>
+		<th>Status (H)</th>
+		<th>Status (L)</th>
+		<th>ACK (H)</th>
+		<th>ACK (L)</th>
 	</tr>
+	{{#each eps}}
+		<tr>
+			<td>{{ idx }}</td>
+			<td>{{ eps_name }}</td>
+			<td>{{ sensor_name }}</td>
+			<td>{{ value }}</td>
+			<td>{{ high_alarm_value }}</td>
+			<td>{{ low_alarm_value }}</td>
+			<td>{{ high_limit_alarm_enabled }}</td>
+			<td>{{ low_limit_alarm_enabled }}</td>
+			<td>{{ high_alarm_ack }}</td>
+			<td>{{ low_alarm_ack }}</td>
+		</tr>
+	{{/each}}
 </table>

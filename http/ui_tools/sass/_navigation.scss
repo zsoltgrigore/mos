@@ -1,0 +1,8 @@
+body {
+	padding-top: $topBarHeight;
+}
+
+/* Mobile */
+@media only screen and (max-width: 767px) {
+	body { padding-top: $topBarHeightMobile; }
+}

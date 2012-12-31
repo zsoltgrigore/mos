@@ -8,12 +8,12 @@ define(function(require, exports, module) {
 	var Handlebars = require("handlebars");
 	var helper = require("mds/template/helper");
 	var status = require("text!mds/template/status/status.hbrs");
-	var probes = require("text!mds/template/status/probes.hbrs");
 	var esbclient = require("mds/connection/esbClient");
+	var commonUtils = require("mds/utils/common");
+	
+	var eps_get_memory_profile_and_snapshot_req = require("mds/model/mcp/eps_get_memory_profile_and_snapshot_req");
 	
 	module.exports = function(req) {
-		//this.$content.html("<b>Status Controller</b>");
-		
 		try {
 			if (Handlebars.helpers.i18n == null) {
 				helper.i18n();
@@ -22,70 +22,51 @@ define(function(require, exports, module) {
 			if (console) console.warn(e);
 			helper.i18n();
 		}
-		
-		//check auth
-		//show user data
-		//
-		
-		var connections = {
-			status: {
-				server: "online",
-				ethernet: "connected",
-				wifi: "disconnected",
-				gsm: "disconnected"
-			}
-		};
-		
-		var probesList = {
-			probes: [
-				{ name: "name1", state: "state1", device: "device1", register: "1", low_limit_alarm_enabled: "true"
-				, low_alarm_value: "1", high_limit_alarm_enabled: "true", high_alarm_value: "-1" },
-				{ name: "name2", state: "state2", device: "device2", register: "2", low_limit_alarm_enabled: "true"
-				, low_alarm_value: "2", high_limit_alarm_enabled: "false", high_alarm_value: "-2" }
-			]
-		};
-		
-		for( var i=0; i< probesList.probes.length; i++) {
-			probesList.probes[i].idx = (function(in_i){return in_i+1;})(i);
-		}
-		
-		this.$content.html("<b>Status Controller</b>");
-		
-		var template = Handlebars.compile(status);
-		var html = template(connections);
-		this.$content.append($("<div>").attr("id", "status").html(html));
-		
-		var template2 = Handlebars.compile(probes);
-		var html2 = template2(probesList);
-		this.$content.append($("<div>").attr("id", "probes").html(html2));
-		
-		var i = 1;
-				
-		this.timers.intervals.probesUpdate = setInterval(function() {
-			if (this.$content.has("#probes").length != 0)
-				this.$content.children("#probes").remove();
-			
-			probesList.probes[0].low_alarm_value = i;
-			
-			html2 = template2(probesList);
-			this.$content.append($("<div>").attr("id", "probes").html(html2));
-			
-			i++;
-			console.log("ctx modified");
-		}.bind(this), 1000);
-		
-		/* code snippets for redraw
-		this.$content.has("#status").addClass("full");
-		
-		if (this.$content.has("#status").length != 0)
-			this.$content.children("#status").remove();
-			
-				
-		setTimeout(function() {
-			connections.status.server = "offline";
-			console.log("ctx modified");
-		}, 5000);
-		*/
+
+		var epsGetMemoryProfileAndValueReq = new eps_get_memory_profile_and_value_req();
+		esbclient.sendObject(epsGetMemoryProfileAndValueReq);
+		//ez minden kattintásra hozzáadódik az eseménykezelők listájához ezért
+		//	ha jön egy üzenet akkor lehet h 3-4 alkalommal is lefut
+		//	kell esbclient.of("eps_get_memory_profile_and_value_resp")
+		esbclient.on("eps_get_memory_profile_and_value_resp",
+				eps_get_memory_profile_and_value_resp_handler.bind(this));
 	};
 
+	function eps_get_memory_profile_and_value_resp_handler(profileAndValueResp) {
+		var pageName = "status_page";
+		var mm_devices = profileAndValueResp.data.devices;
+		var memory_map_dto = {
+			"eps": []
+		};
+		
+		for (var mm_key in mm_devices) {
+			var register_map = mm_devices[mm_key]["device"]["register_map"];
+			var value = mm_devices[mm_key]["device"]["value"];
+			var description = mm_devices[mm_key]["device"]["description"]
+			var status_page_map = mm_devices[mm_key]["gui"][pageName];
+			var eps_name = mm_key;
+			
+			for (var rowIndex in status_page_map) {
+				var column = status_page_map[rowIndex];
+				var eps_memory_desc = { 
+					eps_name: eps_name,
+					sensor_name: column["sensor_name"], 
+					value: commonUtils.regValuesToInt(column["value"], value),
+					high_alarm_value: commonUtils.regValuesToInt(column["high_alarm_value"], value),
+					low_alarm_value: commonUtils.regValuesToInt(column["low_alarm_value"], value),
+					high_limit_alarm_enabled: commonUtils.regValuesToInt(column["high_limit_alarm_enabled"], value),
+					low_limit_alarm_enabled: commonUtils.regValuesToInt(column["low_limit_alarm_enabled"], value),
+					high_alarm_ack: commonUtils.regValuesToInt(column["high_alarm_ack"], value),
+					low_alarm_ack: commonUtils.regValuesToInt(column["low_alarm_ack"], value),
+				}
+				memory_map_dto.eps.push(eps_memory_desc);
+			}
+		}
+		
+		console.log(memory_map_dto);
+		
+		var statusT = Handlebars.compile(status);
+		var probeGHtml = statusT(memory_map_dto);
+		this.$content.append(probeGHtml);
+	}
 });

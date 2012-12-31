@@ -14,11 +14,11 @@ var numOfSockets = 1;
 //var meshConf = { host: "meshnetwork.hu"};
 
 for (var i=0; i<numOfSockets; i++) {
-	esbSockets.push(new esb.EsbSocket({ /*host: "192.168.1.99",*/ source: "test"+i, helloInterval: 1000})); //~25 ms nél 0,03% csomagvesztés, STABLE!
+	esbSockets.push(new esb.EsbSocket({ host: "192.168.1.148", port: 5521, source: "test"+i, helloInterval: 1000})); //~25 ms nél 0,03% csomagvesztés, STABLE!
 	esbSockets[i].connect();
 }
 
-getLoadAvg = function (dest, client) {
+/*getLoadAvg = function (dest, client) {
 	//console.info("[%s] get_loadavg_req-t küld %s címre", this.source, dest);
 	var get_loadavg_req = new esb.api.get_loadavg_req();
 	

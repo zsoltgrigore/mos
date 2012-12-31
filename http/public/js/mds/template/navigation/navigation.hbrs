@@ -1,0 +1,28 @@
+     <nav class="top-bar">
+        <ul>
+          <!-- Title Area -->
+          <li class="name">
+            <h1>
+              <a href="meshdatasystems.com">
+                Mesh Data Systems
+              </a>
+            </h1>
+          </li>
+          <li class="toggle-topbar"><a href="#"></a></h1></li>
+        </ul>
+
+        <ul class="right">
+          <li class="divider"></li>
+          <li><a href="/refrigeratory/status">{{I18n "nav.status"}}</a></li>
+          <li class="divider"></li>
+          <li><a href="/refrigeratory/config">{{I18n "nav.configuration"}}</a></li>
+          <li class="divider"></li>
+          <li>
+          	<form id="logout_form"  method="post" action="/logout">
+	            <input type="submit" class="small radius button" value="{{I18n "button.logout"}}" />
+	      	</form>
+          </li>
+          <li class="divider"></li>
+        </ul>
+      </nav>
+    </div>

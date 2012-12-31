@@ -47,7 +47,7 @@ define(function(require, exports, module) {
 					params[elements[i].name] = value;
 				}
 			}
-			params.eps_setup_config.header.destination = params.header_destination;
+			//params.eps_setup_config.header.destination = params.header_destination;
 			console.log(params.eps_setup_config);
 			esbclient.send(JSON.stringify(params.eps_setup_config));
 		});

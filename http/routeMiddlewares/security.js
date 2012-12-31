@@ -18,7 +18,7 @@ exports.restrict = function(req, res, next) {
 		}
 	} catch(e) {
 		this.logger.warn("[restrict]: Érvénytelen cookie. Továbbítás: /login");
-		req.session.redirect = req.url;
+		//req.session.redirect = req.url;
 	}
 	res.redirect('/login');
 }

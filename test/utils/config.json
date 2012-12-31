@@ -1,0 +1,324 @@
+{
+    "header": {
+        "protocol": "mcp5",
+        "name": "eps_setup_config",             
+        "source": "",
+        "destination": "",
+        "session_id": "",
+        "security_id": ""
+    },
+    "data": {
+        "rules": {
+            "_comment": "json creation rules, object declarations comes here",
+            "restrictions": {
+                "data_type": {
+                    "_comment": "for bool see avr>parameters>status>value",
+                    "bool": "16",
+                    "int16": "16",
+                    "uint16": "16",
+                    "int32": "32",
+                    "uint32": "32",
+                    "char": "16",
+                    "string": "16",
+                    "float": "16",
+                    "double": "32"
+                },
+                "reader": {
+                    "avr": "",
+                    "xport": "",
+                    "server": ""
+                },
+                "writer": {
+                    "avr": "",
+                    "xport": "",
+                    "server": ""
+                }
+            }
+        },
+        "config": {
+            "_comment": "metadata for the config file",
+            "xport_id": "",
+            "version": "",
+            "mod_by": "",
+            "mod_date": "",
+            "notes": ""
+        },
+        "avrs": [
+            {
+                "properties": {
+                    "_comment": "strings->server, objects->avr",
+                    "id": "0",
+                    "name": "avr1",
+                    "controller_type": "Atmega1280",
+                    "baud_rate": "38400",
+                    "slave_id": "2",
+                    "serial_dev": "/dev/ttyS0"
+                },
+                "parameters": {
+                    "register_array_size": {
+                        "description_en": "number of Modbus slave registers allocated on AVR",
+                        "offset": "0",
+                        "size": "1",
+                        "type": "uint32",
+                        "reader": "",
+                        "writer": "avr",
+                        "value": ""
+                    },
+                    "status": {
+                        "description_en": "avr's current status, see status enum",
+                        "offset": "1",
+                        "size": "1",
+                        "type": "uint16",
+                        "reader": "",
+                        "writer": "",
+                        "value": ""
+                    },
+                    "data_segment_offset": {
+                        "description_en": "modbus address of the first data unit",
+                        "offset": "2",
+                        "size": "1",
+                        "type": "uint16",
+                        "reader": "",
+                        "writer": "xport",
+                        "value": "100"
+                    },
+                    "register_package_size": {
+                        "description_en": "register packages are made up of 16 bit registers",
+                        "offset": "3",
+                        "size": "1",
+                        "type": "uint16",
+                        "reader": "",
+                        "writer": "xport",
+                        "value": "32"
+                    },
+                    "register_package_num": {
+                        "description_en": "the number of register packages defined",
+                        "offset": "4",
+                        "size": "1",
+                        "type": "uint16",
+                        "reader": "",
+                        "writer": "xport",
+                        "value": "1"
+                    },
+                    "current_date": {
+                        "description_en": "xport can send current date to avr in posix format",
+                        "offset": "5",
+                        "size": "2",
+                        "type": "uint32",
+                        "reader": "",
+                        "writer": "",
+                        "value": "1352495664"
+                    },
+                    "free_memory": {
+                        "description_en": "free memory on AVR, in bytes",
+                        "offset": "7",
+                        "size": "1",
+                        "type": "uint16",
+                        "reader": "",
+                        "writer": "avr",
+                        "value": "2000"
+                    },
+                    "remote_devices_baud_rate": {
+                        "description_en": "all the attached devices must use the same baud rate on the rs-485 network",
+                        "offset": "8",
+                        "size": "1",
+                        "type": "uint16",
+                        "reader": "",
+                        "writer": "xport",
+                        "value": "9600"
+                    }
+                },
+                "remote_modbus_devices": [
+                    {
+                        "properties": {
+                            "_comment": "container for monitoring device registers",
+                            "id": "0",
+                            "name": "földszinti kamra",
+                            "type": "Dixel CX40",
+                            "modbus_slave_id": "2"
+                        },
+                        "register_pkgs": [
+                            {
+                                "properties": {
+                                    "_comment": "value",
+                                    "name": "kamra hőmérséklet"
+                                },
+                                "data_units": {
+                                    "remote_device_slave_id": {
+                                        "description_en": "the modbus register address on the monitored device",
+                                        "offset": "0",
+                                        "size": "1",
+                                        "type": "uint16",
+                                        "reader": "",
+                                        "writer": "xport",
+                                        "value": "2"
+                                    },
+                                    "register_address": {
+                                        "description_en": "the modbus register address on the remote device",
+                                        "offset": "1",
+                                        "size": "1",
+                                        "type": "uint16",
+                                        "reader": "",
+                                        "writer": "xport",
+                                        "value": "256"
+                                    },
+                                    "data_type": {
+                                        "description_en": "bool array data types, ...",
+                                        "offset": "2",
+                                        "size": "1",
+                                        "type": "uint16",
+                                        "reader": "",
+                                        "writer": "xport",
+                                        "value": "1",
+                                        "value_sample": {
+                                            "00_bool_array": "false",
+                                            "01_int16": "false",
+                                            "02_uint16": "false",
+                                            "03_int32": "false",
+                                            "04_uint32": "false",
+                                            "05_char": "false",
+                                            "06_string": "false",
+                                            "07_float": "false",
+                                            "08_double": "false"
+                                        }
+                                    },
+                                    "value": {
+                                        "description_en": "the modbus accessed value of remote register",
+                                        "offset": "3",
+                                        "size": "1",
+                                        "type": "uint16",
+                                        "reader": "",
+                                        "writer": "avr",
+                                        "value": ""
+                                    },
+                                    "register_mod_date": {
+                                        "description_en": "the date of last register query/update in posix format",
+                                        "offset": "5",
+                                        "size": "1",
+                                        "type": "uint32",
+                                        "reader": "",
+                                        "writer": "avr",
+                                        "value": ""
+                                    },
+                                    "lower_limit": {
+                                        "description_en": "lower alarm limit value",
+                                        "offset": "7",
+                                        "size": "1",
+                                        "type": "uint16",
+                                        "reader": "",
+                                        "writer": "xport",
+                                        "value": "30"
+                                    },
+                                    "lower_limit_status_ch_date": {
+                                        "description_en": "date of alarm status change for lower limit",
+                                        "offset": "9",
+                                        "size": "2",
+                                        "type": "uint32",
+                                        "reader": "",
+                                        "writer": "avr",
+                                        "value": "0"
+                                    },
+                                    "upper_limit": {
+                                        "description_en": "upper alarm limit value",
+                                        "offset": "11",
+                                        "size": "1",
+                                        "type": "uint16",
+                                        "reader": "",
+                                        "writer": "xport",
+                                        "value": "10"
+                                    },
+                                    "upper_limit_status_ch_date": {
+                                        "description_en": "date of alarm status change for upper limit",
+                                        "offset": "13",
+                                        "size": "2",
+                                        "type": "uint32",
+                                        "reader": "",
+                                        "writer": "avr",
+                                        "value": "0"
+                                    },
+                                    "alarm_on_delay": {
+                                        "description_en": "in seconds, off->on, delay must be elapsed to mark alarm valid",
+                                        "offset": "15",
+                                        "size": "1",
+                                        "type": "uint16",
+                                        "reader": "",
+                                        "writer": "xport",
+                                        "value": "10"
+                                    },
+                                    "alarm_off_delay": {
+                                        "description_en": "in seconds, on->off, delay must be elapsed to mark alarm valid",
+                                        "offset": "16",
+                                        "size": "1",
+                                        "type": "uint16",
+                                        "reader": "",
+                                        "writer": "xport",
+                                        "value": "20"
+                                    },
+                                    "alarm_notification_delay": {
+                                        "description_en": "in seconds, after this time, a new notification will be sent, if user doesn't intervenes",
+                                        "offset": "17",
+                                        "size": "1",
+                                        "type": "uint16",
+                                        "reader": "avr",
+                                        "writer": "xport",
+                                        "value": "60"
+                                    },
+                                    "alarm_input_flags": {
+                                        "description": "flags to enable/disable alarm and store ack's",
+                                        "offset": "18",
+                                        "size": "1",
+                                        "type": "bool",
+                                        "reader": "",
+                                        "writer": "xport",
+                                        "value": {
+                                            "00_lower_alarm_enabled": "true",
+                                            "01_lower_alarm_user_ack": "false",
+                                            "02_lower_alarm_notification_ack": "false",
+                                            "03_upper_alarm_enabled": "true",
+                                            "04_upper_alarm_user_ack": "false",
+                                            "05_upper_alarm_notification_ack": "false"
+                                        }
+                                    },
+                                    "alarm_output_flags": {
+                                        "description": "flags to check alarm status, and notification req",
+                                        "offset": "19",
+                                        "size": "1",
+                                        "type": "bool",
+                                        "reader": "",
+                                        "writer": "avr",
+                                        "value": {
+                                            "00_lower_alarm_active": "false",
+                                            "01_lower_alarm_status_valid": "false",
+                                            "02_lower_alarm_notification_req": "false",
+                                            "03_upper_alarm_active": "false",
+                                            "04_upper_alarm_status_valid": "false",
+                                            "05_upper_alarm_notification_req": "false"
+                                        }
+                                    },
+                                    "refresh_rate": {
+                                        "description": "time interval between register updates, in seconds",
+                                        "offset": "20",
+                                        "size": "1",
+                                        "type": "uint16",
+                                        "reader": "",
+                                        "writer": "xport",
+                                        "value": "10"
+                                    },
+                                    "value_multiplier": {
+                                        "description": "this multiplier is applied on the value read from remote device",
+                                        "offset": "21",
+                                        "size": "1",
+                                        "type": "float16",
+                                        "reader": "",
+                                        "writer": "xport",
+                                        "value": "0.1"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

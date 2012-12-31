@@ -1,7 +1,11 @@
 {
 	"status.connection": "Kapcsolatok",
+	"nav.status": "Állapot",
+	"nav.configuration": "Beállítások",
+	"button.logout": "Kijelentkezés",
 	"config.title": "Konfiguráció",
 	"config.error": "Hiba a konfigurációban!",
 	"config.eps_address.placeholder": "esp_name@domain.com",
+	"status.probes.subhead": "Szondák",
 	"config.eps_config.placeholder": "{'header':..., 'rules':...}"
 }

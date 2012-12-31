@@ -1,7 +1,16 @@
-!!!
-html
+!!! 5
+//if IE 8
+	html(class="no-js lt-ie9", lang="en")
+<!--[if gt IE 8]><!-->
+html(class='no-js', lang='hu')
+	<!--<![endif]-->
 	head
-		meta(http-equiv="Content-Type", content="text/html; charset=UTF-8")
-		title #{title}
+		title Hűtőház megfigyelő és riasztó rendszer
+		meta(charset="utf-8")
+		meta(name="viewport", content="width=device-width, initial-scale=1.0")
+		meta(name="description", content="Refrigeratory monitoring and alarming system")
+		meta(name="author", content="Zsolt Grigore")
+		
+		link(rel="stylesheet", type="text/css", href="/css/app.css")
 	body
 		block content

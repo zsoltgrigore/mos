@@ -5,24 +5,19 @@
 define(function(require, exports, module) {
 	
 	var statusController = require("mds/controller/statusController");
-	var statusViewLogsController = require("mds/controller/statusViewLogsController");
+	//var statusViewLogsController = require("mds/controller/statusViewLogsController");
 	var configController = require("mds/controller/configController");
+	var navController = require("mds/controller/navController");
 	var configPostController = require("mds/controller/configPostController");
 	
 	module.exports = function() {
+		
 		var app = this;
 		this.state('/refrigeratory/', function(req) {
-			//ide jöhentek inicializáló feladatok és aztán factor out!
-			//ha nem jó a path akkor javítsuk!
-			if (location.pathname != req.fullPath) {
-				alert("Hibás elérési út! Újra be kell jelentkeznie!")
-				location.href = req.fullPath;
-			} else {
-				statusController.call(app, req);
-			}
-			alert("mindíg?");
+				statusController.bind(app);
 		});
 		
+		this.get('/refrigeratory/', statusController.bind(app));
 		this.get('/refrigeratory/status', statusController.bind(app));
 		
 		this.get('/refrigeratory/config', configController.bind(app));
@@ -35,9 +30,12 @@ define(function(require, exports, module) {
 			req.redirect('/refrigeratory/config');
 		});
 		
-		this.get('/refrigeratory/status/view-logs', statusViewLogsController.bind(app));
-		
 		this.before(function(req) {
+			app.$navigation.empty();
+			app.$content.empty();
+		
+			//eseménykezelők nullázása! pl.: delete esbclient.removeHandler("handlerName");
+		
 			if (app.timers) {
 				if (app.timers.intervals) {
 					for (var i in app.timers.intervals) {
@@ -50,6 +48,7 @@ define(function(require, exports, module) {
 					}
 				}
 			}
+			navController.call(app, req);
 		});
 	};
 

@@ -8,6 +8,7 @@ var Session = require('connect').middleware.session.Session;
 var Logger = require('../utils/Logger');
 var	cloneConfig = require('../utils/general').cloneConfig;
 var EsbSocket = require('../esb/').EsbSocket;
+var ws_auth_resp = require('../model/auth/websocket/ws_auth_resp');
 
 /**
  * @classDescription 
@@ -134,24 +135,29 @@ MosWebSocketServer.prototype.globalConnectionHandler = function(webSocket) {
 			self.logger.error("Hibás üzenet érkezett webről!" + e);
 		}
 		
+		console.log(messageObj);
+		
 		if (messageObj) {
-			if (messageObj.header.name == "ws_auth" && !webSocket.source) {
+			self.logger.debug("Üzenet web felől: %s", messageObj.header.name);
+			if (messageObj.header.name == "ws_auth_req" && !webSocket.source) {
 				var authHash = parseSignedCookie(messageObj.data.cookieValue, self.http.salt);
 				webSocket.source = self.http.getSourceToHash(authHash);
 				webSocket.connection = connection;
 				esbSocket.user = self.http.socketMap[webSocket.source].user;
 				esbSocket.connect();
 				self.http.socketMap[webSocket.source].esbSocket = esbSocket;
+				connection.sendUTF(JSON.stringify(new ws_auth_resp(true)));
 			} else {
 				if (webSocket.source) {
-					console.log(messageObj);
 					self.logger.info("esb felé továbbítva: %s", messageObj.header.name);
 					messageObj.header.security_id = esbSocket.securityId;
+					messageObj.header.source = esbSocket.user.source;
 					if (!esbSocket.reconnecting)
 						esbSocket.writeObject(messageObj);
 				} else {
 					self.logger.info("Nem authentikált kapcsolódás. WebSocket lekapcsolása...");
-					self.destroyWebSocket(webSocket, "Not authenticated!")
+					connection.sendUTF(JSON.stringify(new ws_auth_resp(false)));
+					self.destroyWebSocket(webSocket, "Not authenticated!");
 				}
 			}
 		}
@@ -165,9 +171,13 @@ MosWebSocketServer.prototype.globalConnectionHandler = function(webSocket) {
 MosWebSocketServer.prototype.destroyWebSocket = function(webSocket, description) {
 	var self = this;
 	
-	if (webSocket.connection.state != "closed") {
-		self.dropWebSocket(webSocket, description);
-		return;
+	try {
+		if (webSocket.connection.state != "closed") {
+			self.dropWebSocket(webSocket, description);
+			return;
+		}
+	} catch (e) {
+		self.logger.error(e.message);
 	}
 	
 	if (webSocket.source) {

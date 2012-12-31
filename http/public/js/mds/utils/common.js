@@ -44,4 +44,15 @@ define(function(require, exports, module) {
 	exports.isNegative = function(n) {
 		return n < 0;
 	};
+	
+	exports.regValuesToInt = function(string, device_values) {
+		var valueArray = string.split(",");
+		valueArray.reverse();
+		var ret = 0;
+		for (var i = 0; i < valueArray.length; i++){
+			//get register name and use it as key for device register value
+			ret += device_values[valueArray[i]] * Math.pow(256, i);
+		}
+		return ret;
+	};
 });

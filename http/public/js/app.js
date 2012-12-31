@@ -12,10 +12,12 @@ requirejs.config({
     //the paths config could be for a directory.
     paths: {
         mds: '../mds',
+        foundation: '../foundation',
         socketio: '../../socket.io/socket.io',
         text: "plugins/text"
     },
 	shim: {
+	
 		davis: {
 			deps: ['jquery'],
 			exports: 'Davis'
@@ -29,7 +31,9 @@ requirejs.config({
 		},
 		handlebars: {
 			exports: 'Handlebars'
-		}
+		},
+		/*'foundation/jquery.foundation.topbar': ['jquery'],
+		'foundation/responsive-tables': ['jquery']*/
 	}
 });
 
@@ -50,10 +54,11 @@ require([  "mds/controller/router", "mds/connection/esbClient",
 		var app = davis(router);
 		
 		domReady(function(){
-			console.log(esbclient);
 			esbclient.connect();
 			
 			app.$content = $("#content");
+			app.$navigation = $("#navigation");
+			
 			app.timers = {
 				intervals: {},
 				timeouts: {}

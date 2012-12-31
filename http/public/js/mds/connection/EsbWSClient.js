@@ -11,10 +11,15 @@ define(function(require, exports, module) {
 		clientConfig = clientConfig || {};
 		
 		this.url = clientConfig.url || "ws://127.0.0.1:8080";
-		this.protocol = "mesh-control-protocol"
+		this.protocol = "mesh-control-protocol";
+		this.destination = "control@fridge.integ.meshnetwork.hu";
 		this.authCookieKey = clientConfig.authCookieKey || "wshash";
 		
+		this.messageQueue = new Array();
+		this.eventHandlers = {};
+		
 		this.connection = false;
+		this.authenticated = false;
 	};
 	
 	EsbWSClient.prototype.connect = function() {
@@ -31,17 +36,24 @@ define(function(require, exports, module) {
 	
 	EsbWSClient.prototype.authenticate = function() {
 		//delete from browser after user auth: http://www.quirksmode.org/js/cookies.html
-		var authmsg = {
+		var ws_auth_req = {
 			header: {
-				name: "ws_auth"
+				name: "ws_auth_req"
 			},
 			data: {
 				cookieValue: cookieUtils.getCookie(this.authCookieKey)
 			}
 		};
-		this.send(JSON.stringify(authmsg));
+		//minden egyéb esetben this.send(...)
+		this.connection.send(JSON.stringify(ws_auth_req));
+		this.on("ws_auth_resp", this.authenticationHandler.bind(this));
 		cookieUtils.setCookie(this.authCookieKey, "", -1);
 	}
+	
+	EsbWSClient.prototype.authenticationHandler = function(payload) {
+		this.authenticated = payload.data.authenticated;
+		this.checkMessageQueue();
+	};
 	
 	EsbWSClient.prototype.close = function(c, d) {
 		//https://developer.mozilla.org/en-US/docs/XPCOM_Interface_Reference/nsIWebSocketChannel#Status_codes
@@ -56,17 +68,49 @@ define(function(require, exports, module) {
 	};
 	
 	EsbWSClient.prototype.send = function(message) {
-		this.connection.send(message);
+		this.authenticated ? this.connection.send(message) : this.messageQueue.push(message);
+	};
+	
+	EsbWSClient.prototype.sendObject = function(object) {
+		//for security reasons source will be added by the server side logic
+		object.header.destination = this.destination;
+		object.header.session_id = "" + Math.floor(Math.random()*65535) + "";
+		this.send(JSON.stringify(object));
+	}
+	
+	EsbWSClient.prototype.checkMessageQueue = function() {
+		if (this.messageQueue.length > 0) {
+			this.send(this.messageQueue.pop());
+			setTimeout(this.checkMessageQueue.bind(this), 100);
+		}
+	}
+	
+	EsbWSClient.prototype.on = function(eventType, callback) {
+		if (!this.eventHandlers[eventType])
+			this.eventHandlers[eventType] = new Array();
+		
+		this.eventHandlers[eventType].push(callback);
 	};
 	
 	EsbWSClient.prototype.connectHandler = function (event){
-		console.log(event);
-		console.info('successfully established a working connection \o/');
 		this.authenticate();
 	};
 	
 	EsbWSClient.prototype.messageHandler = function (event){
-		console.log(event);
+		try {
+			var payload = JSON.parse(event.data);
+			
+			console.log(payload);
+			
+			var eventType = payload.header.name;
+			if (this.eventHandlers[eventType]) {
+				for (var callbackIndex in this.eventHandlers[eventType]) {
+					this.eventHandlers[eventType][callbackIndex](payload);
+				}
+			}
+		} catch(e) {
+			console.log(e);
+		}
 	};
 	
 	EsbWSClient.prototype.closeHandler = function (event){
