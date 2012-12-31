@@ -11,7 +11,7 @@ define(function(require, exports, module) {
 	var esbclient = require("mds/connection/esbClient");
 	var commonUtils = require("mds/utils/common");
 	
-	var eps_get_memory_profile_and_snapshot_req = require("mds/model/mcp/eps_get_memory_profile_and_snapshot_req");
+	var eps_get_memory_profile_and_value_req = require("mds/model/mcp/eps_get_memory_profile_and_value_req");
 	
 	module.exports = function(req) {
 		try {
