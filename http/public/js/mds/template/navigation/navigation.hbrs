@@ -13,12 +13,8 @@
 
         <ul class="right">
           <li class="divider"></li>
-          <li><a href="/refrigeratory/status">{{I18n "nav.status"}}</a></li>
-          <li class="divider"></li>
-          <li><a href="/refrigeratory/config">{{I18n "nav.configuration"}}</a></li>
-          <li class="divider"></li>
           <li>
-          	<form id="logout_form"  method="post" action="/logout">
+          <form id="logout_form"  method="post" action="/logout">
 	            <input type="submit" class="small radius button" value="{{I18n "button.logout"}}" />
 	      	</form>
           </li>

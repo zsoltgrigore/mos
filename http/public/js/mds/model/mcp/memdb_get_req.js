@@ -4,18 +4,17 @@
 
 define(function(require, exports, module) {
 	
-	var eps_get_memory_profile_and_value_req = module.exports = function() {
+	 var memdb_get_req = module.exports = function memdb_get_req() {
 		this.data = {
-			devices : [
-			]
+			path: ""
 		},
-		this.header = {
-			destination : "",
-			name : "eps_get_memory_profile_and_value_req",
+		 this.header = {
+			destination : "ANY",
+			name : "memdb_get_req",
 			protocol : "mcp5",
 			security_id : "",
 			session_id : "",
 			source : ""
 		}
-	};
+	}
 });

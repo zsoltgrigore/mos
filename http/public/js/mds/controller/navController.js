@@ -22,5 +22,10 @@ define(function(require, exports, module) {
 		var navT = Handlebars.compile(nav);
 		var navGHtml = navT();
 		this.$navigation.append(navGHtml);
+		
+		$("#logout_form").submit(function(event) {
+			window.onbeforeunload = null;
+			return true;
+		});
 	}
 });

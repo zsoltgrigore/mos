@@ -121,5 +121,4 @@ define(function(require, exports, module) {
 		//console.log("after: " + bar.position)
 		return bar;
 	};
-
 });

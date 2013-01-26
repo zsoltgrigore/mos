@@ -105,6 +105,8 @@ MosWebSocketServer.prototype.globalConnectionHandler = function(webSocket) {
 	var self = this;
 	var esbSocket = false;
 
+	this.logger.info("Websocket kapcsolódási kisérlet:" + webSocket.origin);
+
 	if (!self.globalAuthorizationHandler(webSocket)) {
 		webSocket.reject();
 		self.logger.info((new Date()) + ' Kapcsolódás: ' + webSocket.origin + '. Visszautasítva.');
@@ -143,6 +145,9 @@ MosWebSocketServer.prototype.globalConnectionHandler = function(webSocket) {
 				var authHash = parseSignedCookie(messageObj.data.cookieValue, self.http.salt);
 				webSocket.source = self.http.getSourceToHash(authHash);
 				webSocket.connection = connection;
+				/*
+				 *A túl gyors kattintgatásoktól hajlamos itt elszállni
+				 */
 				esbSocket.user = self.http.socketMap[webSocket.source].user;
 				esbSocket.connect();
 				self.http.socketMap[webSocket.source].esbSocket = esbSocket;

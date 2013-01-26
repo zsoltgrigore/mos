@@ -2,29 +2,132 @@
 
 <table class="responsive twelve">
 	<tr>
-		<th>#</th>
 		<th>EPS name</th>
 		<th>Sensor name</th>
 		<th>Value</th>
-		<th>Limit (H)</th>
-		<th>Limit (L)</th>
-		<th>Status (H)</th>
-		<th>Status (L)</th>
-		<th>ACK (H)</th>
-		<th>ACK (L)</th>
+		<th>Limits</th>
+		<th>Statuses</th>
+		<th>Errors</th>
 	</tr>
 	{{#each eps}}
-		<tr>
-			<td>{{ idx }}</td>
-			<td>{{ eps_name }}</td>
-			<td>{{ sensor_name }}</td>
-			<td>{{ value }}</td>
-			<td>{{ high_alarm_value }}</td>
-			<td>{{ low_alarm_value }}</td>
-			<td>{{ high_limit_alarm_enabled }}</td>
-			<td>{{ low_limit_alarm_enabled }}</td>
-			<td>{{ high_alarm_ack }}</td>
-			<td>{{ low_alarm_ack }}</td>
+		<tr class="{{eps_csscls_name}}">
+			<td class="eps_name" rowspan="2">
+				{{ eps_name }}
+			</td>
+			
+			<td class="sensor_name" rowspan="2">
+				{{ sensor_name }}
+			</td>
+			
+			<td rowspan="2">
+				<canvas id="{{fridge_temp_id}}" class="{{fridge_temp_addr}}" height="96" width="250">
+					{{ fridge_temp }}
+				</canvas>
+			</td>
+			
+			<td>
+				<form method="post" action="{{set_alarm_action}}">
+					<div class="row collapse">
+						<div class="eight columns">
+							<input class="{{high_alarm_value_addr}}"
+									name="data[{{high_alarm_value_addr}}]"
+									type="text" value="{{ high_alarm_value }}">
+						</div>
+						<div class="four end columns">
+							<input type="submit" class="button expand postfix" value="ok">
+						</div>
+					</div>
+				</form>
+			</td>
+			
+			<td>
+				<form method="post" action="{{set_limit_active_action}}">
+					<div class="{{high_limit_active_addr}} limit-active">
+						<center>
+							<input type="hidden" name="data_key" value="high_limit_active_addr">
+							<input type="checkbox"
+								{{#if high_limit_active}}
+									checked="checked"
+								{{/if}}
+								name="data[{{high_limit_active_addr}}]">
+						</center>
+					</div>
+				</form>
+			</td>
+			
+			<td>
+				<form method="post" action="{{set_limit_error_action}}">
+					<div class="{{high_limit_error_addr}} limit-error alert-box
+							{{#ifCond high_limit_error 1}}
+								alert
+							{{/ifCond}}
+							{{#ifCond high_limit_error 0}}
+								success
+							{{/ifCond}}
+							">
+						{{#ifCond high_limit_error 1}}
+							<input type="hidden" value="{{high_limit_error}}"
+								name="data[{{high_limit_error_addr}}]">
+							<a class="close">&times;</a>
+						{{/ifCond}}
+					</div>
+				</form>
+			</td>
+		</tr>
+		
+		
+		<tr class="{{eps_csscls_name}}">
+			<td>
+				<form method="post" action="{{set_alarm_action}}">
+					<div class="row collapse">
+						<div class="eight columns">
+							<input class="{{low_alarm_value_addr}}"
+									name="data[{{low_alarm_value_addr}}]"
+									type="text" value="{{ low_alarm_value }}">
+						</div>
+						<div class="four end columns">
+							<input type="submit" class="button expand postfix" value="ok">
+						</div>
+					</div>
+				</form>
+			</td>
+			
+			<td>
+				<form method="post" action="{{set_limit_active_action}}">
+					<div class="{{low_limit_active_addr}} limit-active">
+						<center>
+							<input type="hidden" name="data_key" value="high_limit_active_addr">
+							<input type="checkbox"
+								{{#if low_limit_active}}
+									checked="checked"
+								{{/if}}
+								name="data[{{low_limit_active_addr}}]">
+						</center>
+					</div>
+				</form>
+			</td>
+			
+			<td>
+				<form method="post" action="{{set_limit_error_action}}">
+					<div class="{{low_limit_error_addr}} limit-error alert-box
+							{{#ifCond low_limit_error 1}}
+								alert
+							{{/ifCond}}
+							{{#ifCond low_limit_error 0}}
+								success
+							{{/ifCond}}
+							">
+						{{#ifCond low_limit_error 1}}
+							<input type="hidden" value="{{low_limit_error}}"
+								name="data[{{low_limit_error_addr}}]">
+							<a class="close">&times;</a>
+						{{/ifCond}}
+					</div>
+				</form>
+			</td>
+
 		</tr>
 	{{/each}}
 </table>
+
+<!-- center><div class="{{low_alarm_ack_addr}} panel callout"><input type="submit" class="button" value="Nyugtáz"></div></center-->

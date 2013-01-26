@@ -23,7 +23,7 @@ define(function(require, exports, module) {
 		var tempArray = new Array();
 		var isNegative = this.isNegative(n);
 		
-		if (isNegative)  n = n * -1;
+		if (isNegative) n = n * -1;
 		
 		var intAndDecimal = n.toString().split('.');
 		if (this.isInt(n)) {
@@ -45,8 +45,8 @@ define(function(require, exports, module) {
 		return n < 0;
 	};
 	
-	exports.regValuesToInt = function(string, device_values) {
-		var valueArray = string.split(",");
+	exports.regValuesToInt = function(addr_string, device_values) {
+		var valueArray = addr_string.split(",");
 		valueArray.reverse();
 		var ret = 0;
 		for (var i = 0; i < valueArray.length; i++){
@@ -54,5 +54,19 @@ define(function(require, exports, module) {
 			ret += device_values[valueArray[i]] * Math.pow(256, i);
 		}
 		return ret;
+	};
+	
+	exports.pause = function(ms) {
+		ms += new Date().getTime();
+		while (new Date() < ms){}
+	};
+	
+	exports.pause = function(ms) {
+		ms += new Date().getTime();
+		while (new Date() < ms){}
+	};
+	
+	exports.stringToCssCls = function(string) {
+		return string.replace(/[@|.]/gi, "_");
 	};
 });

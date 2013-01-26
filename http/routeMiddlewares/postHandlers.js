@@ -40,7 +40,10 @@ exports.processLoginData = function(req, res) {
 				//	so BE CAREFUL even if you sign it
 				//	it would be better to genarate a one time password for this
 				res.cookie('wshash', user.hash, { signed: true, httpOnly: false });
+				res.cookie('user', user.source, { signed: false, httpOnly: false });
 				res.redirect(redirectAfterLogin);
+				
+				//if user doesn't start WS connection in the following 10 seconds than remove form socketmap
 			});
 			
 		} else {

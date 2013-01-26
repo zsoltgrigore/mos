@@ -20,7 +20,15 @@ define(function(require, exports, module) {
 		Handlebars.registerHelper('I18n', function(str) {
 			//return str;
 			return (i18n != undefined ? i18n[str] : str);
-		}
-	) 
+		}); 
 	};
+	
+	exports.ifCond = function() {
+		Handlebars.registerHelper('ifCond', function(v1, v2, options) {
+			if(v1 == v2) {
+				return options.fn(this);
+			}
+			return options.inverse(this);
+		});
+	}
 });

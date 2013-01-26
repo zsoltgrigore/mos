@@ -38,10 +38,18 @@ requirejs.config({
 });
 
 require([  "mds/controller/router", "mds/connection/esbClient",
-			"text!mds/i18n/hu.json", "plugins/domReady",
+			"text!mds/i18n/hu.json", "mds/controller/navController", "plugins/domReady",
 			"davis", "jquery"],
-	function(router, esbclient, intern13n, domReady, davis, jquery) {
-		//paper.install(window);
+	function(router, esbclient, intern13n, navController, domReady, davis, jquery) {
+		//ha el akarna navigálni szinkron hívással akkor figyelmeztessük
+		window.onbeforeunload = function() {
+			//TODO: rendes i18n szöveget neki! 
+			return "Amennyiben elhagyja az oldalt, később újra be kell jelentkezzen!";
+		};
+		//ha elnavigál akkor kapcsoljuk le a WS-t
+		window.onunload = function() {
+			esbclient.close(1001, "User has navigated away!");
+		};
 		
 		// add imported i18n pack. see require array!
 		try {
@@ -51,64 +59,20 @@ require([  "mds/controller/router", "mds/connection/esbClient",
 			throw e;
 		}
 		
-		var app = davis(router);
+		var app = davis(router.main);
 		
 		domReady(function(){
+			//esbclient.url = "ws://192.168.1.103:8080";
 			esbclient.connect();
 			
 			app.$content = $("#content");
 			app.$navigation = $("#navigation");
+			app.datas = false;
 			
-			app.timers = {
-				intervals: {},
-				timeouts: {}
-			};
+			router.init.call(app);
+			
 			app.start();
-			
-			app.trans('/refrigeratory/');
-			
-			//ha el akarna navigálni szinkron hívással akkor figyelmeztessük
-			window.onbeforeunload = function() {
-				//TODO: rendes i18n szöveget neki! 
-				return "Amennyiben elhagyja az oldalt, később újra be kell jelentkezzen!";
-			};
-			//ha elnavigál akkor kapcsoljuk le a WS-t
-			window.onunload = function() {
-				esbclient.close(1001, "User has navigated away!");
-				console.log("1234");
-			};
 
-			/*
-			paper.setup('display');
-			
-			var number = 0;
-			var dc = new DisplayController({controlPoint: [0, 0]});
-			
-			$("#enterNumber").submit(function(event) {
-				var inputNumber = $('#number').val();
-				if (utils.isNumber(inputNumber)) {
-					try {
-						number = utils.repCommaToDot(inputNumber);
-						//dc.drawDisplay();
-						dc.drawNumber(number);
-					} catch (e) {
-						console.log(e);
-					}
-				}
-				
-				event.preventDefault();
-				return false;
-			});
-			/*
-				with (paper) {
-				var fridge = new Fridge({controlPoint: new Point(0, 0)});
-				fridge.drawFrame();
-				
-				view.draw();
-			}
-			*/
-
-			
 		});
 
 	}

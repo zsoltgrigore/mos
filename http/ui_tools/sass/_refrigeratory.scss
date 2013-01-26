@@ -1,0 +1,39 @@
+table form {
+	margin: 0px !important;
+}
+
+table input {
+	margin: 0px !important;
+}
+
+table .button {
+	padding: 0px 6px !important;
+}
+
+table tbody tr td {
+	vertical-align: middle !important;
+}
+
+table .limit-active input {
+	cursor: pointer;
+}
+
+table .limit-error a {
+	color: #fff !important;
+	opacity: 0.9 !important;
+	font-size:31px !important;
+	right: 6px !important; top: 6px !important;
+	padding: 0px !important;
+	display: none;
+	cursor: pointer;
+}
+
+table .limit-error.alert a {
+	display: block;
+}
+
+table .limit-error {
+	width: 32px;
+	height:32px;
+	margin: auto !important;
+}

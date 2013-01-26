@@ -12,6 +12,7 @@ define(function(require, exports, module) {
 		
 		this.url = clientConfig.url || "ws://127.0.0.1:8080";
 		this.protocol = "mesh-control-protocol";
+		this.user = cookieUtils.getCookie("user");
 		this.destination = "control@fridge.integ.meshnetwork.hu";
 		this.authCookieKey = clientConfig.authCookieKey || "wshash";
 		
@@ -20,6 +21,7 @@ define(function(require, exports, module) {
 		
 		this.connection = false;
 		this.authenticated = false;
+		this.connectTimeInterval = false;
 	};
 	
 	EsbWSClient.prototype.connect = function() {
@@ -30,12 +32,13 @@ define(function(require, exports, module) {
 			this.connection.onclose = this.closeHandler.bind(this);
 			this.connection.onerror = this.errorHandler.bind(this);
 		} else {
-			throw "WebSocket not supported";
+			alert("websocket not supported");
 		}
 	};
 	
 	EsbWSClient.prototype.authenticate = function() {
 		//delete from browser after user auth: http://www.quirksmode.org/js/cookies.html
+		clearInterval(this.connectTimeInterval);
 		var ws_auth_req = {
 			header: {
 				name: "ws_auth_req"
@@ -52,14 +55,17 @@ define(function(require, exports, module) {
 	
 	EsbWSClient.prototype.authenticationHandler = function(payload) {
 		this.authenticated = payload.data.authenticated;
-		this.checkMessageQueue();
+		/*várunk 100ms-t mert a connection megnyitására rakott eeménykezelő későn hívódik részletesebben @this revision log*/
+		/*az okozója valszeg az esbclient singleton megvalósítása a require.js-el közösen*/
+		/*esbClient window-hoz!?*/
+		setTimeout(this.checkMessageQueue.bind(this), 100);
+		this.off("ws_auth_resp", this.authenticationHandler.bind(this));
 	};
 	
 	EsbWSClient.prototype.close = function(c, d) {
 		//https://developer.mozilla.org/en-US/docs/XPCOM_Interface_Reference/nsIWebSocketChannel#Status_codes
 		var code = c || 1005;
 		var description = d || "No Code provided!";
-		console.log(this.connection);
 		if (this.connection) {
 				this.connection.close(c, d);
 		} else {
@@ -80,7 +86,7 @@ define(function(require, exports, module) {
 	
 	EsbWSClient.prototype.checkMessageQueue = function() {
 		if (this.messageQueue.length > 0) {
-			this.send(this.messageQueue.pop());
+			this.send(this.messageQueue.shift());
 			setTimeout(this.checkMessageQueue.bind(this), 100);
 		}
 	}
@@ -92,24 +98,33 @@ define(function(require, exports, module) {
 		this.eventHandlers[eventType].push(callback);
 	};
 	
+	EsbWSClient.prototype.off = function(eventType, callback) {
+		if (this.eventHandlers[eventType]) {
+			var list = this.eventHandlers[eventType];
+			for (var i = 0, length = list.length; i < length; i++) {
+				if (list[i].toString() == callback.toString())
+					list.splice(i, 1);
+				else
+					if (console) console.warn("can't off eventhandler" + eventType);
+			}
+		}
+	};
+	
 	EsbWSClient.prototype.connectHandler = function (event){
 		this.authenticate();
 	};
 	
 	EsbWSClient.prototype.messageHandler = function (event){
-		try {
-			var payload = JSON.parse(event.data);
-			
-			console.log(payload);
-			
-			var eventType = payload.header.name;
-			if (this.eventHandlers[eventType]) {
-				for (var callbackIndex in this.eventHandlers[eventType]) {
-					this.eventHandlers[eventType][callbackIndex](payload);
-				}
+		//console.log(event.data);
+		var payload = JSON.parse(event.data);
+		//console.log(payload);
+		var eventType = payload.header.name;
+		//console.log(payload.header.name);
+		
+		if (this.eventHandlers[eventType]) {
+			for (var callbackIndex in this.eventHandlers[eventType]) {
+				this.eventHandlers[eventType][callbackIndex](payload);
 			}
-		} catch(e) {
-			console.log(e);
 		}
 	};
 	
@@ -119,8 +134,10 @@ define(function(require, exports, module) {
 	};
 	
 	EsbWSClient.prototype.errorHandler = function (reason){
-		console.log(event);
-		utils.redirectTo(null, '/login');
+		if (console) console.error(reason);
+		setTimeout(function() { 
+			utils.redirectTo(null, '/login');
+			}, 5000);
 	};
 	
 	EsbWSClient.prototype.webSocketSupported = function() {

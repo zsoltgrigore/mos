@@ -5,23 +5,42 @@ var net = require("net");
 var fs = require("fs");
 var os = require("os");
 var esb = require("../esb/");
+var jsontool = require('jsontool');
 var getted = 0;
 var xyRespData = 0;
 var xyRespSent = 0;
+var randomTimerId = false;
+var obj = false;
+var iteratorKey = 100;
 
 var server = net.createServer(function (socket) {
-  socket.setNoDelay(true);
-  socket.on("data", function(data) {
-  	var dataStr = data.toString("utf-8");
-  	console.log(dataStr);
-  	try {
-  		var obj = JSON.parse(dataStr);
-  	} catch (e) {
-  		console.log("   nem sikerült parszolni!!!")
-  	}
-  	getted++;
-  	console.log(obj.header.name + " ez a " + getted + ". csomag");
-  	switch(obj.header.name) {
+
+randomTimer.call(function() {
+		var changeNotify = new eps_memory_change_notify(++iteratorKey);
+		changeNotify.header.source = "dummy@localhost";
+		if (obj) {
+			changeNotify.header.destination = obj.header.source;
+			changeNotify.header.session_id = obj.header.session_id;
+			changeNotify.header.security_id = obj.header.security_id;
+			socket.write(JSON.stringify(changeNotify));
+			console.log(changeNotify);
+		}
+	});
+
+socket.setNoDelay(true);
+socket.on("data", function(data) {
+	var dataStr = data.toString("utf-8");
+	console.log(dataStr);
+	try {
+		obj = JSON.parse(dataStr);
+	} catch (e) {
+		console.log("   nem sikerült parszolni!!!")
+	}
+	getted++;
+	console.log(obj.header.name + " ez a " + getted + ". csomag");
+	
+	
+	switch(obj.header.name) {
 		case "esb_login_req":
 			var esb_login_resp = new esb.api.esb_login_resp();
 			esb_login_resp.header.source = "dummy@localhost";
@@ -47,11 +66,115 @@ var server = net.createServer(function (socket) {
 			epsGetMemoryProfileAndValueResp.header.security_id = obj.header.security_id;
 			socket.write(JSON.stringify(epsGetMemoryProfileAndValueResp));
 			break;
+		case "memdb_get_req":
+			if (obj.data.path == "attila@integ.meshnetwork.hu::business_details::device_list") {
+				var memdbGetResp = new memdb_get_resp1();
+				memdbGetResp.header.source = "dummy@localhost";
+				memdbGetResp.header.destination = obj.header.source;
+				memdbGetResp.header.session_id = obj.header.session_id;
+				memdbGetResp.header.security_id = obj.header.security_id;
+				socket.write(JSON.stringify(memdbGetResp));
+			} else {
+				if (obj.data.path == "eps0.attila@fridge.integ.meshnetwork.hu::::") {
+					var memdbGetResp = new memdb_get_resp2();
+					memdbGetResp.header.source = "dummy@localhost";
+					memdbGetResp.header.destination = obj.header.source;
+					memdbGetResp.header.session_id = obj.header.session_id;
+					memdbGetResp.header.security_id = obj.header.security_id;
+					socket.write(JSON.stringify(memdbGetResp));
+					console.log(memdbGetResp);
+				} else {
+					console.log(obj.data.path);
+				}
+			}
+			break;
 		default:
 			console.log("Ismeretlen üzenet, nincs válasz!");
   	}
   });
 });
+
+function randomTimer() {
+	this();
+	var randomTime = Math.floor((Math.random()*10)+10)*1000;
+	console.log(randomTime);
+	
+	if (randomTimerId) {
+		clearTimeout(randomTimerId);
+	}
+	
+	randomTimerId = setTimeout(randomTimer.bind(this), randomTime);
+}
+/*******DB Specific MCP***********/
+function memdb_get_req() {
+	this.data = {
+		path: ""
+	},
+	 this.header = {
+		destination : "ANY",
+		name : "memdb_get_req",
+		protocol : "mcp5",
+		security_id : "",
+		session_id : "",
+		source : ""
+	}
+}
+
+function memdb_get_resp1() {
+	this.data = {
+		value: "[\"eps0.attila@fridge.integ.meshnetwork.hu\"]"
+	},
+	 this.header = {
+		destination : "ANY",
+		name : "memdb_get_resp",
+		protocol : "mcp5",
+		security_id : "",
+		session_id : "",
+		source : "esbd1.prod@meshnetwork.hu"
+	}
+}
+
+/*
+            {\"register_description\": {\"101\": \"1. contact Input\",\"102\": \"2. Contact Input\",
+            \"301\": \"High Alarm Value\", \"302\": \"Low alarm Value\", \"303\": \"High Limit Alarm Enabled\",
+            \"304\": \"Low Limit Alarm Enabled\", \"305\": \"High Alarm Ack\", \"306\": \"Low Alarm Ack\",
+            \"1001\": \"External modbus slave #1 register\" },
+            \"register_value\": { \"101\": \"0\", \"102\": \"0\", \"301\": \"10\", \"302\": \"4\", \"303\": \"1\",
+            \"304\": \"0\", \"305\": \"0\", \"306\": \"0\", \"1001\": \"8\" } }*/
+
+function memdb_get_resp2() {
+	this.data = {
+		value: "{\"register_description\": {\"301\": \"High Alarm Value\", \"302\": \"Low alarm Value\", \"303\": \"High Limit Alarm Enabled\","
+				+"\"304\": \"Low Limit Alarm Enabled\", \"305\": \"High Limit Error\", \"306\": \"Low Limit Error\","
+				+"\"1256\": \"External modbus slave #1 register\" },"
+				+"\"register_value\": { \"301\": \"350\", \"302\": \"200\", \"303\": \"1\","
+				+"\"304\": \"0\", \"305\": \"1\", \"306\": \"0\", \"1256\": \"260\" } }"
+	},
+	 this.header = {
+		destination : "ANY",
+		name : "memdb_get_resp",
+		protocol : "mcp5",
+		security_id : "",
+		session_id : "",
+		source : "esbd1.prod@meshnetwork.hu"
+	}
+}
+
+var value = "{\"register_description\": {\"101\": \"1. contact Input\",\"102\": \"2. Contact Input\","
+				+"\"301\": \"High Alarm Value\", \"302\": \"Low alarm Value\", \"303\": \"High Limit Alarm Enabled\","
+				+"\"304\": \"Low Limit Alarm Enabled\", \"305\": \"High Alarm Ack\", \"306\": \"Low Alarm Ack\","
+				+"\"1001\": \"External modbus slave #1 register\" },"
+				+"\"register_value\": { \"101\": \"0\", \"102\": \"0\", \"301\": \"10\", \"302\": \"4\", \"303\": \"1\","
+				+"\"304\": \"0\", \"305\": \"0\", \"306\": \"0\", \"1001\": \"8\" } }";
+console.log(value);
+
+var stringify = {};
+stringify.kerdes = JSON.stringify(new memdb_get_resp2());
+console.log(JSON.stringify(new memdb_get_resp2()));
+console.log(JSON.stringify(stringify));
+
+var object = JSON.parse(JSON.stringify(stringify));
+console.log(object.kerdes);
 
 /*******Project Specific MCP**********/
 /**********Refrigeratory**************/
@@ -68,6 +191,7 @@ function eps_get_device_list_req() {
 	}
 }
 console.log(JSON.stringify(new eps_get_device_list_req()));
+console.log(" ");
 
 function eps_get_device_list_resp() {
 	this.data = {
@@ -86,6 +210,7 @@ function eps_get_device_list_resp() {
 	}
 }
 console.log(JSON.stringify(new eps_get_device_list_resp()));
+console.log(" ");
 
 function eps_get_memory_profile_and_value_req() {
 	this.data = {
@@ -107,6 +232,7 @@ function eps_get_memory_profile_and_value_req() {
 	}
 }
 console.log(JSON.stringify(new eps_get_memory_profile_and_value_req()));
+console.log(" ");
 
 function eps_get_memory_profile_and_value_resp() {
 	this.data = {
@@ -218,18 +344,12 @@ function eps_get_memory_profile_and_value_resp() {
 	}
 }
 console.log(JSON.stringify(new eps_get_memory_profile_and_value_resp()));
+console.log(" ");
 
-function eps_memory_change_notify() {
+function eps_memory_change_notify(val) {
 	this.data = {
-		devices : {
-			"eps0.attila@fridge.integ.meshnetwork.hu": {
-				"register" : ["sys0", "in1"],
-				"value": ["24", "0"]
-			},
-			"eps1.attila@fridge.integ.meshnetwork.hu": {
-				"register" : ["sys0", "in1"],
-				"value": ["24", "0"]
-			}
+		"eps0.attila@fridge.integ.meshnetwork.hu": {
+			"1256": "" + val
 		}
 	},
 	this.header = {
@@ -242,6 +362,7 @@ function eps_memory_change_notify() {
 	}
 }
 console.log(JSON.stringify(new eps_memory_change_notify()));
+console.log(" ");
 
 /***********************************************************/
 
@@ -257,6 +378,7 @@ console.log(JSON.stringify(new eps_memory_change_notify()));
 		}
 		
 console.log(registerValueToInt("2,100"));
+console.log(" ");
 
 function listen (port, host) {
 server.listen(port, host);

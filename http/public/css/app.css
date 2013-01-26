@@ -6052,3 +6052,51 @@ body {
     padding-top: 45px;
   }
 }
+/* line 1, ../../ui_tools/sass/_refrigeratory.scss */
+table form {
+  margin: 0px !important;
+}
+
+/* line 5, ../../ui_tools/sass/_refrigeratory.scss */
+table input {
+  margin: 0px !important;
+}
+
+/* line 9, ../../ui_tools/sass/_refrigeratory.scss */
+table .button {
+  padding: 0px 6px !important;
+}
+
+/* line 13, ../../ui_tools/sass/_refrigeratory.scss */
+table tbody tr td {
+  vertical-align: middle !important;
+}
+
+/* line 17, ../../ui_tools/sass/_refrigeratory.scss */
+table .limit-active input {
+  cursor: pointer;
+}
+
+/* line 21, ../../ui_tools/sass/_refrigeratory.scss */
+table .limit-error a {
+  color: #fff !important;
+  opacity: 0.9 !important;
+  font-size: 31px !important;
+  right: 6px !important;
+  top: 6px !important;
+  padding: 0px !important;
+  display: none;
+  cursor: pointer;
+}
+
+/* line 31, ../../ui_tools/sass/_refrigeratory.scss */
+table .limit-error.alert a {
+  display: block;
+}
+
+/* line 35, ../../ui_tools/sass/_refrigeratory.scss */
+table .limit-error {
+  width: 32px;
+  height: 32px;
+  margin: auto !important;
+}

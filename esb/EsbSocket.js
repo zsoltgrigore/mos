@@ -94,7 +94,6 @@ util.inherits(EsbSocket, EventEmitter);
  */
 EsbSocket.prototype.connect = function () {
 	this._reconnecting = false;
-	this.logger = new Logger({target : "EsbSocket<"+this.user.source+">"});
 	this.connection = net.createConnection(this.port, this.host);
 	//this.connection.setNoDelay(true); //kifelé kell Nagle de lehet hogy nem
 	
@@ -106,6 +105,7 @@ EsbSocket.prototype.connect = function () {
 	this.connection.on("close", this.closeHandler.bind(this));
 	this.connection.on("end", this.endHandler.bind(this));
 	
+	this.logger = new Logger({target : "EsbSocket<"+this.user.source+">"});
 	this.logger.info("Kapcsolódás... %s:%d", this.host, this.port);
 };
 
