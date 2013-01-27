@@ -185,15 +185,19 @@ MosWebSocketServer.prototype.destroyWebSocket = function(webSocket, description)
 		self.logger.error(e.message);
 	}
 	
-	if (webSocket.source) {
-		this.http.sessionStore.destroy(this.http.socketMap[webSocket.source].sessionID, function() {
-			self.logger.info("Kliens végpont leszakadt. Felhasználó azonosító és a hozzá tartozó session törölve."
-				+ webSocket.source);
-			self.http.socketMap[webSocket.source].esbSocket.end();
-			delete self.http.socketMap[webSocket.source];
-			delete webSocket.source;
-		});
-	}
+	//try {
+		if (webSocket.source) {
+			this.http.sessionStore.destroy(this.http.socketMap[webSocket.source].sessionID, function() {
+				self.logger.info("Kliens végpont leszakadt. Felhasználó azonosító és a hozzá tartozó session törölve."
+					+ webSocket.source);
+				self.http.socketMap[webSocket.source].esbSocket.end();
+				delete self.http.socketMap[webSocket.source];
+				delete webSocket.source;
+			});
+		}
+	/*} catch(e) {
+		console.log(e);
+	}*/
 };
 
 MosWebSocketServer.prototype.dropWebSocket = function(webSocket, description) {
