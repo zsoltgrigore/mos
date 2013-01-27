@@ -72,9 +72,7 @@ require([  "mds/controller/router", "mds/connection/esbClient",
 			router.init.call(app);
 			
 			app.start();
-
 		});
-
 	}
 );
 

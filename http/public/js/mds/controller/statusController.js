@@ -14,8 +14,6 @@ define(function(require, exports, module) {
 	var commonUtils = require("mds/utils/common");
 	var DisplayController = require("mds/display/DisplayController");
 	
-	var memdb_get_req = require("mds/model/mcp/memdb_get_req");
-	
 	var deviceList = false;
 	var numOfDevices = 0;
 	var addedDevices = 0;
@@ -29,18 +27,12 @@ define(function(require, exports, module) {
 
 		if (!app.datas) {
 			app.datas = {};
-			getDataFromDb(esbclient.user + "::business_details::device_list");
+			esbclient.getDataFromDb(esbclient.user + "::business_details::device_list");
 			esbclient.on("memdb_get_resp", getUserDevicesHandler.bind(this));
 		} else {
 			renderContent.call(app);
 		}
 	};
-	
-	function getDataFromDb(path) {
-		var memDbGetReq = new memdb_get_req();
-		memDbGetReq.data.path = path;
-		esbclient.sendObject(memDbGetReq);
-	}
 
 	function getUserDevicesHandler(payload) {
 		esbclient.off("memdb_get_resp", getUserDevicesHandler.bind(this));
@@ -52,7 +44,7 @@ define(function(require, exports, module) {
 		esbclient.on("memdb_get_resp", getUserDeviceDetailsHandler.bind(this));
 		for (var i in deviceList) {
 			this.datas[deviceList[i]] = {};
-			getDataFromDb(deviceList[i]+"::::");
+			esbclient.getDataFromDb(deviceList[i]+"::::");
 			commonUtils.pause(50);
 		}
 	}
@@ -60,9 +52,8 @@ define(function(require, exports, module) {
 	function getUserDeviceDetailsHandler(payload) {
 		var app = this;
 		this.datas[deviceList[addedDevices]] = JSON.parse(payload.data.value);
-		
-		//console.log(this.datas);
 		addedDevices++;
+		console.log("Parsed and added one device's details. Num of added details: " + addedDevices);
 
 		if (deviceList.length == addedDevices) {
 			esbclient.off("memdb_get_resp", getUserDeviceDetailsHandler.bind(this));
@@ -82,7 +73,9 @@ define(function(require, exports, module) {
 				//console.log("Value is " + changedValue);
 				//input has value but any other tag has text or html
 				if ($changedField.is("input")) {
-					$changedField.val(changedValue);
+					//BUG: input ami set-limit típusú ott /10
+					//ezt a többivel együtt kitenni switch-case - be
+					$changedField.val(changedValue/10);
 				} else {
 					if ($changedField.is("canvas")) {
 						console.log(payload);
@@ -124,7 +117,6 @@ define(function(require, exports, module) {
 						//var $oldContent = $(this).parent();
 						$oldContent.removeClass("alert");
 						$oldContent.appendTo($oldWrapper);
-						console.log("ok");
 					}
 					$(this).parents("form:first").submit();
 				})
@@ -154,6 +146,16 @@ define(function(require, exports, module) {
 		}
 	}
 
+	function renderLimitActive($changedField, changedValue) {
+		changedValue == 1 ?
+			$("input:checkbox", $changedField).prop('checked', true)
+			: $("input:checkbox", $changedField).prop('checked', false);
+	}
+	
+	function renderLimitError($changedField, changedValue) {
+		console.log($changedField, changedValue);
+	}
+
 	function transformData() {
 		var app = this;
 		var mm_devices = app.datas;
@@ -170,6 +172,7 @@ define(function(require, exports, module) {
 				var column = status_page[rowIndex];
 				var eps_memory_desc = {
 					eps_name: eps_name,
+					eps_short_name: eps_name.split("@")[0],
 					eps_csscls_name: commonUtils.stringToCssCls(eps_name),
 					sensor_name: column["sensor_name"],
 					fridge_temp: (""+commonUtils.regValuesToInt(column["fridge_temp"], value))/10,

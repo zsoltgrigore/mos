@@ -4,8 +4,11 @@
 
 define(function(require, exports, module) {
 	
-	var cookieUtils = require("mds/utils/cookie");
 	var $ = require("jquery");
+	var cookieUtils = require("mds/utils/cookie");
+	
+	var memdb_get_req = require("mds/model/mcp/memdb_get_req");
+	var memdb_set_req = require("mds/model/mcp/memdb_set_req");
 	
 	var EsbWSClient = module.exports = function(clientConfig) {
 		clientConfig = clientConfig || {};
@@ -115,11 +118,10 @@ define(function(require, exports, module) {
 	};
 	
 	EsbWSClient.prototype.messageHandler = function (event){
-		//console.log(event.data);
+		console.log("messageHandler: ");
+		console.log(event.data);
 		var payload = JSON.parse(event.data);
-		//console.log(payload);
 		var eventType = payload.header.name;
-		//console.log(payload.header.name);
 		
 		if (this.eventHandlers[eventType]) {
 			for (var callbackIndex in this.eventHandlers[eventType]) {
@@ -143,4 +145,22 @@ define(function(require, exports, module) {
 	EsbWSClient.prototype.webSocketSupported = function() {
 		return "WebSocket" in window;
 	};
+	
+	/* Database related functions */
+	EsbWSClient.prototype.getDataFromDb = function(path) {
+		var memDbGetReq = new memdb_get_req();
+		memDbGetReq.data.path = path;
+		console.log("getDataFromDb: ");
+		console.log(memDbGetReq);
+		this.sendObject(memDbGetReq);
+	}
+
+	EsbWSClient.prototype.sendDataToDb = function(path, value) {
+		var memDbSetReq = new memdb_set_req();
+		memDbSetReq.data.path = path;
+		memDbSetReq.data.value = "" + value;
+		console.log("sendDataToDb: ");
+		console.log(memDbSetReq);
+		this.sendObject(memDbSetReq);
+	}
 });

@@ -12,7 +12,7 @@
 	{{#each eps}}
 		<tr class="{{eps_csscls_name}}">
 			<td class="eps_name" rowspan="2">
-				{{ eps_name }}
+				<span class="has-tip" title="{{eps_name}}">{{ eps_short_name }}</span>
 			</td>
 			
 			<td class="sensor_name" rowspan="2">
@@ -20,7 +20,7 @@
 			</td>
 			
 			<td rowspan="2">
-				<canvas id="{{fridge_temp_id}}" class="{{fridge_temp_addr}}" height="96" width="250">
+				<canvas id="{{fridge_temp_id}}" class="{{fridge_temp_addr}}" height="96" width="400">
 					{{ fridge_temp }}
 				</canvas>
 			</td>
@@ -66,7 +66,8 @@
 							{{/ifCond}}
 							">
 						{{#ifCond high_limit_error 1}}
-							<input type="hidden" value="{{high_limit_error}}"
+							<!-- acknowledged error has code 2! -->
+							<input type="hidden" value="2"
 								name="data[{{high_limit_error_addr}}]">
 							<a class="close">&times;</a>
 						{{/ifCond}}
@@ -74,7 +75,6 @@
 				</form>
 			</td>
 		</tr>
-		
 		
 		<tr class="{{eps_csscls_name}}">
 			<td>
@@ -118,7 +118,8 @@
 							{{/ifCond}}
 							">
 						{{#ifCond low_limit_error 1}}
-							<input type="hidden" value="{{low_limit_error}}"
+							<!-- acknowledged error has code 2! -->
+							<input type="hidden" value="2"
 								name="data[{{low_limit_error_addr}}]">
 							<a class="close">&times;</a>
 						{{/ifCond}}
@@ -130,4 +131,13 @@
 	{{/each}}
 </table>
 
-<!-- center><div class="{{low_alarm_ack_addr}} panel callout"><input type="submit" class="button" value="Nyugtáz"></div></center-->
+<!-- 
+<div class="row">
+	<div class="twelve column">
+		<h3 class="subheader">Tudnivalók:</h3>
+		<ul class="circle">
+			<li>lorem ipsum</li>
+		</ul>
+	</div>
+</div>
+ -->
