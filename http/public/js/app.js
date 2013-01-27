@@ -62,9 +62,6 @@ require([  "mds/controller/router", "mds/connection/esbClient",
 		var app = davis(router.main);
 		
 		domReady(function(){
-			esbclient.url = "ws://192.168.1.103:8080";
-			esbclient.connect();
-			
 			app.$content = $("#content");
 			app.$navigation = $("#navigation");
 			app.datas = false;
@@ -72,6 +69,8 @@ require([  "mds/controller/router", "mds/connection/esbClient",
 			router.init.call(app);
 			
 			app.start();
+			esbclient.url = "ws://192.168.1.103:8080";
+			esbclient.connect();
 		});
 	}
 );
