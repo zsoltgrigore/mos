@@ -55,6 +55,8 @@ exports.processLoginData = function(req, res) {
 };
 
 exports.processLogoutData = function(req, res) {
+	console.log(req.session);
+	delete this.socketMap[req.session.user.source];
 	req.session = null;
 	res.redirect("/login");
 };

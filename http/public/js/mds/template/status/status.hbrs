@@ -44,7 +44,7 @@
 				<form method="post" action="{{set_limit_active_action}}">
 					<div class="{{high_limit_active_addr}} limit-active">
 						<center>
-							<input type="hidden" name="data_key" value="high_limit_active_addr">
+							<input type="hidden" name="data_key" value="{{high_limit_active_addr}}">
 							<input type="checkbox"
 								{{#if high_limit_active}}
 									checked="checked"
@@ -65,12 +65,10 @@
 								success
 							{{/ifCond}}
 							">
-						{{#ifCond high_limit_error 1}}
-							<!-- acknowledged error has code 2! -->
-							<input type="hidden" value="2"
-								name="data[{{high_limit_error_addr}}]">
-							<a class="close">&times;</a>
-						{{/ifCond}}
+						<!-- acknowledged error has code 2! -->
+						<input type="hidden" value="2"
+							name="data[{{high_limit_error_addr}}]">
+						<a class="close">&times;</a>
 					</div>
 				</form>
 			</td>
@@ -96,7 +94,7 @@
 				<form method="post" action="{{set_limit_active_action}}">
 					<div class="{{low_limit_active_addr}} limit-active">
 						<center>
-							<input type="hidden" name="data_key" value="high_limit_active_addr">
+							<input type="hidden" name="data_key" value="{{low_limit_active_addr}}">
 							<input type="checkbox"
 								{{#if low_limit_active}}
 									checked="checked"
@@ -117,12 +115,10 @@
 								success
 							{{/ifCond}}
 							">
-						{{#ifCond low_limit_error 1}}
-							<!-- acknowledged error has code 2! -->
-							<input type="hidden" value="2"
-								name="data[{{low_limit_error_addr}}]">
-							<a class="close">&times;</a>
-						{{/ifCond}}
+						<!-- acknowledged error has code 2! -->
+						<input type="hidden" value="2"
+							name="data[{{low_limit_error_addr}}]">
+						<a class="close">&times;</a>
 					</div>
 				</form>
 			</td>
@@ -131,7 +127,7 @@
 	{{/each}}
 </table>
 
-<!-- 
+ 
 <div class="row">
 	<div class="twelve column">
 		<h3 class="subheader">Tudnivalók:</h3>
@@ -140,4 +136,3 @@
 		</ul>
 	</div>
 </div>
- -->

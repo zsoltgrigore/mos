@@ -114,7 +114,7 @@ define(function(require, exports, module) {
 						event.preventDefault();
 						var $oldContent = $(this).parent().clone();
 						var $oldWrapper = $(this).parent().parent();
-						//var $oldContent = $(this).parent();
+						//--var $oldContent = $(this).parent();
 						$oldContent.removeClass("alert");
 						$oldContent.appendTo($oldWrapper);
 					}
@@ -153,7 +153,25 @@ define(function(require, exports, module) {
 	}
 	
 	function renderLimitError($changedField, changedValue) {
-		console.log($changedField, changedValue);
+		if ($changedField.hasClass("alert")) {
+			$changedField.removeClass("alert");
+		}
+		if ($changedField.hasClass("success")) {
+			$changedField.removeClass("success");
+		}
+		switch (parseInt(changedValue)) {
+			case 0:
+				$changedField.addClass("success");
+				break;
+			case 1:
+				$changedField.addClass("alert");
+				break;
+			case 2:
+				break;
+			default:
+				console.log("not implemented");
+				console.log(changedValue);
+		}
 	}
 
 	function transformData() {

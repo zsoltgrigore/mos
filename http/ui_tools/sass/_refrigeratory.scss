@@ -37,3 +37,8 @@ table .limit-error {
 	height:32px;
 	margin: auto !important;
 }
+
+table .sensor_name {
+	max-width: 180px;
+	overflow: auto;
+}

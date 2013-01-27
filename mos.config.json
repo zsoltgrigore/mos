@@ -2,7 +2,7 @@
 	"http" : {
 		"development" : {
 			"enabled" : true,
-			"host" : "localhost",
+			"host" : "192.168.1.103",
 			"port" : 8080,
 			"salt" : "essé-mán-le-a-fárúl",
 			"defaultLanding" : "/refrigeratory/",
@@ -66,7 +66,7 @@
 	},
 	"esb" : {
 		"development" : {
-			"host" : "localhost",
+			"host" : "192.168.1.148",
 			"port" : 5521,
 			"helloInterval" : 1000,
 			"reconnectAllowed" : true,
@@ -83,7 +83,7 @@
 	"global" : {
 		"development" : {
 			"logger" : {
-				"level" : 3
+				"level" : 2
 			}
 		},
 		"production" : {
