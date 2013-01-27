@@ -57,9 +57,13 @@ exports.processLoginData = function(req, res) {
 exports.processLogoutData = function(req, res) {
 	console.log(req.session);
 	try {
-		this.socketMap[req.session.user.source].esbSocket.end();
+		if (this.socketMap[req.session.user.source].esbSocket) {
+			this.socketMap[req.session.user.source].esbSocket.end();
+		}
 		delete this.socketMap[req.session.user.source];
+		console.log("deleted");
 	} catch(e) {
+		console.log(e);
 	}
 	req.session = null;
 	res.redirect("/login");
