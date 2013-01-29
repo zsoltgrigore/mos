@@ -26,7 +26,7 @@
 				</canvas>
 			</td>
 			
-			<td>M<br/>A<br/>X</td>
+			<td style="color: red;">M<br/>A<br/>X</td>
 			
 			<td>
 				<form method="post" action="{{set_alarm_action}}">
@@ -78,7 +78,7 @@
 		</tr>
 		
 		<tr class="{{eps_csscls_name}}">
-			<td>M<br/>I<br/>N</td>
+			<td style="color: blue;">M<br/>I<br/>N</td>
 			
 			<td>
 				<form method="post" action="{{set_alarm_action}}">
