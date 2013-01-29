@@ -137,8 +137,6 @@ MosWebSocketServer.prototype.globalConnectionHandler = function(webSocket) {
 			self.logger.error("Hibás üzenet érkezett webről!" + e);
 		}
 		
-		console.log(messageObj);
-		
 		if (messageObj) {
 			self.logger.debug("Üzenet web felől: %s", messageObj.header.name);
 			if (messageObj.header.name == "ws_auth_req" && !webSocket.source) {
@@ -148,10 +146,16 @@ MosWebSocketServer.prototype.globalConnectionHandler = function(webSocket) {
 				/*
 				 *A túl gyors kattintgatásoktól hajlamos itt elszállni
 				 */
-				esbSocket.user = self.http.socketMap[webSocket.source].user;
-				esbSocket.connect();
-				self.http.socketMap[webSocket.source].esbSocket = esbSocket;
-				connection.sendUTF(JSON.stringify(new ws_auth_resp(true)));
+				try {
+					esbSocket.user = self.http.socketMap[webSocket.source].user;
+					esbSocket.connect();
+					self.http.socketMap[webSocket.source].esbSocket = esbSocket;
+					connection.sendUTF(JSON.stringify(new ws_auth_resp(true)));
+				} catch(e) {
+					console.log(e);
+					self.logger.info("Http session lejárt.");
+					self.destroyWebSocket(webSocket, "Not authenticated!");
+				}
 			} else {
 				if (webSocket.source) {
 					self.logger.info("esb felé továbbítva: %s", messageObj.header.name);
@@ -195,7 +199,7 @@ MosWebSocketServer.prototype.destroyWebSocket = function(webSocket, description)
 				delete webSocket.source;
 			});
 		} else {
-			console.log("nincseeen");
+			self.logger.warn("Nincs webSocket.source a socketMap-ban.");
 		}
 	} catch(e) {
 		console.log(e);

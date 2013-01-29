@@ -3,7 +3,7 @@
           <!-- Title Area -->
           <li class="name">
             <h1>
-              <a href="meshdatasystems.com">
+              <a href="http://www.meshdatasystems.com">
                 Mesh Data Systems
               </a>
             </h1>
@@ -15,7 +15,7 @@
           <li class="divider"></li>
           <li>
           <form id="logout_form"  method="post" action="/logout">
-	            <input type="submit" class="small radius button" value="{{I18n "button.logout"}}" />
+	            <input type="submit" class="small radius button" value="{{I18n "nav.logout"}}" />
 	      	</form>
           </li>
           <li class="divider"></li>

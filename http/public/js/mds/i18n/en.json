@@ -1,3 +1,10 @@
 {
-	"status.connection": "Connection"
+	"nav.logout": "Logout",
+	"status.probes.subhead": "Probes",
+	"status.probes.eps_name": "Device name",
+	"status.probes.sensor_name": "Probe name",
+	"status.probes.value": "Current value",
+	"status.probes.limits": "Value limits",
+	"status.probes.active": "Active",
+	"status.probes.error": "Error"
 }

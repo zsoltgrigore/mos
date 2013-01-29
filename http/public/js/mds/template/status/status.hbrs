@@ -2,12 +2,13 @@
 
 <table class="responsive twelve">
 	<tr>
-		<th>EPS name</th>
-		<th>Sensor name</th>
-		<th>Value</th>
-		<th>Limits</th>
-		<th>Statuses</th>
-		<th>Errors</th>
+		<th>{{I18n "status.probes.eps_name"}}</th>
+		<th>{{I18n "status.probes.sensor_name"}}</th>
+		<th>{{I18n "status.probes.value"}}</th>
+		<th></th>
+		<th>{{I18n "status.probes.limits"}}</th>
+		<th>{{I18n "status.probes.active"}}</th>
+		<th>{{I18n "status.probes.error"}}</th>
 	</tr>
 	{{#each eps}}
 		<tr class="{{eps_csscls_name}}">
@@ -24,6 +25,8 @@
 					{{ fridge_temp }}
 				</canvas>
 			</td>
+			
+			<td>M<br/>A<br/>X</td>
 			
 			<td>
 				<form method="post" action="{{set_alarm_action}}">
@@ -75,6 +78,8 @@
 		</tr>
 		
 		<tr class="{{eps_csscls_name}}">
+			<td>M<br/>I<br/>N</td>
+			
 			<td>
 				<form method="post" action="{{set_alarm_action}}">
 					<div class="row collapse">

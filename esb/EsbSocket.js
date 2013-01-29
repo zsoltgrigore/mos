@@ -145,8 +145,10 @@ EsbSocket.prototype.writeObject = function (obj) {
 		this.connection.write(msg, "utf8", function(){
 			this.logger.debug("Kiküldött Üzenet: %s", msg);
 			this.flushed++;
-			this.logger.info("--> Üzenet küldés. Típusa: %s; Cél: %s, SeddionID: %d, Eddig kiküldve: %d", 
+			if (obj.header.name != "esb_hello_req") {
+				this.logger.info("--> Üzenet küldés. Típusa: %s; Cél: %s, SeddionID: %d, Eddig kiküldve: %d", 
 					obj.header.name, obj.header.destination, obj.header.session_id, this.wrote);
+			}
 			this.logger.debug("%s üzenet -> kernel | sorszám: %d", obj.header.name, this.flushed);
 		}.bind(this));
 		this.wrote++;
@@ -246,7 +248,9 @@ EsbSocket.prototype.processPriBuffer = function (callback) {
 			} else {
 				this.emit(incomingObj.header.name, incomingObj);
 			}
-			this.logger.info("<-- Üzenet a bufferből: %s", incomingObj.header.name);
+			if (incomingObj.header.name != "esb_hello_resp") {
+				this.logger.info("<-- Üzenet a bufferből: %s", incomingObj.header.name);
+			}
 		}
 		
 		if (this.priBuffer.length == 0 || !hasObject) { //ha kiürült vagy már csak töredék akkor lépjünk ki

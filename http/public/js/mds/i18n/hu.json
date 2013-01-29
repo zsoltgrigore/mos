@@ -1,11 +1,10 @@
 {
-	"status.connection": "Kapcsolatok",
-	"nav.status": "Állapot",
-	"nav.configuration": "Beállítások",
-	"button.logout": "Kijelentkezés",
-	"config.title": "Konfiguráció",
-	"config.error": "Hiba a konfigurációban!",
-	"config.eps_address.placeholder": "esp_name@domain.com",
+	"nav.logout": "Kijelentkezés",
 	"status.probes.subhead": "Szondák",
-	"config.eps_config.placeholder": "{'header':..., 'rules':...}"
+	"status.probes.eps_name": "Eszköz neve",
+	"status.probes.sensor_name": "Szonda neve",
+	"status.probes.value": "Jelenlegi értéke",
+	"status.probes.limits": "Érték határok",
+	"status.probes.active": "Aktív",
+	"status.probes.error": "Hiba"
 }
