@@ -1,12 +1,17 @@
 extends layout
 
 block content
-	div#login_form.row
-		div.four.columns.centered
-			form#loginform(method="post", action="login")
+	form#loginform(method="post", action="login")
+		div#lang.row
+			div.two.columns.offset-by-ten
+				select(name="lang")
+					option(SELECTED) hun
+					option eng
+		div#login_form.row
+			div.four.columns.centered
 				input(type="text", name="username", placeholder="Username")
 				input(type="password", name="password", placeholder="Password")
 				input.small.radius.button(type="submit", value="Login")
-			if (message.type)
-				<div class="#{message.type}"><small>#{message.text}</small></div>
+				if (message.type)
+					<div class="#{message.type}"><small>#{message.text}</small></div>
 	script(language="javascript", type="text/javascript", src="/js/login.js")

@@ -3,7 +3,7 @@
  */
 
 define(function(require, exports, module) {
-	var paper = require('paper');
+	var paper = require("paper");
 	
 	/**
 	 * BarSymbol
@@ -13,7 +13,7 @@ define(function(require, exports, module) {
 	 * ||
 	 * \/
 	 */
-	var Bar = module.exports = function(position) {
+	var Bar = module.exports = function(position, paperScope) {
 		this.position = new paper.Point(position);
 		return this.create();
 	};

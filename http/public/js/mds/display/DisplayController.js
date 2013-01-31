@@ -3,7 +3,8 @@
  */
 
 define(function(require, exports, module) {
-	var paper = require('paper');
+	
+	var paper = require("paper");
 
 	var DigitNumber = require('mds/display/model/DigitNumber');
 	var utils = require("mds/utils/common");
@@ -52,8 +53,7 @@ define(function(require, exports, module) {
 				//first char positioned after the neg sign
 				position--;
 				var digitGroup = new DigitNumber(intNum, {
-						position: paper.view.center.subtract([position * xDistance, 0])
-						, dilatation: 2
+						position: paper.view.center.subtract([position * xDistance, 0]), dilatation: 2
 					}
 				);
 				this.numberGroup.addChild(digitGroup);

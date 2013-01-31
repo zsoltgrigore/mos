@@ -60,12 +60,11 @@ define(function(require, exports, module) {
 		ms += new Date().getTime();
 		while (new Date() < ms){}
 	};
-	
-	exports.pause = function(ms) {
-		ms += new Date().getTime();
-		while (new Date() < ms){}
-	};
-	
+
+	exports.getURLParameter = function(name) {
+		return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
+	}
+
 	exports.stringToCssCls = function(string) {
 		return string.replace(/[@|.]/gi, "_");
 	};

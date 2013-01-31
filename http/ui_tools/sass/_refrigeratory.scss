@@ -42,3 +42,18 @@ table .sensor_name {
 	max-width: 180px;
 	overflow: auto;
 }
+
+#content .loading {
+	height: 37px;
+	margin-top: 50px;
+	background: url('/../../images/refrigeratory/loading-anim.gif') no-repeat;
+}
+
+table .limit-text{
+	font-size: 12px;
+	line-height: 12px;
+}
+
+table .limit-text.max {color: red}
+
+table .limit-text.min {color: blue;}

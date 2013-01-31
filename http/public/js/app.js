@@ -37,28 +37,11 @@ requirejs.config({
 	}
 });
 
-require([  "mds/controller/router", "mds/connection/esbClient",
-			"text!mds/i18n/hu.json", "mds/controller/navController", "plugins/domReady",
-			"davis", "jquery"],
-	function(router, esbclient, intern13n, navController, domReady, davis, jquery) {
-		//ha el akarna navigálni szinkron hívással akkor figyelmeztessük
-		window.onbeforeunload = function() {
-			//TODO: rendes i18n szöveget neki! 
-			return "Amennyiben elhagyja az oldalt, később újra be kell jelentkezzen!";
-		};
-		//ha elnavigál akkor kapcsoljuk le a WS-t
-		window.onunload = function() {
-			esbclient.close(1001, "User has navigated away!");
-		};
+require([ "mds/controller/router", "mds/connection/esbClient",
+			"mds/controller/languageController", "plugins/domReady", "davis", "jquery"],
+	function(router, esbclient, languageController, domReady, davis, jquery) {
 		
-		// add imported i18n pack. see require array!
-		try {
-			window.i18n = JSON.parse(intern13n);
-		} catch (e) {
-			if (console) console.error(e);
-			throw e;
-		}
-		
+		languageController();
 		var app = davis(router.main);
 		
 		domReady(function(){

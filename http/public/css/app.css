@@ -5943,6 +5943,11 @@ table.hide-for-medium {
   display: inline;
 }
 
+/* line 3, ../../ui_tools/sass/_loginlogout.scss */
+#login_form .error small {
+  margin-top: 10px;
+}
+
 /* Foundation v2.1.4 http://foundation.zurb.com */
 /* Artfully masterminded by ZURB  */
 /* -------------------------------------------------- 
@@ -6105,4 +6110,27 @@ table .limit-error {
 table .sensor_name {
   max-width: 180px;
   overflow: auto;
+}
+
+/* line 46, ../../ui_tools/sass/_refrigeratory.scss */
+#content .loading {
+  height: 37px;
+  margin-top: 50px;
+  background: url("/../../images/refrigeratory/loading-anim.gif") no-repeat;
+}
+
+/* line 52, ../../ui_tools/sass/_refrigeratory.scss */
+table .limit-text {
+  font-size: 12px;
+  line-height: 12px;
+}
+
+/* line 57, ../../ui_tools/sass/_refrigeratory.scss */
+table .limit-text.max {
+  color: red;
+}
+
+/* line 59, ../../ui_tools/sass/_refrigeratory.scss */
+table .limit-text.min {
+  color: blue;
 }

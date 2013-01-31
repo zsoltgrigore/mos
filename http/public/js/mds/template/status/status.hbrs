@@ -21,12 +21,12 @@
 			</td>
 			
 			<td rowspan="2">
-				<canvas id="{{fridge_temp_id}}" class="{{fridge_temp_addr}}" height="96" width="400">
+				<canvas id="{{fridge_temp_id}}" class="{{fridge_temp_addr}} fridge_temp" height="96" width="400">
 					{{ fridge_temp }}
 				</canvas>
 			</td>
 			
-			<td style="color: red;">M<br/>A<br/>X</td>
+			<td class="max limit-text">M<br/>A<br/>X</td>
 			
 			<td>
 				<form method="post" action="{{set_alarm_action}}">
@@ -78,7 +78,7 @@
 		</tr>
 		
 		<tr class="{{eps_csscls_name}}">
-			<td style="color: blue;">M<br/>I<br/>N</td>
+			<td class="min limit-text">M<br/>I<br/>N</td>
 			
 			<td>
 				<form method="post" action="{{set_alarm_action}}">
@@ -132,6 +132,7 @@
 	{{/each}}
 </table>
 
+<canvas id = "buffer" height="96" width="400" style="display:none"></canvas>
 <!-- 
 <div class="row">
 	<div class="twelve column">

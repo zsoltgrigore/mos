@@ -1,12 +1,26 @@
-[
-    {
-        "sensor_name": "Hűtő",
-        "fridge_temp": "1256",
-        "high_alarm_value": "301",
-        "low_alarm_value": "302",
-        "high_limit_active": "303",
-        "low_limit_active": "304",
-        "high_limit_error": "305",
-        "low_limit_error": "306"
-    }
-]
+{
+	"eps0.attila@fridge.integ.meshnetwork.hu": [
+	    {
+	        "sensor_name": "Hűtő",
+	        "fridge_temp": "1256",
+	        "high_alarm_value": "301",
+	        "low_alarm_value": "302",
+	        "high_limit_active": "303",
+	        "low_limit_active": "304",
+	        "high_limit_error": "305",
+	        "low_limit_error": "306"
+	    }
+	],
+	"eps1.attila@fridge.integ.meshnetwork.hu": [
+	    {
+	        "sensor_name": "Hűtő",
+	        "fridge_temp": "1256",
+	        "high_alarm_value": "301",
+	        "low_alarm_value": "302",
+	        "high_limit_active": "303",
+	        "low_limit_active": "304",
+	        "high_limit_error": "305",
+	        "low_limit_error": "306"
+	    }
+	]
+}

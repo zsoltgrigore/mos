@@ -3,7 +3,7 @@
  */
 
 define(function(require, exports, module) {
-	var paper = require('paper');
+	var paper = require("paper");
 	
 	var Bar = require('mds/display/model/Bar');	
 	

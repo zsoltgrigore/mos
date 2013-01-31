@@ -1,10 +1,11 @@
 {
 	"nav.logout": "Kijelentkezés",
+	"alert.navigate-away": "Amennyiben elhagyja az oldalt, később újra be kell jelentkezzen!",
 	"status.probes.subhead": "Szondák",
 	"status.probes.eps_name": "Eszköz neve",
 	"status.probes.sensor_name": "Szonda neve",
 	"status.probes.value": "Jelenlegi értéke",
-	"status.probes.limits": "Érték határok",
+	"status.probes.limits": "Érték határ",
 	"status.probes.active": "Aktív",
 	"status.probes.error": "Hiba"
 }

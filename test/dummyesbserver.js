@@ -25,6 +25,15 @@ randomTimer.call(function() {
 			socket.write(JSON.stringify(changeNotify));
 			console.log(changeNotify);
 		}
+		var changeNotify = new eps_memory_change_notify1(++iteratorKey);
+		changeNotify.header.source = "dummy@localhost";
+		if (obj) {
+			changeNotify.header.destination = obj.header.source;
+			changeNotify.header.session_id = obj.header.session_id;
+			changeNotify.header.security_id = obj.header.security_id;
+			socket.write(JSON.stringify(changeNotify));
+			console.log(changeNotify);
+		}
 	});
 
 socket.setNoDelay(true);
@@ -84,7 +93,16 @@ socket.on("data", function(data) {
 					socket.write(JSON.stringify(memdbGetResp));
 					console.log(memdbGetResp);
 				} else {
-					console.log(obj.data.path);
+					if (obj.data.path == "eps1.attila@fridge.integ.meshnetwork.hu::::") {
+						var memdbGetResp = new memdb_get_resp3();
+						memdbGetResp.header.source = "dummy@localhost";
+						memdbGetResp.header.destination = obj.header.source;
+						memdbGetResp.header.session_id = obj.header.session_id;
+						memdbGetResp.header.security_id = obj.header.security_id;
+						socket.write(JSON.stringify(memdbGetResp));
+						console.log(memdbGetResp);
+					} else {
+					}
 				}
 			}
 			break;
@@ -122,6 +140,7 @@ function memdb_get_req() {
 
 function memdb_get_resp1() {
 	this.data = {
+		/*"[\"eps0.attila@fridge.integ.meshnetwork.hu\",\"eps1.attila@fridge.integ.meshnetwork.hu\"]"*/
 		value: "[\"eps0.attila@fridge.integ.meshnetwork.hu\"]"
 	},
 	 this.header = {
@@ -143,6 +162,24 @@ function memdb_get_resp1() {
             \"304\": \"0\", \"305\": \"0\", \"306\": \"0\", \"1001\": \"8\" } }*/
 
 function memdb_get_resp2() {
+	this.data = {
+		value: "{\"register_description\": {\"301\": \"High Alarm Value\", \"302\": \"Low alarm Value\", \"303\": \"High Limit Alarm Enabled\","
+				+"\"304\": \"Low Limit Alarm Enabled\", \"305\": \"High Limit Error\", \"306\": \"Low Limit Error\","
+				+"\"1256\": \"External modbus slave #1 register\" },"
+				+"\"register_value\": { \"301\": \"350\", \"302\": \"200\", \"303\": \"1\","
+				+"\"304\": \"0\", \"305\": \"1\", \"306\": \"0\", \"1256\": \"260\" } }"
+	},
+	 this.header = {
+		destination : "ANY",
+		name : "memdb_get_resp",
+		protocol : "mcp5",
+		security_id : "",
+		session_id : "",
+		source : "esbd1.prod@meshnetwork.hu"
+	}
+}
+
+function memdb_get_resp3() {
 	this.data = {
 		value: "{\"register_description\": {\"301\": \"High Alarm Value\", \"302\": \"Low alarm Value\", \"303\": \"High Limit Alarm Enabled\","
 				+"\"304\": \"Low Limit Alarm Enabled\", \"305\": \"High Limit Error\", \"306\": \"Low Limit Error\","
@@ -346,9 +383,25 @@ function eps_get_memory_profile_and_value_resp() {
 console.log(JSON.stringify(new eps_get_memory_profile_and_value_resp()));
 console.log(" ");
 
+function eps_memory_change_notify1(val) {
+	this.data = {
+		"eps1.attila@fridge.integ.meshnetwork.hu" : {
+			"1256": "" + val
+		}
+	},
+	this.header = {
+		destination : "",
+		name : "eps_memory_change_notify",
+		protocol : "mcp5",
+		security_id : "",
+		session_id : "",
+		source : "control@fridge.integ.meshnetwork.hu"
+	}
+}
+
 function eps_memory_change_notify(val) {
 	this.data = {
-		"eps0.attila@fridge.integ.meshnetwork.hu": {
+		"eps0.attila@fridge.integ.meshnetwork.hu" : {
 			"1256": "" + val
 		}
 	},

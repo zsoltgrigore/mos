@@ -1,5 +1,6 @@
 {
 	"nav.logout": "Logout",
+	"alert.navigate-away": "For security reasons, you must log in again if you are navigating away!",
 	"status.probes.subhead": "Probes",
 	"status.probes.eps_name": "Device name",
 	"status.probes.sensor_name": "Probe name",
