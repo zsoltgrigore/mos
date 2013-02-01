@@ -137,6 +137,7 @@ define(function(require, exports, module) {
 	
 	EsbWSClient.prototype.errorHandler = function (reason){
 		if (console) console.error(reason);
+		$("#logout_form").submit();
 		setTimeout(function() { 
 			utils.redirectTo(null, '/login');
 			}, 5000);
