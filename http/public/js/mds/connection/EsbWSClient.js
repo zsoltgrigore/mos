@@ -137,10 +137,8 @@ define(function(require, exports, module) {
 	
 	EsbWSClient.prototype.errorHandler = function (reason){
 		if (console) console.error(reason);
+		window.onbeforeunload = null;
 		$("#logout_form").submit();
-		setTimeout(function() { 
-			utils.redirectTo(null, '/login');
-			}, 5000);
 	};
 	
 	EsbWSClient.prototype.webSocketSupported = function() {
