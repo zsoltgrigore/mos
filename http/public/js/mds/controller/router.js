@@ -16,9 +16,7 @@ define(function(require, exports, module) {
 		statusController.call(app);
 		
 		window.onbeforeunload = function() {
-			//TODO: rendes i18n szöveget neki! i18n.alert.navigate-away
-			console.log(i18n);
-			return "Amennyiben elhagyja az oldalt, később újra be kell jelentkezzen!";
+			return i18n["alert.navigate-away"];
 		};
 		window.onunload = function() {
 			esbclient.close(1001, "User has navigated away!");

@@ -1,6 +1,6 @@
 {
 	"nav.logout": "Kijelentkezés",
-	"alert.navigate-away": "Amennyiben elhagyja az oldalt, később újra be kell jelentkezzen!",
+	"alert.navigate-away": "Biztonsági okokból, amennyiben most elhagyja az oldalt, később újra be kell jelentkeznie!",
 	"status.probes.subhead": "Szondák",
 	"status.probes.eps_name": "Eszköz neve",
 	"status.probes.sensor_name": "Szonda neve",

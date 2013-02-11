@@ -118,8 +118,8 @@ define(function(require, exports, module) {
 	};
 	
 	EsbWSClient.prototype.messageHandler = function (event){
-		console.log("messageHandler: ");
-		console.log(event.data);
+		//console.log("messageHandler: ");
+		//console.log(event.data);
 		var payload = JSON.parse(event.data);
 		var eventType = payload.header.name;
 		
@@ -149,8 +149,8 @@ define(function(require, exports, module) {
 	EsbWSClient.prototype.getDataFromDb = function(path) {
 		var memDbGetReq = new memdb_get_req();
 		memDbGetReq.data.path = path;
-		console.log("getDataFromDb: ");
-		console.log(memDbGetReq);
+		//console.log("getDataFromDb: ");
+		//console.log(memDbGetReq);
 		this.sendObject(memDbGetReq);
 	}
 
@@ -158,8 +158,8 @@ define(function(require, exports, module) {
 		var memDbSetReq = new memdb_set_req();
 		memDbSetReq.data.path = path;
 		memDbSetReq.data.value = "" + value;
-		console.log("sendDataToDb: ");
-		console.log(memDbSetReq);
+		//console.log("sendDataToDb: ");
+		//console.log(memDbSetReq);
 		this.sendObject(memDbSetReq);
 	}
 });

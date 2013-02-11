@@ -54,7 +54,7 @@ define(function(require, exports, module) {
 		var app = this;
 		this.datas[deviceList[addedDevices]] = JSON.parse(payload.data.value);
 		addedDevices++;
-		console.log("Parsed and added one device's details. Num of added details: " + addedDevices);
+		//console.log("Parsed and added one device's details. Num of added details: " + addedDevices);
 
 		if (deviceList.length == addedDevices) {
 			esbclient.off("memdb_get_resp", getUserDeviceDetailsHandler.bind(this));
@@ -79,7 +79,7 @@ define(function(require, exports, module) {
 					$changedField.val(changedValue/10);
 				} else {
 					if ($changedField.is("canvas")) {
-						console.log(payload);
+						//console.log(payload);
 						$changedField.text(changedValue/10);
 						//TODO: use $changedField instead
 						renderCanvas($changedField.attr("id"));
@@ -179,8 +179,8 @@ define(function(require, exports, module) {
 			case 2:
 				break;
 			default:
-				console.log("not implemented");
-				console.log(changedValue);
+				//console.log("not implemented");
+				//console.log(changedValue);
 		}
 	}
 
