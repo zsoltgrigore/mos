@@ -1,0 +1,44 @@
+{
+	"http" : {
+		"enabled" : true,
+		"host" : "localhost",
+		"port" : 8080,
+		"defaultLanding" : "/tester",
+		"viewEngine" : "jade",
+		"showErrorStack" : true,
+		"use" : [
+			"express.static(__dirname + '/public')",
+			"express.bodyParser()",
+			"express.cookieParser()",
+			"express.methodOverride()",
+			"express.session({store: this.sessionStore, secret: 'essé-mán-le-a-fárúl', key: 'publicSessionKey'})",
+			{"appMiddlewares" : "sessionMessages"},
+			{"appMiddlewares" : "i18n"},
+			"this.app.router",
+			{"appMiddlewares" : "notFound"},
+			{"appMiddlewares" : "error"}
+		],
+		"routes" : [
+			{ "path" : "/login" , "method" : "get", "middlewares" : ["accessLogger", "login"]},
+			{ "path" : "/login" , "method" : "post", "middlewares" : ["accessLogger", "processLoginData"]},
+			{ "path" : "/", "method" : "get", "middlewares" : ["accessLogger", "root"]},
+			{ "path" : "/tester" , "method" : "get", "middlewares" : ["accessLogger", "restrict", "tester"]}
+		]
+	},
+	"websockets" : {
+		"enabled" :  true,
+		"host" : "localhost",
+		"port" : 8081
+	},
+	"esb" : {
+		"salt" : "essé-mán-le-a-fárúl",
+		"host" : "localhost",
+		"port" : 5521,
+		"helloInterval" : 1000,
+		"reconnectAllowed" : true,
+		"reconnectDelay" : 1000
+	},
+	"logger" : {
+	    "level" : 3
+	}
+}

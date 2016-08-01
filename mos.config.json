@@ -1,93 +1,39 @@
 {
 	"http" : {
-		"development" : {
-			"enabled" : true,
-			"host" : "localhost",
-			"port" : 8080,
-			"defaultLanding" : "/tester",
-			"viewEngine" : "jade",
-			"showErrorStack" : true,
-			"use" : [
-				"express.static(__dirname + '/public')",
-				"express.bodyParser()",
-				"express.cookieParser()",
-				"express.methodOverride()",
-				"express.session({store: this.sessionStore, secret: 'essé-mán-le-a-fárúl', key: 'publicSessionKey'})",
-				{"appMiddlewares" : "sessionMessages"},
-				{"appMiddlewares" : "i18n"},
-				"this.app.router",
-				{"appMiddlewares" : "notFound"},
-				{"appMiddlewares" : "error"}
-			],
-			"routes" : [
-				{ "path" : "/login" , "method" : "get", "middlewares" : ["accessLogger", "login"]},
-				{ "path" : "/login" , "method" : "post", "middlewares" : ["accessLogger", "processLoginData"]},
-				{ "path" : "/", "method" : "get", "middlewares" : ["accessLogger", "root"]},
-				{ "path" : "/tester" , "method" : "get", "middlewares" : ["accessLogger", "restrict", "tester"]}
-			]
-		},
-		"production" : {
-			"enabled" : true,
-			"host" : "meshnetwork.hu",
-			"port" : 8080,
-			"defaultLanding" : "/tester",
-			"viewEngine" : "jade",
-			"showErrorStack" : false,
-			"use" : [
-				"express.bodyParser()",
-				"express.cookieParser()",
-				"express.methodOverride()",
-				"express.session({ store: new RedisStore, secret: 'essé-mán-le-a-fárúl', key: 'publicSessionKey'})",
-				"this.app.router",
-				"express.static(__dirname + '/public')",
-				"express.errorHandler()"
-			],
-			"routes" : [
-				{ "path" : "/login" , "method" : "get", "middlewares" : ["accessLogger", "login"]},
-				{ "path" : "/login" , "method" : "post", "middlewares" : ["accessLogger", "processLoginData"]},
-				{ "path" : "/", "method" : "get", "middlewares" : ["accessLogger", "root"]}
-			]
-		}
+		"enabled" : true,
+		"host" : "meshnetwork.hu",
+		"port" : 8080,
+		"defaultLanding" : "/tester",
+		"viewEngine" : "jade",
+		"showErrorStack" : false,
+		"use" : [
+			"express.bodyParser()",
+			"express.cookieParser()",
+			"express.methodOverride()",
+			"express.session({ store: new RedisStore, secret: 'essé-mán-le-a-fárúl', key: 'publicSessionKey'})",
+			"this.app.router",
+			"express.static(__dirname + '/public')",
+			"express.errorHandler()"
+		],
+		"routes" : [
+			{ "path" : "/login" , "method" : "get", "middlewares" : ["accessLogger", "login"]},
+			{ "path" : "/login" , "method" : "post", "middlewares" : ["accessLogger", "processLoginData"]},
+			{ "path" : "/", "method" : "get", "middlewares" : ["accessLogger", "root"]}
+		]
 	},
 	"websockets" : {
-		"development" : {
-			"enabled" :  true,
-			"host" : "localhost",
-			"port" : 8081
-		},
-		"production" : {
-			"enabled" : true,
-			"host" : "localhost",
-			"port" : 8081
-		}
+		"enabled" : true,
+		"host" : "localhost",
+		"port" : 8081
 	},
 	"esb" : {
-		"development" : {
-			"salt" : "essé-mán-le-a-fárúl",
-			"host" : "localhost",
-			"port" : 5521,
-			"helloInterval" : 1000,
-			"reconnectAllowed" : true,
-			"reconnectDelay" : 1000
-		},
-		"production" : {
-			"host" : "meshnetwork.hu",
-			"port" : 5521,
-			"helloInterval" : 2000,
-			"reconnectAllowed": true,
-			"reconnectDelay" : 3000
-		}
+		"host" : "meshnetwork.hu",
+		"port" : 5521,
+		"helloInterval" : 2000,
+		"reconnectAllowed": true,
+		"reconnectDelay" : 3000
 	},
-	"global" : {
-		"development" : {
-			"logger" : {
-				"level" : 3
-			}
-		},
-		"production" : {
-			"logger" : {
-				"level" : 1
-			}
-		}
+	"logger" : {
+		"level" : 1
 	}
 }

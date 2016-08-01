@@ -1,31 +1,15 @@
 {
-  "name": "mesh-owners-site",
-  "description": "Mesh tulajdonosok honlapja",
+  "name": "mos",
+  "description": "Path based request routing",
   "version": "0.0.1",
-  "author": "Grigore Zsolt <grigo@meshnetwork.hu>",
-  "contributors": [
-    {
-      "name": "Grigore Zsolt",
-      "email": "grigo@meshnetwork.hu"
-    },
-    {
-      "name": "Jacsek Gergely",
-      "email": "jager@meshnetwork.hu"
-    }
-  ],
+  "author": "Grigore Zsolt <grigo.billboard@gmail.com>",
   "dependencies": {
-    "express": "3.x.x",
-    "socket.io": "0.9.x",
-    "connect": "2.x.x",
-    "jade": "0.34.1",
-    "redis": "~0.7.2",
-    "hiredis": "~0.4.1",
-    "cookie": "0.0.4"
+    "express": "4.x.x"
   },
   "devDependencies": {},
-  "main": "core",
+  "main": "core_new",
   "scripts": {},
   "engines": {
-    "node": ">= 0.4.1 < 0.7.0"
+    "node": ">= 6"
   }
 }
